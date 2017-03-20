@@ -1,0 +1,21 @@
+[package]
+name = "input-sys"
+version = "1.6.3"
+authors = ["Victor Brekenfeld (Drakulix) <github@drakulix.de>"]
+build = "build.rs"
+description = "Bindgen generated unsafe libinput wrapper"
+documentation = "https://drakulix.github.io/libinput.rs/input-sys"
+repository = "https://github.com/Drakulix/libinput.rs/tree/master/input-sys"
+keywords = ["wayland", "input", "bindings"]
+categories = ["external-ffi-bindings"]
+license = "MIT"
+exclude = [".travis.yml", ".rustfmt.toml"]
+
+[lib]
+path = "src/lib.rs"
+
+[build-dependencies]
+bindgen = "0.22"
+
+[dependencies]
+libc = "0.2"
