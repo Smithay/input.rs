@@ -5,3 +5,4 @@ authors = ["drakulix"]
 
 [dependencies]
 input-sys = { version = "1.6.3", path = "./input-sys" }
+libc = "0.2"

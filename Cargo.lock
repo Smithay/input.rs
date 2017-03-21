@@ -3,6 +3,7 @@ name = "input"
 version = "0.1.0"
 dependencies = [
  "input-sys 1.6.3",
+ "libc 0.2.21 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
