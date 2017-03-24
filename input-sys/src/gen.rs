@@ -70,6 +70,7 @@ pub enum libinput_device_capability {
     LIBINPUT_DEVICE_CAP_TABLET_TOOL = 3,
     LIBINPUT_DEVICE_CAP_TABLET_PAD = 4,
     LIBINPUT_DEVICE_CAP_GESTURE = 5,
+    LIBINPUT_DEVICE_CAP_SWITCH = 6,
 }
 #[repr(u32)]
 /**
@@ -83,18 +84,15 @@ pub enum libinput_key_state {
     LIBINPUT_KEY_STATE_RELEASED = 0,
     LIBINPUT_KEY_STATE_PRESSED = 1,
 }
-#[repr(u32)]
+pub const libinput_led_LIBINPUT_LED_NUM_LOCK: libinput_led = 1;
+pub const libinput_led_LIBINPUT_LED_CAPS_LOCK: libinput_led = 2;
+pub const libinput_led_LIBINPUT_LED_SCROLL_LOCK: libinput_led = 4;
 /**
  * @ingroup device
  *
  * Mask reflecting LEDs on a device.
  */
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum libinput_led {
-    LIBINPUT_LED_NUM_LOCK = 1,
-    LIBINPUT_LED_CAPS_LOCK = 2,
-    LIBINPUT_LED_SCROLL_LOCK = 4,
-}
+pub type libinput_led = libc::c_uint;
 #[repr(u32)]
 /**
  * @ingroup device
@@ -137,6 +135,7 @@ pub enum libinput_pointer_axis_source {
     LIBINPUT_POINTER_AXIS_SOURCE_WHEEL = 1,
     LIBINPUT_POINTER_AXIS_SOURCE_FINGER = 2,
     LIBINPUT_POINTER_AXIS_SOURCE_CONTINUOUS = 3,
+    LIBINPUT_POINTER_AXIS_SOURCE_WHEEL_TILT = 4,
 }
 #[repr(u32)]
 /**
@@ -465,6 +464,32 @@ extern "C" {
 }
 #[repr(u32)]
 /**
+ * @ingroup device
+ *
+ * The state of a switch. The default state of a switch is @ref
+ * LIBINPUT_SWITCH_STATE_OFF and no event is sent to confirm a switch in the
+ * off position. If a switch is logically on during initialization, libinput
+ * sends an event of type @ref LIBINPUT_EVENT_SWITCH_TOGGLE with a state
+ * @ref LIBINPUT_SWITCH_STATE_ON.
+ */
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum libinput_switch_state {
+    LIBINPUT_SWITCH_STATE_OFF = 0,
+    LIBINPUT_SWITCH_STATE_ON = 1,
+}
+#[repr(u32)]
+/**
+ * @ingroup device
+ *
+ * The type of a switch.
+ */
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum libinput_switch { LIBINPUT_SWITCH_LID = 1, }
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct libinput_event_switch([u8; 0]);
+#[repr(u32)]
+/**
  * @ingroup base
  *
  * Event type for events returned by libinput_get_event().
@@ -497,6 +522,7 @@ pub enum libinput_event_type {
     LIBINPUT_EVENT_GESTURE_PINCH_BEGIN = 803,
     LIBINPUT_EVENT_GESTURE_PINCH_UPDATE = 804,
     LIBINPUT_EVENT_GESTURE_PINCH_END = 805,
+    LIBINPUT_EVENT_SWITCH_TOGGLE = 900,
 }
 extern "C" {
     /**
@@ -638,6 +664,20 @@ extern "C" {
  */
     pub fn libinput_event_get_tablet_pad_event(event: *mut libinput_event)
      -> *mut libinput_event_tablet_pad;
+}
+extern "C" {
+    /**
+ * @ingroup event
+ *
+ * Return the switch event that is this input event. If the event type does
+ * not match the switch event types, this function returns NULL.
+ *
+ * The inverse of this function is libinput_event_switch_get_base_event().
+ *
+ * @return A switch event, or NULL for other events
+ */
+    pub fn libinput_event_get_switch_event(event: *mut libinput_event)
+     -> *mut libinput_event_switch;
 }
 extern "C" {
     /**
@@ -1063,6 +1103,15 @@ extern "C" {
  * terminating event is guaranteed (though it may happen).
  * The coordinate system is identical to the cursor movement, i.e. a
  * scroll value of 1 represents the equivalent relative motion of 1.
+ *
+ * If the source is @ref LIBINPUT_POINTER_AXIS_SOURCE_WHEEL_TILT, no
+ * terminating event is guaranteed (though it may happen).
+ * Scrolling is in discrete steps and there is no physical equivalent for
+ * the value returned here. For backwards compatibility, the value returned
+ * by this function is identical to a single mouse wheel rotation by this
+ * device (see the documentation for @ref LIBINPUT_POINTER_AXIS_SOURCE_WHEEL
+ * above). Callers should not use this value but instead exclusively refer
+ * to the value returned by libinput_event_pointer_get_axis_value_discrete().
  *
  * For pointer events that are not of type @ref LIBINPUT_EVENT_POINTER_AXIS,
  * this function returns 0.
@@ -2544,6 +2593,72 @@ extern "C" {
  */
     pub fn libinput_event_tablet_pad_get_time_usec(event:
                                                        *mut libinput_event_tablet_pad)
+     -> u64;
+}
+extern "C" {
+    /**
+ * @ingroup event_switch
+ *
+ * Return the switch that triggered this event.
+ * For pointer events that are not of type @ref
+ * LIBINPUT_EVENT_SWITCH_TOGGLE, this function returns 0.
+ *
+ * @note It is an application bug to call this function for events other than
+ * @ref LIBINPUT_EVENT_SWITCH_TOGGLE.
+ *
+ * @param event The libinput switch event
+ * @return The switch triggering this event
+ */
+    pub fn libinput_event_switch_get_switch(event: *mut libinput_event_switch)
+     -> libinput_switch;
+}
+extern "C" {
+    /**
+ * @ingroup event_switch
+ *
+ * Return the switch state that triggered this event.
+ * For switch events that are not of type @ref
+ * LIBINPUT_EVENT_SWITCH_TOGGLE, this function returns 0.
+ *
+ * @note It is an application bug to call this function for events other than
+ * @ref LIBINPUT_EVENT_SWITCH_TOGGLE.
+ *
+ * @param event The libinput switch event
+ * @return The switch state triggering this event
+ */
+    pub fn libinput_event_switch_get_switch_state(event:
+                                                      *mut libinput_event_switch)
+     -> libinput_switch_state;
+}
+extern "C" {
+    /**
+ * @ingroup event_switch
+ *
+ * @return The generic libinput_event of this event
+ */
+    pub fn libinput_event_switch_get_base_event(event:
+                                                    *mut libinput_event_switch)
+     -> *mut libinput_event;
+}
+extern "C" {
+    /**
+ * @ingroup event_switch
+ *
+ * @param event The libinput switch event
+ * @return The event time for this event
+ */
+    pub fn libinput_event_switch_get_time(event: *mut libinput_event_switch)
+     -> u32;
+}
+extern "C" {
+    /**
+ * @ingroup event_switch
+ *
+ * @param event The libinput switch event
+ * @return The event time for this event in microseconds
+ */
+    pub fn libinput_event_switch_get_time_usec(event:
+                                                   *mut libinput_event_switch)
      -> u64;
 }
 /**

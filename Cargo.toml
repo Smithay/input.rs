@@ -4,5 +4,6 @@ version = "0.1.0"
 authors = ["drakulix"]
 
 [dependencies]
-input-sys = { version = "1.6.3", path = "./input-sys" }
+input-sys = { version = "1.7.0", path = "./input-sys" }
 libc = "0.2"
+bitflags = "0.8"

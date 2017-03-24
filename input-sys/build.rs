@@ -4,11 +4,12 @@ fn main()
 {
     // Setup bindings builder
     let generated = bindgen::builder()
-        .header("include/libinput.1.6.3.h")
+        .header("include/libinput.1.7.0.h")
         .no_unstable_rust()
         .ctypes_prefix("libc")
         .whitelisted_type(r"^libinput_.*$")
         .whitelisted_function(r"^libinput_.*$")
+        .constified_enum("libinput_led")
         .generate().unwrap();
 
     println!("cargo:rustc-link-lib=dylib=input");

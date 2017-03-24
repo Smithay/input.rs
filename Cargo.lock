@@ -2,7 +2,8 @@
 name = "input"
 version = "0.1.0"
 dependencies = [
- "input-sys 1.6.3",
+ "bitflags 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "input-sys 1.7.0",
  "libc 0.2.21 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -128,7 +129,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "input-sys"
-version = "1.6.3"
+version = "1.7.0"
 dependencies = [
  "bindgen 0.22.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.2.21 (registry+https://github.com/rust-lang/crates.io-index)",
