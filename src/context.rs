@@ -11,17 +11,18 @@ use ::{ffi, FromRaw, AsRaw, Userdata, LibinputDevice};
 
 pub type LibinputInterface = ffi::libinput_interface;
 
-pub struct LibinputContext<C: 'static, D: 'static, G: 'static, S: 'static> {
+pub struct LibinputContext<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
     context: *mut ffi::libinput,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
+    _tablet_tool_userdata_type: PhantomData<T>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static> FromRaw<ffi::libinput> for LibinputContext<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput> for LibinputContext<C, D, G, S, T>
 {
-    unsafe fn from_raw(raw: *mut ffi::libinput) -> LibinputContext<C, D, G, S>
+    unsafe fn from_raw(raw: *mut ffi::libinput) -> LibinputContext<C, D, G, S, T>
     {
         LibinputContext {
             context: ffi::libinput_ref(raw),
@@ -29,11 +30,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static> FromRaw<ffi::libinput> for 
             _device_userdata_type: PhantomData,
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
+            _tablet_tool_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static> AsRaw<ffi::libinput> for LibinputContext<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput> for LibinputContext<C, D, G, S, T>
 {
     unsafe fn as_raw(&self) -> *const ffi::libinput {
         self.context as *const _
@@ -44,7 +46,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static> AsRaw<ffi::libinput> for Li
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static> Userdata<C> for LibinputContext<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Userdata<C> for LibinputContext<C, D, G, S, T>
 {
     fn userdata(&self) -> Option<&C> {
         unsafe {
@@ -79,9 +81,9 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static> Userdata<C> for LibinputCon
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static> Clone for LibinputContext<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Clone for LibinputContext<C, D, G, S, T>
 {
-    fn clone(&self) -> LibinputContext<C, D, G, S>
+    fn clone(&self) -> LibinputContext<C, D, G, S, T>
     {
         LibinputContext {
             context: unsafe { ffi::libinput_ref(self.context) },
@@ -89,11 +91,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static> Clone for LibinputContext<C
             _device_userdata_type: PhantomData,
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
+            _tablet_tool_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static> Drop for LibinputContext<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Drop for LibinputContext<C, D, G, S, T>
 {
     fn drop(&mut self) {
         unsafe {
@@ -105,9 +108,9 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static> Drop for LibinputContext<C,
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static> LibinputContext<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> LibinputContext<C, D, G, S, T>
 {
-    pub fn new_from_udev(interface: LibinputInterface, userdata: Option<C>, udev_context: *mut libc::c_void) -> LibinputContext<C, D, G, S> {
+    pub fn new_from_udev(interface: LibinputInterface, userdata: Option<C>, udev_context: *mut libc::c_void) -> LibinputContext<C, D, G, S, T> {
         let boxed_interface = Box::new(interface);
         let mut boxed_userdata = Box::new(userdata);
 
@@ -122,6 +125,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static> LibinputContext<C, D, G, S>
             _device_userdata_type: PhantomData,
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
+            _tablet_tool_userdata_type: PhantomData,
         };
 
         mem::forget(boxed_interface);
@@ -130,7 +134,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static> LibinputContext<C, D, G, S>
         context
     }
 
-    pub fn new_from_path(interface: LibinputInterface, userdata: Option<C>) -> LibinputContext<C, D, G, S> {
+    pub fn new_from_path(interface: LibinputInterface, userdata: Option<C>) -> LibinputContext<C, D, G, S, T> {
         let boxed_interface = Box::new(interface);
         let mut boxed_userdata = Box::new(userdata);
 
@@ -145,6 +149,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static> LibinputContext<C, D, G, S>
             _device_userdata_type: PhantomData,
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
+            _tablet_tool_userdata_type: PhantomData,
         };
 
         mem::forget(boxed_interface);
@@ -153,7 +158,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static> LibinputContext<C, D, G, S>
         context
     }
 
-    pub fn path_add_device(&mut self, path: &str) -> LibinputDevice<C, D, G, S>
+    pub fn path_add_device(&mut self, path: &str) -> LibinputDevice<C, D, G, S, T>
     {
         let path = CString::new(path).expect("Device Path contained a null-byte");
         unsafe {
@@ -161,7 +166,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static> LibinputContext<C, D, G, S>
         }
     }
 
-    pub fn path_remove_device(&mut self, mut device: LibinputDevice<C, D, G, S>)
+    pub fn path_remove_device(&mut self, mut device: LibinputDevice<C, D, G, S, T>)
     {
         unsafe {
             ffi::libinput_path_remove_device(device.as_raw_mut())

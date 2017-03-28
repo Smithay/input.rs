@@ -15,18 +15,19 @@ pub use self::led::*;
 
 use ::{ffi, FromRaw, AsRaw, Userdata, LibinputContext, LibinputSeat};
 
-pub struct LibinputDevice<C: 'static, D: 'static, G: 'static, S: 'static>
+pub struct LibinputDevice<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>
 {
     device: *mut ffi::libinput_device,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
+    _tablet_tool_userdata_type: PhantomData<T>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static>  FromRaw<ffi::libinput_device> for LibinputDevice<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  FromRaw<ffi::libinput_device> for LibinputDevice<C, D, G, S, T>
 {
-    unsafe fn from_raw(raw: *mut ffi::libinput_device) -> LibinputDevice<C, D, G, S>
+    unsafe fn from_raw(raw: *mut ffi::libinput_device) -> LibinputDevice<C, D, G, S, T>
     {
         LibinputDevice {
             device: ffi::libinput_device_ref(raw),
@@ -34,11 +35,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static>  FromRaw<ffi::libinput_devi
             _device_userdata_type: PhantomData,
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
+            _tablet_tool_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static>  AsRaw<ffi::libinput_device> for LibinputDevice<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  AsRaw<ffi::libinput_device> for LibinputDevice<C, D, G, S, T>
 {
     unsafe fn as_raw(&self) -> *const ffi::libinput_device {
         self.device as *const _
@@ -49,7 +51,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static>  AsRaw<ffi::libinput_device
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static>  Userdata<D> for LibinputDevice<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  Userdata<D> for LibinputDevice<C, D, G, S, T>
 {
     fn userdata(&self) -> Option<&D> {
         unsafe {
@@ -84,9 +86,9 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static>  Userdata<D> for LibinputDe
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static>  Clone for LibinputDevice<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  Clone for LibinputDevice<C, D, G, S, T>
 {
-    fn clone(&self) -> LibinputDevice<C, D, G, S>
+    fn clone(&self) -> LibinputDevice<C, D, G, S, T>
     {
         LibinputDevice {
             device: unsafe { ffi::libinput_device_ref(self.device) },
@@ -94,11 +96,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static>  Clone for LibinputDevice<C
             _device_userdata_type: PhantomData,
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
+            _tablet_tool_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static> Drop for LibinputDevice<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Drop for LibinputDevice<C, D, G, S, T>
 {
     fn drop(&mut self) {
         unsafe {
@@ -110,16 +113,16 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static> Drop for LibinputDevice<C, 
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static> LibinputDevice<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> LibinputDevice<C, D, G, S, T>
 {
-    pub fn context(&self) -> LibinputContext<C, D, G, S>
+    pub fn context(&self) -> LibinputContext<C, D, G, S, T>
     {
         unsafe {
             LibinputContext::from_raw(ffi::libinput_device_get_context(self.device))
         }
     }
 
-    pub fn device_group(&self) -> LibinputDeviceGroup<C, D, G, S>
+    pub fn device_group(&self) -> LibinputDeviceGroup<C, D, G, S, T>
     {
         unsafe {
             LibinputDeviceGroup::from_raw(ffi::libinput_device_get_device_group(self.device))
@@ -166,7 +169,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static> LibinputDevice<C, D, G, S>
         }
     }
 
-    pub fn seat(&self) -> LibinputSeat<C, D, G, S>
+    pub fn seat(&self) -> LibinputSeat<C, D, G, S, T>
     {
         unsafe {
             LibinputSeat::from_raw(ffi::libinput_device_get_seat(self.device))

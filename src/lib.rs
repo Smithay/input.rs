@@ -24,8 +24,10 @@ pub trait Userdata<T> {
 
 mod context;
 mod device;
+mod event;
 mod seat;
 
 pub use context::*;
 pub use device::*;
+pub use event::*;
 pub use seat::*;

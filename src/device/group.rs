@@ -6,18 +6,19 @@ use libc;
 
 use ::{ffi, FromRaw, AsRaw, Userdata};
 
-pub struct LibinputDeviceGroup<C: 'static, D: 'static, G: 'static, S: 'static>
+pub struct LibinputDeviceGroup<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>
 {
     device_group: *mut ffi::libinput_device_group,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
+    _tablet_tool_userdata_type: PhantomData<T>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static>  FromRaw<ffi::libinput_device_group> for LibinputDeviceGroup<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  FromRaw<ffi::libinput_device_group> for LibinputDeviceGroup<C, D, G, S, T>
 {
-    unsafe fn from_raw(raw: *mut ffi::libinput_device_group) -> LibinputDeviceGroup<C, D, G, S>
+    unsafe fn from_raw(raw: *mut ffi::libinput_device_group) -> LibinputDeviceGroup<C, D, G, S, T>
     {
         LibinputDeviceGroup {
             device_group: ffi::libinput_device_group_ref(raw),
@@ -25,11 +26,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static>  FromRaw<ffi::libinput_devi
             _device_userdata_type: PhantomData,
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
+            _tablet_tool_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static>  AsRaw<ffi::libinput_device_group> for LibinputDeviceGroup<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  AsRaw<ffi::libinput_device_group> for LibinputDeviceGroup<C, D, G, S, T>
 {
     unsafe fn as_raw(&self) -> *const ffi::libinput_device_group {
         self.device_group as *const _
@@ -40,7 +42,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static>  AsRaw<ffi::libinput_device
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static>  Userdata<D> for LibinputDeviceGroup<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  Userdata<D> for LibinputDeviceGroup<C, D, G, S, T>
 {
     fn userdata(&self) -> Option<&D> {
         unsafe {
@@ -75,9 +77,9 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static>  Userdata<D> for LibinputDe
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static>  Clone for LibinputDeviceGroup<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  Clone for LibinputDeviceGroup<C, D, G, S, T>
 {
-    fn clone(&self) -> LibinputDeviceGroup<C, D, G, S>
+    fn clone(&self) -> LibinputDeviceGroup<C, D, G, S, T>
     {
         LibinputDeviceGroup {
             device_group: unsafe { ffi::libinput_device_group_ref(self.device_group) },
@@ -85,11 +87,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static>  Clone for LibinputDeviceGr
             _device_userdata_type: PhantomData,
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
+            _tablet_tool_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static> Drop for LibinputDeviceGroup<C, D, G, S>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Drop for LibinputDeviceGroup<C, D, G, S, T>
 {
     fn drop(&mut self) {
         unsafe {
