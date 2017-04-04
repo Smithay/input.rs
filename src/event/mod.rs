@@ -19,41 +19,41 @@ pub use self::touch::*;
 use ::{ffi, LibinputContext, LibinputDevice, FromRaw, AsRaw};
 
 #[derive(Clone, Copy)]
-pub enum LibinputEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
-    Device(DeviceEvent<C, D, G, S, T>),
-    Keyboard(KeyboardEvent<C, D, G, S, T>),
-    Pointer(PointerEvent<C, D, G, S, T>),
-    Touch(TouchEvent<C, D, G, S, T>),
-    Tablet(TabletToolEvent<C, D, G, S, T>),
-    TabletPad(TabletPadEvent<C, D, G, S, T>),
-    Gesture(GestureEvent<C, D, G, S, T>),
-    Switch(SwitchEvent<C, D, G, S, T>),
+pub enum LibinputEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
+    Device(DeviceEvent<C, D, G, S, T, M>),
+    Keyboard(KeyboardEvent<C, D, G, S, T, M>),
+    Pointer(PointerEvent<C, D, G, S, T, M>),
+    Touch(TouchEvent<C, D, G, S, T, M>),
+    Tablet(TabletToolEvent<C, D, G, S, T, M>),
+    TabletPad(TabletPadEvent<C, D, G, S, T, M>),
+    Gesture(GestureEvent<C, D, G, S, T, M>),
+    Switch(SwitchEvent<C, D, G, S, T, M>),
 }
 
-pub trait Event<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub trait Event<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event;
 
-    fn context(&self) -> LibinputContext<C, D, G, S, T> {
+    fn context(&self) -> LibinputContext<C, D, G, S, T, M> {
         unsafe {
             LibinputContext::from_raw(ffi::libinput_event_get_context(self.as_raw_event()))
         }
     }
 
-    fn device(&self) -> LibinputDevice<C, D, G, S, T> {
+    fn device(&self) -> LibinputDevice<C, D, G, S, T, M> {
         unsafe {
             LibinputDevice::from_raw(ffi::libinput_event_get_device(self.as_raw_event()))
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for LibinputEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for LibinputEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { self.as_raw() as *mut _ }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event> for LibinputEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event> for LibinputEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event) -> Self {
         match ffi::libinput_event_get_type(event) {
             ffi::libinput_event_type::LIBINPUT_EVENT_NONE => panic!("Trying to convert null event"),
@@ -69,7 +69,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event> for LibinputEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event> for LibinputEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event {
         match *self {
             LibinputEvent::Device(ref event) => ffi::libinput_event_device_notify_get_base_event(event.as_raw() as *mut _) as *const _,

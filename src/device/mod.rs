@@ -13,9 +13,9 @@ pub use self::capabilities::*;
 pub use self::group::*;
 pub use self::led::*;
 
-use ::{ffi, FromRaw, AsRaw, Userdata, LibinputContext, LibinputSeat};
+use ::{ffi, FromRaw, AsRaw, Userdata, LibinputContext, LibinputSeat, TabletPadModeGroup};
 
-pub struct LibinputDevice<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>
+pub struct LibinputDevice<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>
 {
     device: *mut ffi::libinput_device,
     _context_userdata_type: PhantomData<C>,
@@ -23,11 +23,12 @@ pub struct LibinputDevice<C: 'static, D: 'static, G: 'static, S: 'static, T: 'st
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  FromRaw<ffi::libinput_device> for LibinputDevice<C, D, G, S, T>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>  FromRaw<ffi::libinput_device> for LibinputDevice<C, D, G, S, T, M>
 {
-    unsafe fn from_raw(raw: *mut ffi::libinput_device) -> LibinputDevice<C, D, G, S, T>
+    unsafe fn from_raw(raw: *mut ffi::libinput_device) -> LibinputDevice<C, D, G, S, T, M>
     {
         LibinputDevice {
             device: ffi::libinput_device_ref(raw),
@@ -36,11 +37,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  FromRaw<ffi::l
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  AsRaw<ffi::libinput_device> for LibinputDevice<C, D, G, S, T>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>  AsRaw<ffi::libinput_device> for LibinputDevice<C, D, G, S, T, M>
 {
     unsafe fn as_raw(&self) -> *const ffi::libinput_device {
         self.device as *const _
@@ -51,7 +53,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  AsRaw<ffi::lib
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  Userdata<D> for LibinputDevice<C, D, G, S, T>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>  Userdata<D> for LibinputDevice<C, D, G, S, T, M>
 {
     fn userdata(&self) -> Option<&D> {
         unsafe {
@@ -86,9 +88,9 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  Userdata<D> fo
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  Clone for LibinputDevice<C, D, G, S, T>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>  Clone for LibinputDevice<C, D, G, S, T, M>
 {
-    fn clone(&self) -> LibinputDevice<C, D, G, S, T>
+    fn clone(&self) -> LibinputDevice<C, D, G, S, T, M>
     {
         LibinputDevice {
             device: unsafe { ffi::libinput_device_ref(self.device) },
@@ -97,11 +99,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  Clone for Libi
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Drop for LibinputDevice<C, D, G, S, T>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Drop for LibinputDevice<C, D, G, S, T, M>
 {
     fn drop(&mut self) {
         unsafe {
@@ -113,16 +116,16 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Drop for Libinp
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> LibinputDevice<C, D, G, S, T>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> LibinputDevice<C, D, G, S, T, M>
 {
-    pub fn context(&self) -> LibinputContext<C, D, G, S, T>
+    pub fn context(&self) -> LibinputContext<C, D, G, S, T, M>
     {
         unsafe {
             LibinputContext::from_raw(ffi::libinput_device_get_context(self.device))
         }
     }
 
-    pub fn device_group(&self) -> LibinputDeviceGroup<C, D, G, S, T>
+    pub fn device_group(&self) -> LibinputDeviceGroup<C, D, G, S, T, M>
     {
         unsafe {
             LibinputDeviceGroup::from_raw(ffi::libinput_device_get_device_group(self.device))
@@ -169,7 +172,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> LibinputDevice<
         }
     }
 
-    pub fn seat(&self) -> LibinputSeat<C, D, G, S, T>
+    pub fn seat(&self) -> LibinputSeat<C, D, G, S, T, M>
     {
         unsafe {
             LibinputSeat::from_raw(ffi::libinput_device_get_seat(self.device))
@@ -238,18 +241,32 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> LibinputDevice<
         }
     }
 
-    pub fn tablet_pad_num_buttons(&self) -> i32
+    pub fn tablet_pad_number_of_buttons(&self) -> i32
     {
         unsafe { ffi::libinput_device_tablet_pad_get_num_buttons(self.device) }
     }
 
-    pub fn tablet_pad_num_rings(&self) -> i32
+    pub fn tablet_pad_number_of_rings(&self) -> i32
     {
         unsafe { ffi::libinput_device_tablet_pad_get_num_rings(self.device) }
     }
 
-    pub fn tablet_pad_num_strips(&self) -> i32
+    pub fn tablet_pad_number_of_strips(&self) -> i32
     {
         unsafe { ffi::libinput_device_tablet_pad_get_num_strips(self.device) }
+    }
+
+    pub fn tablet_pad_number_of_mode_groups(&self) -> i32
+    {
+        unsafe { ffi::libinput_device_tablet_pad_get_num_mode_groups(self.device) }
+    }
+
+    pub fn tablet_pad_get_mode_group(&self, index: u32) -> Option<TabletPadModeGroup<C, D, G, S, T, M>> {
+        let ptr = unsafe { ffi::libinput_device_tablet_pad_get_mode_group(self.device, index) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(unsafe { TabletPadModeGroup::from_raw(ptr) })
+        }
     }
 }

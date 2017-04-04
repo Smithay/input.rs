@@ -10,7 +10,7 @@ pub enum KeyState {
     Released,
 }
 
-pub trait Keyboard: AsRaw<ffi::libinput_event_keyboard> {
+pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> {
     fn time(&self) -> u32 {
         unsafe { ffi::libinput_event_keyboard_get_time(self.as_raw() as *mut _) }
     }
@@ -31,20 +31,20 @@ pub trait Keyboard: AsRaw<ffi::libinput_event_keyboard> {
     }
 }
 
-impl<T: AsRaw<ffi::libinput_event_keyboard>> Keyboard for T {}
+impl<T: AsRaw<ffi::libinput_event_keyboard>> KeyboardEventTrait for T {}
 
 #[derive(Clone, Copy)]
-pub enum KeyboardEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
-    Key(KeyboardKeyEvent<C, D, G, S, T>),
+pub enum KeyboardEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
+    Key(KeyboardKeyEvent<C, D, G, S, T, M>),
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for KeyboardEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for KeyboardEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_keyboard_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_keyboard> for KeyboardEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_keyboard> for KeyboardEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_keyboard) -> Self {
         let base = ffi::libinput_event_keyboard_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
@@ -55,7 +55,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_keyboard> for KeyboardEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_keyboard> for KeyboardEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_keyboard {
         match *self {
             KeyboardEvent::Key(ref event) => event.as_raw(),
@@ -70,28 +70,29 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub struct KeyboardKeyEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct KeyboardKeyEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_keyboard,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> KeyboardKeyEvent<C, D, G, S, T> {
-    pub fn seat_key_count() -> u32 {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> KeyboardKeyEvent<C, D, G, S, T, M> {
+    pub fn seat_key_count(&self) -> u32 {
         unsafe { ffi::libinput_event_keyboard_get_seat_key_count(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for KeyboardKeyEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for KeyboardKeyEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_keyboard_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_keyboard> for KeyboardKeyEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_keyboard> for KeyboardKeyEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_keyboard) -> Self {
         KeyboardKeyEvent {
             event: event,
@@ -100,11 +101,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_keyboard> for KeyboardKeyEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_keyboard> for KeyboardKeyEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_keyboard {
         self.event as *const _
     }

@@ -7,7 +7,7 @@ use libc;
 
 use ::{ffi, FromRaw, AsRaw, Userdata, LibinputContext};
 
-pub struct LibinputSeat<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>
+pub struct LibinputSeat<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>
 {
     seat: *mut ffi::libinput_seat,
     _context_userdata_type: PhantomData<C>,
@@ -15,11 +15,12 @@ pub struct LibinputSeat<C: 'static, D: 'static, G: 'static, S: 'static, T: 'stat
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_seat> for LibinputSeat<C, D, G, S, T>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_seat> for LibinputSeat<C, D, G, S, T, M>
 {
-    unsafe fn from_raw(raw: *mut ffi::libinput_seat) -> LibinputSeat<C, D, G, S, T>
+    unsafe fn from_raw(raw: *mut ffi::libinput_seat) -> LibinputSeat<C, D, G, S, T, M>
     {
         LibinputSeat {
             seat: ffi::libinput_seat_ref(raw),
@@ -28,11 +29,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  AsRaw<ffi::libinput_seat> for LibinputSeat<C, D, G, S, T>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>  AsRaw<ffi::libinput_seat> for LibinputSeat<C, D, G, S, T, M>
 {
     unsafe fn as_raw(&self) -> *const ffi::libinput_seat {
         self.seat as *const _
@@ -43,7 +45,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  AsRaw<ffi::lib
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  Userdata<S> for LibinputSeat<C, D, G, S, T>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>  Userdata<S> for LibinputSeat<C, D, G, S, T, M>
 {
     fn userdata(&self) -> Option<&S> {
         unsafe {
@@ -78,9 +80,9 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  Userdata<S> fo
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  Clone for LibinputSeat<C, D, G, S, T>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>  Clone for LibinputSeat<C, D, G, S, T, M>
 {
-    fn clone(&self) -> LibinputSeat<C, D, G, S, T>
+    fn clone(&self) -> LibinputSeat<C, D, G, S, T, M>
     {
         LibinputSeat {
             seat: unsafe { ffi::libinput_seat_ref(self.seat) },
@@ -89,11 +91,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static>  Clone for Libi
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Drop for LibinputSeat<C, D, G, S, T>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Drop for LibinputSeat<C, D, G, S, T, M>
 {
     fn drop(&mut self) {
         unsafe {
@@ -105,9 +108,9 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Drop for Libinp
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> LibinputSeat<C, D, G, S, T>
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> LibinputSeat<C, D, G, S, T, M>
 {
-    pub fn context(&self) -> LibinputContext<C, D, G, S, T> {
+    pub fn context(&self) -> LibinputContext<C, D, G, S, T, M> {
         unsafe {
             LibinputContext::from_raw(ffi::libinput_seat_get_context(self.seat))
         }

@@ -4,7 +4,7 @@ use super::Event;
 
 use std::marker::PhantomData;
 
-pub trait Pointer: AsRaw<ffi::libinput_event_pointer> {
+pub trait PointerEventTrait: AsRaw<ffi::libinput_event_pointer> {
     fn time(&self) -> u32 {
         unsafe { ffi::libinput_event_pointer_get_time(self.as_raw() as *mut _) }
     }
@@ -14,23 +14,23 @@ pub trait Pointer: AsRaw<ffi::libinput_event_pointer> {
     }
 }
 
-impl<T: AsRaw<ffi::libinput_event_pointer>> Pointer for T {}
+impl<T: AsRaw<ffi::libinput_event_pointer>> PointerEventTrait for T {}
 
 #[derive(Clone, Copy)]
-pub enum PointerEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
-    Motion(PointerMotionEvent<C, D, G, S, T>),
-    MotionAbsolute(PointerMotionAbsoluteEvent<C, D, G, S, T>),
-    Button(PointerButtonEvent<C, D, G, S, T>),
-    Axis(PointerAxisEvent<C, D, G, S, T>),
+pub enum PointerEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
+    Motion(PointerMotionEvent<C, D, G, S, T, M>),
+    MotionAbsolute(PointerMotionAbsoluteEvent<C, D, G, S, T, M>),
+    Button(PointerButtonEvent<C, D, G, S, T, M>),
+    Axis(PointerAxisEvent<C, D, G, S, T, M>),
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for PointerEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for PointerEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_keyboard_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_pointer> for PointerEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_pointer> for PointerEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_pointer) -> Self {
         let base = ffi::libinput_event_pointer_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
@@ -47,7 +47,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_pointer> for PointerEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_pointer> for PointerEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_pointer {
         match *self {
             PointerEvent::Motion(ref event) => event.as_raw(),
@@ -68,16 +68,17 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub struct PointerMotionEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct PointerMotionEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_pointer,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> PointerMotionEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> PointerMotionEvent<C, D, G, S, T, M> {
     pub fn dx(&self) -> f64 {
         unsafe { ffi::libinput_event_pointer_get_dx(self.as_raw() as *mut _) }
     }
@@ -95,13 +96,13 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> PointerMotionEv
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for PointerMotionEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for PointerMotionEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_pointer_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_pointer> for PointerMotionEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_pointer> for PointerMotionEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_pointer) -> Self {
         PointerMotionEvent {
             event: event,
@@ -110,11 +111,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_pointer> for PointerMotionEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_pointer> for PointerMotionEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_pointer {
         self.event as *const _
     }
@@ -125,39 +127,40 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub struct PointerMotionAbsoluteEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct PointerMotionAbsoluteEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_pointer,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> PointerMotionAbsoluteEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> PointerMotionAbsoluteEvent<C, D, G, S, T, M> {
     pub fn absolute_x(&self) -> f64 {
         unsafe { ffi::libinput_event_pointer_get_absolute_x(self.as_raw() as *mut _) }
     }
 
-    pub fn absolute_x_transformed(&self) -> f64 {
-        unsafe { ffi::libinput_event_pointer_get_absolute_x_transformed(self.as_raw() as *mut _) }
+    pub fn absolute_x_transformed(&self, width: u32) -> f64 {
+        unsafe { ffi::libinput_event_pointer_get_absolute_x_transformed(self.as_raw() as *mut _, width) }
     }
 
     pub fn absolute_y(&self) -> f64 {
         unsafe { ffi::libinput_event_pointer_get_absolute_y(self.as_raw() as *mut _) }
     }
 
-    pub fn absolute_y_transformed(&self) -> f64 {
-        unsafe { ffi::libinput_event_pointer_get_absolute_y_transformed(self.as_raw() as *mut _) }
+    pub fn absolute_y_transformed(&self, height: u32) -> f64 {
+        unsafe { ffi::libinput_event_pointer_get_absolute_y_transformed(self.as_raw() as *mut _, height) }
     }
 }
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for PointerMotionAbsoluteEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for PointerMotionAbsoluteEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_pointer_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_pointer> for PointerMotionAbsoluteEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_pointer> for PointerMotionAbsoluteEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_pointer) -> Self {
         PointerMotionAbsoluteEvent {
             event: event,
@@ -166,11 +169,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_pointer> for PointerMotionAbsoluteEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_pointer> for PointerMotionAbsoluteEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_pointer {
         self.event as *const _
     }
@@ -187,16 +191,17 @@ pub enum ButtonState {
 }
 
 #[derive(Clone, Copy)]
-pub struct PointerButtonEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct PointerButtonEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_pointer,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> PointerButtonEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> PointerButtonEvent<C, D, G, S, T, M> {
     pub fn button(&self) -> u32 {
         unsafe { ffi::libinput_event_pointer_get_button(self.as_raw() as *mut _) }
     }
@@ -208,18 +213,18 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> PointerButtonEv
         }
     }
 
-    pub fn seat_button_count() -> u32 {
-        unsafe { ffi::libinput_event_keyboard_get_seat_button_count(self.as_raw() as *mut _) }
+    pub fn seat_button_count(&self) -> u32 {
+        unsafe { ffi::libinput_event_pointer_get_seat_button_count(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for PointerButtonEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for PointerButtonEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_pointer_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_pointer> for PointerButtonEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_pointer> for PointerButtonEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_pointer) -> Self {
         PointerButtonEvent {
             event: event,
@@ -228,11 +233,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_pointer> for PointerButtonEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_pointer> for PointerButtonEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_pointer {
         self.event as *const _
     }
@@ -257,21 +263,22 @@ pub enum Axis {
 }
 
 #[derive(Clone, Copy)]
-pub struct PointerAxisEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct PointerAxisEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_pointer,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> PointerAxisEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> PointerAxisEvent<C, D, G, S, T, M> {
     pub fn has_axis(&self, axis: Axis) -> bool {
         unsafe { ffi::libinput_event_pointer_has_axis(self.as_raw() as *mut _, match axis {
             Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
             Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
-        }) } != 0
+        }) != 0 }
     }
 
     pub fn axis_source(&self) -> AxisSource {
@@ -283,25 +290,34 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> PointerAxisEven
         }
     }
 
-    pub fn axis_value(&self) -> f64 {
-        unsafe { ffi::libinput_event_pointer_get_axis_value(self.as_raw() as *mut _) }
+    pub fn axis_value(&self, axis: Axis) -> f64 {
+        unsafe { ffi::libinput_event_pointer_get_axis_value(self.as_raw() as *mut _, match axis {
+            Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
+            Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
+        }) }
     }
 
-    pub fn axis_value_discrete(&self) -> Option<f64> {
+    pub fn axis_value_discrete(&self, axis: Axis) -> Option<f64> {
         match self.axis_source() {
             AxisSource::Continuous | AxisSource::Finger => None,
-            _ => Some(unsafe { ffi::libinput_event_pointer_get_axis_value_discrete(self.as_raw() as *mut _) }), 
+            _ =>
+            Some(unsafe { ffi::libinput_event_pointer_get_axis_value_discrete(self.as_raw() as *mut _,
+                match axis {
+                    Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
+                    Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
+                })
+            }),
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for PointerAxisEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for PointerAxisEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_pointer_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_pointer> for PointerAxisEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_pointer> for PointerAxisEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_pointer) -> Self {
         PointerAxisEvent {
             event: event,
@@ -310,11 +326,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_pointer> for PointerAxisEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_pointer> for PointerAxisEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_pointer {
         self.event as *const _
     }

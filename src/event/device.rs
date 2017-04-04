@@ -5,18 +5,18 @@ use super::Event;
 use std::marker::PhantomData;
 
 #[derive(Clone, Copy)]
-pub enum DeviceEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
-    Added(DeviceAddedEvent<C, D, G, S, T>),
-    Removed(DeviceRemovedEvent<C, D, G, S, T>),
+pub enum DeviceEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
+    Added(DeviceAddedEvent<C, D, G, S, T, M>),
+    Removed(DeviceRemovedEvent<C, D, G, S, T, M>),
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for DeviceEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for DeviceEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_device_notify_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_device_notify> for DeviceEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_device_notify> for DeviceEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_device_notify) -> Self {
         let base = ffi::libinput_event_device_notify_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
@@ -29,7 +29,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_device_notify> for DeviceEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_device_notify> for DeviceEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_device_notify {
         match *self {
             DeviceEvent::Added(ref event) => event.as_raw(),
@@ -46,22 +46,23 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub struct DeviceAddedEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct DeviceAddedEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_device_notify,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for DeviceAddedEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for DeviceAddedEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_device_notify_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_device_notify> for DeviceAddedEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_device_notify> for DeviceAddedEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_device_notify) -> Self {
         DeviceAddedEvent {
             event: event,
@@ -70,11 +71,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_device_notify> for DeviceAddedEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_device_notify> for DeviceAddedEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_device_notify {
         self.event as *const _
     }
@@ -85,22 +87,23 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub struct DeviceRemovedEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct DeviceRemovedEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_device_notify,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for DeviceRemovedEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for DeviceRemovedEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_device_notify_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_device_notify> for DeviceRemovedEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_device_notify> for DeviceRemovedEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_device_notify) -> Self {
         DeviceRemovedEvent {
             event: event,
@@ -109,11 +112,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_device_notify> for DeviceRemovedEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_device_notify> for DeviceRemovedEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_device_notify {
         self.event as *const _
     }

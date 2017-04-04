@@ -4,7 +4,7 @@ use super::Event;
 
 use std::marker::PhantomData;
 
-pub trait Gesture: AsRaw<ffi::libinput_event_gesture> {
+pub trait GestureEventTrait: AsRaw<ffi::libinput_event_gesture> {
     fn time(&self) -> u32 {
         unsafe { ffi::libinput_event_gesture_get_time(self.as_raw() as *mut _) }
     }
@@ -18,21 +18,21 @@ pub trait Gesture: AsRaw<ffi::libinput_event_gesture> {
     }
 }
 
-impl<T: AsRaw<ffi::libinput_event_gesture>> Gesture for T {}
+impl<T: AsRaw<ffi::libinput_event_gesture>> GestureEventTrait for T {}
 
 #[derive(Clone, Copy)]
-pub enum GestureEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
-    Swipe(GestureSwipeEvent<C, D, G, S, T>),
-    Pinch(GesturePinchEvent<C, D, G, S, T>),
+pub enum GestureEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
+    Swipe(GestureSwipeEvent<C, D, G, S, T, M>),
+    Pinch(GesturePinchEvent<C, D, G, S, T, M>),
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for GestureEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for GestureEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_gesture_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_gesture> for GestureEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_gesture> for GestureEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_gesture) -> Self {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
@@ -45,7 +45,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_gesture> for GestureEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_gesture> for GestureEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_gesture {
         match *self {
             GestureEvent::Swipe(ref event) => event.as_raw(),
@@ -62,19 +62,19 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub enum GestureSwipeEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
-    Begin(GestureSwipeBeginEvent<C, D, G, S, T>),
-    Update(GestureSwipeUpdateEvent<C, D, G, S, T>),
-    End(GestureSwipeEndEvent<C, D, G, S, T>),
+pub enum GestureSwipeEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
+    Begin(GestureSwipeBeginEvent<C, D, G, S, T, M>),
+    Update(GestureSwipeUpdateEvent<C, D, G, S, T, M>),
+    End(GestureSwipeEndEvent<C, D, G, S, T, M>),
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for GestureSwipeEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for GestureSwipeEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_gesture_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_gesture> for GestureSwipeEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_gesture> for GestureSwipeEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_gesture) -> Self {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
@@ -89,7 +89,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_gesture> for GestureSwipeEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_gesture> for GestureSwipeEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_gesture {
         match *self {
             GestureSwipeEvent::Begin(ref event) => event.as_raw(),
@@ -108,27 +108,27 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub enum GesturePinchEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
-    Begin(GesturePinchBeginEvent<C, D, G, S, T>),
-    Update(GesturePinchUpdateEvent<C, D, G, S, T>),
-    End(GesturePinchEndEvent<C, D, G, S, T>),
+pub enum GesturePinchEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
+    Begin(GesturePinchBeginEvent<C, D, G, S, T, M>),
+    Update(GesturePinchUpdateEvent<C, D, G, S, T, M>),
+    End(GesturePinchEndEvent<C, D, G, S, T, M>),
 }
 
-pub trait GesturePinch: AsRaw<ffi::libinput_event_gesture> {
-    pub fn scale(&self) -> f64 {
+pub trait GesturePinchEventTrait: AsRaw<ffi::libinput_event_gesture> {
+    fn scale(&self) -> f64 {
         unsafe { ffi::libinput_event_gesture_get_scale(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> GesturePinch for GesturePinchEvent<C, D, G, S, T> {}
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> GesturePinchEventTrait for GesturePinchEvent<C, D, G, S, T, M> {}
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for GesturePinchEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for GesturePinchEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_gesture_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_gesture> for GesturePinchEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_gesture> for GesturePinchEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_gesture) -> Self {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
@@ -145,7 +145,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_gesture> for GesturePinchEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_gesture> for GesturePinchEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_gesture {
         match *self {
             GesturePinchEvent::Begin(ref event) => event.as_raw(),
@@ -164,22 +164,23 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub struct GestureSwipeBeginEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct GestureSwipeBeginEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_gesture,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for GestureSwipeBeginEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for GestureSwipeBeginEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_gesture_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_gesture> for GestureSwipeBeginEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_gesture> for GestureSwipeBeginEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_gesture) -> Self {
         GestureSwipeBeginEvent {
             event: event,
@@ -188,11 +189,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_gesture> for GestureSwipeBeginEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_gesture> for GestureSwipeBeginEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_gesture {
         self.event as *const _
     }
@@ -203,16 +205,17 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub struct GestureSwipeUpdateEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct GestureSwipeUpdateEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_gesture,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> GestureSwipeUpdateEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> GestureSwipeUpdateEvent<C, D, G, S, T, M> {
     pub fn dx(&self) -> f64 {
         unsafe { ffi::libinput_event_gesture_get_dx(self.as_raw() as *mut _) }
     }
@@ -230,13 +233,13 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> GestureSwipeUpd
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for GestureSwipeUpdateEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for GestureSwipeUpdateEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_gesture_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_gesture> for GestureSwipeUpdateEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_gesture> for GestureSwipeUpdateEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_gesture) -> Self {
         GestureSwipeUpdateEvent {
             event: event,
@@ -245,11 +248,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_gesture> for GestureSwipeUpdateEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_gesture> for GestureSwipeUpdateEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_gesture {
         self.event as *const _
     }
@@ -260,28 +264,29 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub struct GestureSwipeEndEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct GestureSwipeEndEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_gesture,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> GestureSwipeEndEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> GestureSwipeEndEvent<C, D, G, S, T, M> {
     pub fn cancelled(&self) -> bool {
         unsafe { ffi::libinput_event_gesture_get_cancelled(self.as_raw() as *mut _) == 1 }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for GestureSwipeEndEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for GestureSwipeEndEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_gesture_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_gesture> for GestureSwipeEndEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_gesture> for GestureSwipeEndEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_gesture) -> Self {
         GestureSwipeEndEvent {
             event: event,
@@ -290,11 +295,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_gesture> for GestureSwipeEndEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_gesture> for GestureSwipeEndEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_gesture {
         self.event as *const _
     }
@@ -305,24 +311,25 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub struct GesturePinchBeginEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct GesturePinchBeginEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_gesture,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> GesturePinch for GesturePinchBeginEvent<C, D, G, S, T> {}
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> GesturePinchEventTrait for GesturePinchBeginEvent<C, D, G, S, T, M> {}
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for GesturePinchBeginEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for GesturePinchBeginEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_gesture_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_gesture> for GesturePinchBeginEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_gesture> for GesturePinchBeginEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_gesture) -> Self {
         GesturePinchBeginEvent {
             event: event,
@@ -331,11 +338,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_gesture> for GesturePinchBeginEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_gesture> for GesturePinchBeginEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_gesture {
         self.event as *const _
     }
@@ -346,18 +354,19 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub struct GesturePinchUpdateEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct GesturePinchUpdateEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_gesture,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> GesturePinch for GesturePinchUpdateEvent<C, D, G, S, T> {}
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> GesturePinchEventTrait for GesturePinchUpdateEvent<C, D, G, S, T, M> {}
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> GesturePinchUpdateEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> GesturePinchUpdateEvent<C, D, G, S, T, M> {
     pub fn dx(&self) -> f64 {
         unsafe { ffi::libinput_event_gesture_get_dx(self.as_raw() as *mut _) }
     }
@@ -379,13 +388,13 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> GesturePinchUpd
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for GesturePinchUpdateEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for GesturePinchUpdateEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_gesture_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_gesture> for GesturePinchUpdateEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_gesture> for GesturePinchUpdateEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_gesture) -> Self {
         GesturePinchUpdateEvent {
             event: event,
@@ -394,11 +403,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_gesture> for GesturePinchUpdateEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_gesture> for GesturePinchUpdateEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_gesture {
         self.event as *const _
     }
@@ -409,30 +419,31 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libi
 }
 
 #[derive(Clone, Copy)]
-pub struct GesturePinchEndEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> {
+pub struct GesturePinchEndEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     event: *mut ffi::libinput_event_gesture,
     _context_userdata_type: PhantomData<C>,
     _device_userdata_type: PhantomData<D>,
     _device_group_userdata_type: PhantomData<G>,
     _seat_userdata_type: PhantomData<S>,
     _tablet_tool_userdata_type: PhantomData<T>,
+    _tablet_pad_mode_group_userdata_type: PhantomData<M>,
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> GesturePinch for GesturePinchEndEvent<C, D, G, S, T> {}
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> GesturePinchEventTrait for GesturePinchEndEvent<C, D, G, S, T, M> {}
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> GesturePinchEndEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> GesturePinchEndEvent<C, D, G, S, T, M> {
     pub fn cancelled(&self) -> bool {
         unsafe { ffi::libinput_event_gesture_get_cancelled(self.as_raw() as *mut _) == 1 }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> Event<C, D, G, S, T> for GesturePinchEndEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Event<C, D, G, S, T, M> for GesturePinchEndEvent<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         unsafe { ffi::libinput_event_gesture_get_base_event(self.as_raw() as *mut _) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::libinput_event_gesture> for GesturePinchEndEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_gesture> for GesturePinchEndEvent<C, D, G, S, T, M> {
     unsafe fn from_raw(event: *mut ffi::libinput_event_gesture) -> Self {
         GesturePinchEndEvent {
             event: event,
@@ -441,11 +452,12 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> FromRaw<ffi::li
             _device_group_userdata_type: PhantomData,
             _seat_userdata_type: PhantomData,
             _tablet_tool_userdata_type: PhantomData,
+            _tablet_pad_mode_group_userdata_type: PhantomData,
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static> AsRaw<ffi::libinput_event_gesture> for GesturePinchEndEvent<C, D, G, S, T> {
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_gesture> for GesturePinchEndEvent<C, D, G, S, T, M> {
     unsafe fn as_raw(&self) -> *const ffi::libinput_event_gesture {
         self.event as *const _
     }
