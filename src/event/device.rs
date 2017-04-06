@@ -2,12 +2,27 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
-use std::marker::PhantomData;
+pub trait DeviceEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>: AsRaw<ffi::libinput_event_device_notify> {
+    fn into_device_event(self) -> DeviceEvent<C, D, G, S, T, M> where Self: Sized {
+        unsafe { DeviceEvent::from_raw(self.as_raw_mut()) }
+    }
+}
+
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static, R: AsRaw<ffi::libinput_event_device_notify>> DeviceEventTrait<C, D, G, S, T, M> for R {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum DeviceEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     Added(DeviceAddedEvent<C, D, G, S, T, M>),
     Removed(DeviceRemovedEvent<C, D, G, S, T, M>),
+}
+
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for DeviceEvent<C, D, G, S, T, M> {
+    fn as_raw_event(&self) -> *mut ffi::libinput_event {
+        match *self {
+            DeviceEvent::Added(ref event) => event.as_raw_event(),
+            DeviceEvent::Removed(ref event) => event.as_raw_event(),
+        }
+    }
 }
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_device_notify> for DeviceEvent<C, D, G, S, T, M> {

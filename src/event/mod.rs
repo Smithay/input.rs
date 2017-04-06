@@ -35,7 +35,7 @@ pub trait EventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static,
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for Event<C, D, G, S, T, M> {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
-        unsafe { self.as_raw_mut() }
+        self.as_raw_mut()
     }
 }
 
@@ -77,6 +77,12 @@ macro_rules! ffi_event_struct {
         impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for $struct_name<C, D, G, S, T, M> {
             fn as_raw_event(&self) -> *mut ffi::libinput_event {
                 unsafe { $get_base_fn(self.as_raw_mut()) }
+            }
+        }
+
+        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Drop for $struct_name<C, D, G, S, T, M> {
+            fn drop(&mut self) {
+                unsafe { ffi::libinput_event_destroy(self.as_raw_event()) }
             }
         }
     )

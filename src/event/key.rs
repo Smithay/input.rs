@@ -2,15 +2,13 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
-use std::marker::PhantomData;
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum KeyState {
     Pressed,
     Released,
 }
 
-pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> {
+pub trait KeyboardEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>: AsRaw<ffi::libinput_event_keyboard> {
     ffi_func!(time, ffi::libinput_event_keyboard_get_time, u32);
     ffi_func!(time_usec, ffi::libinput_event_keyboard_get_time_usec, u64);
     ffi_func!(key, ffi::libinput_event_keyboard_get_key, u32);
@@ -21,13 +19,25 @@ pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> {
             ffi::libinput_key_state::LIBINPUT_KEY_STATE_RELEASED => KeyState::Released,
         }
     }
+
+    fn into_keyboard_event(self) -> KeyboardEvent<C, D, G, S, T, M> where Self: Sized {
+        unsafe { KeyboardEvent::from_raw(self.as_raw_mut()) }
+    }
 }
 
-impl<T: AsRaw<ffi::libinput_event_keyboard>> KeyboardEventTrait for T {}
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static, R: AsRaw<ffi::libinput_event_keyboard>> KeyboardEventTrait<C, D, G, S, T, M> for R {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum KeyboardEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     Key(KeyboardKeyEvent<C, D, G, S, T, M>),
+}
+
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for KeyboardEvent<C, D, G, S, T, M> {
+    fn as_raw_event(&self) -> *mut ffi::libinput_event {
+        match *self {
+            KeyboardEvent::Key(ref event) => event.as_raw_event(),
+        }
+    }
 }
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_keyboard> for KeyboardEvent<C, D, G, S, T, M> {

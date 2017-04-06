@@ -2,18 +2,28 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
-use std::marker::PhantomData;
-
-pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> {
+pub trait SwitchEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>: AsRaw<ffi::libinput_event_switch> {
     ffi_func!(time, ffi::libinput_event_switch_get_time, u32);
     ffi_func!(time_usec, ffi::libinput_event_switch_get_time_usec, u64);
+
+    fn into_switch_event(self) -> SwitchEvent<C, D, G, S, T, M> where Self: Sized {
+        unsafe { SwitchEvent::from_raw(self.as_raw_mut()) }
+    }
 }
 
-impl<T: AsRaw<ffi::libinput_event_switch>> SwitchEventTrait for T {}
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static, R: AsRaw<ffi::libinput_event_switch>> SwitchEventTrait<C, D, G, S, T, M> for R {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum SwitchEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
     Toggle(SwitchToggleEvent<C, D, G, S, T, M>),
+}
+
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for SwitchEvent<C, D, G, S, T, M> {
+    fn as_raw_event(&self) -> *mut ffi::libinput_event {
+        match *self {
+            SwitchEvent::Toggle(ref event) => event.as_raw_event(),
+        }
+    }
 }
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_switch> for SwitchEvent<C, D, G, S, T, M> {

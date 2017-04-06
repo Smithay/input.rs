@@ -2,14 +2,16 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
-use std::marker::PhantomData;
-
-pub trait PointerEventTrait: AsRaw<ffi::libinput_event_pointer> {
+pub trait PointerEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>: AsRaw<ffi::libinput_event_pointer> {
     ffi_func!(time, ffi::libinput_event_pointer_get_time, u32);
     ffi_func!(time_usec, ffi::libinput_event_pointer_get_time_usec, u64);
+
+    fn into_pointer_event(self) -> PointerEvent<C, D, G, S, T, M> where Self: Sized {
+        unsafe { PointerEvent::from_raw(self.as_raw_mut()) }
+    }
 }
 
-impl<T: AsRaw<ffi::libinput_event_pointer>> PointerEventTrait for T {}
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static, R: AsRaw<ffi::libinput_event_pointer>> PointerEventTrait<C, D, G, S, T, M> for R {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PointerEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
@@ -17,6 +19,17 @@ pub enum PointerEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static
     MotionAbsolute(PointerMotionAbsoluteEvent<C, D, G, S, T, M>),
     Button(PointerButtonEvent<C, D, G, S, T, M>),
     Axis(PointerAxisEvent<C, D, G, S, T, M>),
+}
+
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for PointerEvent<C, D, G, S, T, M> {
+    fn as_raw_event(&self) -> *mut ffi::libinput_event {
+        match *self {
+            PointerEvent::Motion(ref event) => event.as_raw_event(),
+            PointerEvent::MotionAbsolute(ref event) => event.as_raw_event(),
+            PointerEvent::Button(ref event) => event.as_raw_event(),
+            PointerEvent::Axis(ref event) => event.as_raw_event(),
+        }
+    }
 }
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_pointer> for PointerEvent<C, D, G, S, T, M> {

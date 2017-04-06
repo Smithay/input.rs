@@ -1,7 +1,5 @@
 use std::ffi::CStr;
-use std::marker::PhantomData;
-use std::mem;
-use std::ptr;
+use std::{mem, ptr};
 
 use libc;
 

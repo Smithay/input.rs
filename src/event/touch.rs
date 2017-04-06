@@ -2,14 +2,16 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
-use std::marker::PhantomData;
-
-pub trait TouchEventTrait: AsRaw<ffi::libinput_event_touch> {
+pub trait TouchEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>: AsRaw<ffi::libinput_event_touch> {
     ffi_func!(time, ffi::libinput_event_touch_get_time, u32);
     ffi_func!(time_usec, ffi::libinput_event_touch_get_time_usec, u64);
+
+    fn into_touch_event(self) -> TouchEvent<C, D, G, S, T, M> where Self: Sized {
+        unsafe { TouchEvent::from_raw(self.as_raw_mut()) }
+    }
 }
 
-impl<T: AsRaw<ffi::libinput_event_touch>> TouchEventTrait for T {}
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static, R: AsRaw<ffi::libinput_event_touch>> TouchEventTrait<C, D, G, S, T, M> for R {}
 
 pub trait TouchEventSlot: AsRaw<ffi::libinput_event_touch> {
     ffi_func!(seat_slot, ffi::libinput_event_touch_get_seat_slot, u32);
@@ -43,6 +45,18 @@ pub enum TouchEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, 
     Motion(TouchMotionEvent<C, D, G, S, T, M>),
     Cancel(TouchCancelEvent<C, D, G, S, T, M>),
     Frame(TouchFrameEvent<C, D, G, S, T, M>),
+}
+
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for TouchEvent<C, D, G, S, T, M> {
+    fn as_raw_event(&self) -> *mut ffi::libinput_event {
+        match *self {
+            TouchEvent::Down(ref event) => event.as_raw_event(),
+            TouchEvent::Up(ref event) => event.as_raw_event(),
+            TouchEvent::Motion(ref event) => event.as_raw_event(),
+            TouchEvent::Cancel(ref event) => event.as_raw_event(),
+            TouchEvent::Frame(ref event) => event.as_raw_event(),
+        }
+    }
 }
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_touch> for TouchEvent<C, D, G, S, T, M> {

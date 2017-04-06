@@ -2,8 +2,6 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::{EventTrait, ButtonState};
 
-use std::marker::PhantomData;
-
 mod mode_group;
 pub use self::mode_group::*;
 
@@ -15,6 +13,10 @@ pub trait TabletPadEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T:
     fn mode_group(&self) -> TabletPadModeGroup<C, D, G, S, T, M> {
         unsafe { TabletPadModeGroup::from_raw(ffi::libinput_event_tablet_pad_get_mode_group(self.as_raw_mut())) }
     }
+
+    fn into_tablet_pad_event(self) -> TabletPadEvent<C, D, G, S, T, M> where Self: Sized {
+        unsafe { TabletPadEvent::from_raw(self.as_raw_mut()) }
+    }
 }
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static, R: AsRaw<ffi::libinput_event_tablet_pad>> TabletPadEventTrait<C, D, G, S, T, M> for R {}
@@ -24,6 +26,16 @@ pub enum TabletPadEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'stat
     Button(TabletPadButtonEvent<C, D, G, S, T, M>),
     Ring(TabletPadRingEvent<C, D, G, S, T, M>),
     Strip(TabletPadStripEvent<C, D, G, S, T, M>),
+}
+
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for TabletPadEvent<C, D, G, S, T, M> {
+    fn as_raw_event(&self) -> *mut ffi::libinput_event {
+        match *self {
+            TabletPadEvent::Button(ref event) => event.as_raw_event(),
+            TabletPadEvent::Ring(ref event) => event.as_raw_event(),
+            TabletPadEvent::Strip(ref event) => event.as_raw_event(),
+        }
+    }
 }
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent<C, D, G, S, T, M> {

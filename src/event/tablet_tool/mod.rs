@@ -2,8 +2,6 @@ use ::ffi;
 use ::{FromRaw, AsRaw, ButtonState};
 use super::EventTrait;
 
-use std::marker::PhantomData;
-
 mod tool;
 pub use self::tool::TabletTool;
 
@@ -44,6 +42,10 @@ pub trait TabletToolEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T
     fn tool(&self) -> TabletTool<C, D, G, S, T, M> {
         unsafe { TabletTool::from_raw(ffi::libinput_event_tablet_tool_get_tool(self.as_raw_mut())) }
     }
+
+    fn into_tablet_tool_event(self) -> TabletToolEvent<C, D, G, S, T, M> where Self: Sized {
+        unsafe { TabletToolEvent::from_raw(self.as_raw_mut()) }
+    }
 }
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static, R: AsRaw<ffi::libinput_event_tablet_tool>> TabletToolEventTrait<C, D, G, S, T, M> for R {}
@@ -54,6 +56,17 @@ pub enum TabletToolEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'sta
     Proximity(TabletToolProximityEvent<C, D, G, S, T, M>),
     Tip(TabletToolTipEvent<C, D, G, S, T, M>),
     Button(TabletToolButtonEvent<C, D, G, S, T, M>),
+}
+
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for TabletToolEvent<C, D, G, S, T, M> {
+    fn as_raw_event(&self) -> *mut ffi::libinput_event {
+        match *self {
+            TabletToolEvent::Axis(ref event) => event.as_raw_event(),
+            TabletToolEvent::Proximity(ref event) => event.as_raw_event(),
+            TabletToolEvent::Tip(ref event) => event.as_raw_event(),
+            TabletToolEvent::Button(ref event) => event.as_raw_event(),
+        }
+    }
 }
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_tablet_tool> for TabletToolEvent<C, D, G, S, T, M> {
@@ -92,7 +105,7 @@ pub enum ProximityState {
     In,
 }
 
-ffi_struct!(TabletToolProximityEvent, ffi::libinput_event_tablet_tool);
+ffi_event_struct!(TabletToolProximityEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> TabletToolProximityEvent<C, D, G, S, T, M> {
     pub fn proximity_state(&self) -> ProximityState {

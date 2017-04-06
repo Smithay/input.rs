@@ -1,9 +1,7 @@
 use std::ffi::CString;
 use std::io::{Result as IoResult, Error as IoError};
 use std::os::unix::io::RawFd;
-use std::marker::PhantomData;
-use std::mem;
-use std::ptr;
+use std::{mem, ptr};
 use std::iter::Iterator;
 
 use libc;
@@ -76,7 +74,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Lib
         }
     }
 
-    pub fn path_remove_device(&mut self, mut device: Device<C, D, G, S, T, M>)
+    pub fn path_remove_device(&mut self, device: Device<C, D, G, S, T, M>)
     {
         unsafe {
             ffi::libinput_path_remove_device(device.as_raw_mut())

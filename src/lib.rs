@@ -58,7 +58,7 @@ macro_rules! ffi_struct {
 
         impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Clone for $struct_name<C, D, G, S, T, M> {
             fn clone(&self) -> Self {
-                $struct_name::from_raw(self.as_raw_mut())
+                unsafe { $struct_name::from_raw(self.as_raw_mut()) }
             }
         }
 
@@ -136,7 +136,7 @@ macro_rules! ffi_ref_struct {
 
         impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Clone for $struct_name<C, D, G, S, T, M> {
             fn clone(&self) -> Self {
-                $struct_name::from_raw(self.as_raw_mut())
+                unsafe { $struct_name::from_raw(self.as_raw_mut()) }
             }
         }
 

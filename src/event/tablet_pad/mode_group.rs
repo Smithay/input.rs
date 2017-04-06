@@ -2,7 +2,6 @@ use ::{ffi, FromRaw, AsRaw, Userdata};
 
 use libc;
 
-use std::marker::PhantomData;
 use std::{mem, ptr};
 
 ffi_ref_struct!(TabletPadModeGroup, ffi::libinput_tablet_pad_mode_group, M, ffi::libinput_tablet_pad_mode_group_ref, ffi::libinput_tablet_pad_mode_group_unref, ffi::libinput_tablet_pad_mode_group_get_user_data, ffi::libinput_tablet_pad_mode_group_set_user_data);
