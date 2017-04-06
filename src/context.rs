@@ -4,14 +4,27 @@ use std::os::unix::io::RawFd;
 use std::marker::PhantomData;
 use std::mem;
 use std::ptr;
+use std::iter::Iterator;
 
 use libc;
 
-use ::{ffi, FromRaw, AsRaw, Userdata, Device};
+use ::{ffi, FromRaw, AsRaw, Userdata, Device, Event};
 
 pub type LibinputInterface = ffi::libinput_interface;
 
 ffi_ref_struct!(Libinput, ffi::libinput, C, ffi::libinput_ref, ffi::libinput_unref, ffi::libinput_get_user_data, ffi::libinput_set_user_data);
+
+impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Iterator for Libinput<C, D, G, S, T, M> {
+    type Item = Event<C, D, G, S, T, M>;
+    fn next(&mut self) -> Option<Self::Item> {
+        let ptr = unsafe { ffi::libinput_get_event(self.as_raw_mut()) };
+        if ptr.is_null() {
+            None
+        } else {
+            unsafe { Some(Event::from_raw(ptr)) }
+        }
+    }
+}
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Libinput<C, D, G, S, T, M>
 {
