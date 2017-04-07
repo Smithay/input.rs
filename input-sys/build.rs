@@ -10,6 +10,7 @@ fn main()
         .whitelisted_type(r"^libinput_.*$")
         .whitelisted_function(r"^libinput_.*$")
         .constified_enum("libinput_led")
+        .constified_enum("libinput_config_send_events_mode")
         .generate().unwrap();
 
     println!("cargo:rustc-link-lib=dylib=input");

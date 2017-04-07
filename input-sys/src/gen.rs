@@ -4137,19 +4137,22 @@ extern "C" {
                                                                      *mut f32)
      -> libc::c_int;
 }
-#[repr(u32)]
+pub const libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_ENABLED:
+          libinput_config_send_events_mode =
+    0;
+pub const libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED:
+          libinput_config_send_events_mode =
+    1;
+pub const libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED_ON_EXTERNAL_MOUSE:
+          libinput_config_send_events_mode =
+    2;
 /**
  * @ingroup config
  *
  * The send-event mode of a device defines when a device may generate events
  * and pass those events to the caller.
  */
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum libinput_config_send_events_mode {
-    LIBINPUT_CONFIG_SEND_EVENTS_ENABLED = 0,
-    LIBINPUT_CONFIG_SEND_EVENTS_DISABLED = 1,
-    LIBINPUT_CONFIG_SEND_EVENTS_DISABLED_ON_EXTERNAL_MOUSE = 2,
-}
+pub type libinput_config_send_events_mode = libc::c_uint;
 extern "C" {
     /**
  * @ingroup config
