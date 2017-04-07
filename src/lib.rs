@@ -1,7 +1,5 @@
 extern crate input_sys;
 extern crate libc;
-#[macro_use]
-extern crate bitflags;
 
 pub mod ffi {
     pub use input_sys::*;
