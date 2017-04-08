@@ -8,8 +8,18 @@ use libc;
 
 use ::{ffi, FromRaw, AsRaw, Userdata, Device, Event};
 
+/// libinput does not open file descriptors to devices directly,
+/// instead `open_restricted` and `close_restricted` are called for
+/// each path that must be opened.
+///
+/// Implementations are of course permitted to just use `open` and
+/// `close` respectively, but doing so would require root permissions
+/// to open devices. This interface provides an api agnostic way to
+/// use ConsoleKit or similar endpoints to open devices without
+/// direct priviledge escalation.  
 pub type LibinputInterface = ffi::libinput_interface;
 
+ffi_ref_struct!(
 /// Libinput context
 ///
 /// Contexts can be used to track input devices and receive events from them.
@@ -18,7 +28,7 @@ pub type LibinputInterface = ffi::libinput_interface;
 ///
 /// Either way you then have to use `dispatch()` and `next()` (provided by the `Iterator` trait) to
 /// receive events.
-ffi_ref_struct!(struct Libinput, ffi::libinput, ffi::libinput_ref, ffi::libinput_unref, ffi::libinput_get_user_data, ffi::libinput_set_user_data);
+struct Libinput, ffi::libinput, ffi::libinput_ref, ffi::libinput_unref, ffi::libinput_get_user_data, ffi::libinput_set_user_data);
 
 impl Iterator for Libinput {
     type Item = Event;
