@@ -3,9 +3,9 @@ use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
 pub trait GestureEventTrait: AsRaw<ffi::libinput_event_gesture> {
-    ffi_func!(time, ffi::libinput_event_gesture_get_time, u32);
-    ffi_func!(time_usec, ffi::libinput_event_gesture_get_time_usec, u64);
-    ffi_func!(finger_count, ffi::libinput_event_gesture_get_finger_count, i32);
+    ffi_func!(fn time, ffi::libinput_event_gesture_get_time, u32);
+    ffi_func!(fn time_usec, ffi::libinput_event_gesture_get_time_usec, u64);
+    ffi_func!(fn finger_count, ffi::libinput_event_gesture_get_finger_count, i32);
 
     fn into_gesture_event(self) -> GestureEvent where Self: Sized {
         unsafe { GestureEvent::from_raw(self.as_raw_mut()) }
@@ -52,14 +52,14 @@ impl AsRaw<ffi::libinput_event_gesture> for GestureEvent {
 }
 
 pub trait GestureEventCoordinates: AsRaw<ffi::libinput_event_gesture> {
-    ffi_func!(dx, ffi::libinput_event_gesture_get_dx, f64);
-    ffi_func!(dx_unaccelerated, ffi::libinput_event_gesture_get_dx_unaccelerated, f64);
-    ffi_func!(dy, ffi::libinput_event_gesture_get_dy, f64);
-    ffi_func!(dy_unaccelerated, ffi::libinput_event_gesture_get_dy_unaccelerated, f64);
+    ffi_func!(fn dx, ffi::libinput_event_gesture_get_dx, f64);
+    ffi_func!(fn dx_unaccelerated, ffi::libinput_event_gesture_get_dx_unaccelerated, f64);
+    ffi_func!(fn dy, ffi::libinput_event_gesture_get_dy, f64);
+    ffi_func!(fn dy_unaccelerated, ffi::libinput_event_gesture_get_dy_unaccelerated, f64);
 }
 
 pub trait GestureEndEvent: AsRaw<ffi::libinput_event_gesture> {
-    ffi_func!(cancelled, ffi::libinput_event_gesture_get_cancelled, bool);
+    ffi_func!(fn cancelled, ffi::libinput_event_gesture_get_cancelled, bool);
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -130,7 +130,7 @@ impl EventTrait for GesturePinchEvent {
 }
 
 pub trait GesturePinchEventTrait: AsRaw<ffi::libinput_event_gesture> {
-    ffi_func!(scale, ffi::libinput_event_gesture_get_scale, f64);
+    ffi_func!(fn scale, ffi::libinput_event_gesture_get_scale, f64);
 
     fn into_gesture_pinch_event(self) -> GesturePinchEvent where Self: Sized {
         unsafe { GesturePinchEvent::from_raw(self.as_raw_mut()) }
@@ -166,37 +166,37 @@ impl AsRaw<ffi::libinput_event_gesture> for GesturePinchEvent {
     }
 }
 
-ffi_event_struct!(GestureSwipeBeginEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
+ffi_event_struct!(struct GestureSwipeBeginEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
 
 impl GestureSwipeEventTrait for GestureSwipeBeginEvent {}
 
-ffi_event_struct!(GestureSwipeUpdateEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
+ffi_event_struct!(struct GestureSwipeUpdateEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
 
 impl GestureSwipeEventTrait for GestureSwipeUpdateEvent {}
 
 impl GestureEventCoordinates for GestureSwipeUpdateEvent {}
 
-ffi_event_struct!(GestureSwipeEndEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
+ffi_event_struct!(struct GestureSwipeEndEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
 
 impl GestureEndEvent for GestureSwipeEndEvent {}
 
 impl GestureSwipeEventTrait for GestureSwipeEndEvent {}
 
-ffi_event_struct!(GesturePinchBeginEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
+ffi_event_struct!(struct GesturePinchBeginEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
 
 impl GesturePinchEventTrait for GesturePinchBeginEvent {}
 
-ffi_event_struct!(GesturePinchUpdateEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
+ffi_event_struct!(struct GesturePinchUpdateEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
 
 impl GesturePinchEventTrait for GesturePinchUpdateEvent {}
 
 impl GestureEventCoordinates for GesturePinchUpdateEvent {}
 
 impl GesturePinchUpdateEvent {
-    ffi_func!(pub angle_delta, ffi::libinput_event_gesture_get_angle_delta, f64);
+    ffi_func!(pub fn angle_delta, ffi::libinput_event_gesture_get_angle_delta, f64);
 }
 
-ffi_event_struct!(GesturePinchEndEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
+ffi_event_struct!(struct GesturePinchEndEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
 
 impl GesturePinchEventTrait for GesturePinchEndEvent {}
 

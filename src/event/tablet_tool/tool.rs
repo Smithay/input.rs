@@ -13,11 +13,11 @@ pub enum TabletToolType {
     Lens,
 }
 
-ffi_ref_struct!(TabletTool, ffi::libinput_tablet_tool, ffi::libinput_tablet_tool_ref, ffi::libinput_tablet_tool_unref, ffi::libinput_tablet_tool_get_user_data, ffi::libinput_tablet_tool_set_user_data);
+ffi_ref_struct!(struct TabletTool, ffi::libinput_tablet_tool, ffi::libinput_tablet_tool_ref, ffi::libinput_tablet_tool_unref, ffi::libinput_tablet_tool_get_user_data, ffi::libinput_tablet_tool_set_user_data);
 
 impl TabletTool {
-    ffi_func!(pub serial, ffi::libinput_tablet_tool_get_serial, u64);
-    ffi_func!(pub tool_id, ffi::libinput_tablet_tool_get_tool_id, u64);
+    ffi_func!(pub fn serial, ffi::libinput_tablet_tool_get_serial, u64);
+    ffi_func!(pub fn tool_id, ffi::libinput_tablet_tool_get_tool_id, u64);
 
     pub fn tool_type(&self) -> TabletToolType {
         match unsafe { ffi::libinput_tablet_tool_get_type(self.as_raw_mut()) } {
@@ -35,11 +35,11 @@ impl TabletTool {
         unsafe { ffi::libinput_tablet_tool_has_button(self.as_raw_mut(), button) != 0 }
     }
 
-    ffi_func!(pub has_distance, ffi::libinput_tablet_tool_has_distance, bool);
-    ffi_func!(pub has_pressure, ffi::libinput_tablet_tool_has_pressure, bool);
-    ffi_func!(pub has_rotation, ffi::libinput_tablet_tool_has_rotation, bool);
-    ffi_func!(pub has_slider, ffi::libinput_tablet_tool_has_slider, bool);
-    ffi_func!(pub has_tilt, ffi::libinput_tablet_tool_has_tilt, bool);
-    ffi_func!(pub has_wheel, ffi::libinput_tablet_tool_has_wheel, bool);
-    ffi_func!(pub is_unique, ffi::libinput_tablet_tool_is_unique, bool);
+    ffi_func!(pub fn has_distance, ffi::libinput_tablet_tool_has_distance, bool);
+    ffi_func!(pub fn has_pressure, ffi::libinput_tablet_tool_has_pressure, bool);
+    ffi_func!(pub fn has_rotation, ffi::libinput_tablet_tool_has_rotation, bool);
+    ffi_func!(pub fn has_slider, ffi::libinput_tablet_tool_has_slider, bool);
+    ffi_func!(pub fn has_tilt, ffi::libinput_tablet_tool_has_tilt, bool);
+    ffi_func!(pub fn has_wheel, ffi::libinput_tablet_tool_has_wheel, bool);
+    ffi_func!(pub fn is_unique, ffi::libinput_tablet_tool_is_unique, bool);
 }

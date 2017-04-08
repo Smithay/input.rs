@@ -142,8 +142,9 @@ pub trait Userdata {
 }
 
 macro_rules! ffi_struct {
-    ($struct_name:ident, $ffi_name:path) => (
+    ($(#[$attr:meta])* struct $struct_name:ident, $ffi_name:path) => (
         #[derive(Eq)]
+        $(#[$attr])*
         pub struct $struct_name
         {
             ffi: *mut $ffi_name,
@@ -192,8 +193,9 @@ macro_rules! ffi_struct {
 }
 
 macro_rules! ffi_ref_struct {
-    ($struct_name:ident, $ffi_name:path, $ref_fn:path, $unref_fn:path, $get_userdata_fn:path, $set_userdata_fn:path) => (
+    ($(#[$attr:meta])* struct $struct_name:ident, $ffi_name:path, $ref_fn:path, $unref_fn:path, $get_userdata_fn:path, $set_userdata_fn:path) => (
         #[derive(Eq)]
+        $(#[$attr])*
         pub struct $struct_name
         {
             ffi: *mut $ffi_name,
@@ -263,22 +265,26 @@ macro_rules! ffi_ref_struct {
 }
 
 macro_rules! ffi_func {
-    ($name:ident, $ffi_fn:path, bool) => (
+    ($(#[$attr:meta])* fn $name:ident, $ffi_fn:path, bool) => (
+        $(#[$attr])*
         fn $name(&self) -> bool {
             unsafe { $ffi_fn(self.as_raw_mut()) != 0 }
         }
     );
-    (pub $name:ident, $ffi_fn:path, bool) => (
+    ($(#[$attr:meta])* pub fn $name:ident, $ffi_fn:path, bool) => (
+        $(#[$attr])*
         pub fn $name(&self) -> bool {
             unsafe { $ffi_fn(self.as_raw_mut()) != 0 }
         }
     );
-    ($name:ident, $ffi_fn:path, $return_type:ty) => (
+    ($(#[$attr:meta])* fn $name:ident, $ffi_fn:path, $return_type:ty) => (
+        $(#[$attr])*
         fn $name(&self) -> $return_type {
             unsafe { $ffi_fn(self.as_raw_mut()) as $return_type }
         }
     );
-    (pub $name:ident, $ffi_fn:path, $return_type:ty) => (
+    ($(#[$attr:meta])* pub fn $name:ident, $ffi_fn:path, $return_type:ty) => (
+        $(#[$attr])*
         pub fn $name(&self) -> $return_type {
             unsafe { $ffi_fn(self.as_raw_mut()) as $return_type }
         }

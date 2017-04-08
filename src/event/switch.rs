@@ -3,8 +3,8 @@ use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
 pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> {
-    ffi_func!(time, ffi::libinput_event_switch_get_time, u32);
-    ffi_func!(time_usec, ffi::libinput_event_switch_get_time_usec, u64);
+    ffi_func!(fn time, ffi::libinput_event_switch_get_time, u32);
+    ffi_func!(fn time_usec, ffi::libinput_event_switch_get_time_usec, u64);
 
     fn into_switch_event(self) -> SwitchEvent where Self: Sized {
         unsafe { SwitchEvent::from_raw(self.as_raw_mut()) }
@@ -56,7 +56,7 @@ pub enum SwitchState {
     On,
 }
 
-ffi_event_struct!(SwitchToggleEvent, ffi::libinput_event_switch, ffi::libinput_event_switch_get_base_event);
+ffi_event_struct!(struct SwitchToggleEvent, ffi::libinput_event_switch, ffi::libinput_event_switch_get_base_event);
 
 impl SwitchToggleEvent {
     pub fn switch(&self) -> Switch {

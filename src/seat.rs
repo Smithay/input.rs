@@ -4,7 +4,7 @@ use libc;
 
 use ::{ffi, FromRaw, AsRaw, Userdata, Libinput};
 
-ffi_ref_struct!(Seat, ffi::libinput_seat, ffi::libinput_seat_ref, ffi::libinput_seat_unref, ffi::libinput_seat_get_user_data, ffi::libinput_seat_set_user_data);
+ffi_ref_struct!(struct Seat, ffi::libinput_seat, ffi::libinput_seat_ref, ffi::libinput_seat_unref, ffi::libinput_seat_get_user_data, ffi::libinput_seat_set_user_data);
 
 impl Seat
 {

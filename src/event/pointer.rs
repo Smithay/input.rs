@@ -3,8 +3,8 @@ use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
 pub trait PointerEventTrait: AsRaw<ffi::libinput_event_pointer> {
-    ffi_func!(time, ffi::libinput_event_pointer_get_time, u32);
-    ffi_func!(time_usec, ffi::libinput_event_pointer_get_time_usec, u64);
+    ffi_func!(fn time, ffi::libinput_event_pointer_get_time, u32);
+    ffi_func!(fn time_usec, ffi::libinput_event_pointer_get_time_usec, u64);
 
     fn into_pointer_event(self) -> PointerEvent where Self: Sized {
         unsafe { PointerEvent::from_raw(self.as_raw_mut()) }
@@ -60,20 +60,20 @@ impl AsRaw<ffi::libinput_event_pointer> for PointerEvent {
     }
 }
 
-ffi_event_struct!(PointerMotionEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
+ffi_event_struct!(struct PointerMotionEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
 
 impl PointerMotionEvent {
-    ffi_func!(pub dx, ffi::libinput_event_pointer_get_dx, f64);
-    ffi_func!(pub dx_unaccelerated, ffi::libinput_event_pointer_get_dx_unaccelerated, f64);
-    ffi_func!(pub dy, ffi::libinput_event_pointer_get_dy, f64);
-    ffi_func!(pub dy_unaccelerated, ffi::libinput_event_pointer_get_dy_unaccelerated, f64);
+    ffi_func!(pub fn dx, ffi::libinput_event_pointer_get_dx, f64);
+    ffi_func!(pub fn dx_unaccelerated, ffi::libinput_event_pointer_get_dx_unaccelerated, f64);
+    ffi_func!(pub fn dy, ffi::libinput_event_pointer_get_dy, f64);
+    ffi_func!(pub fn dy_unaccelerated, ffi::libinput_event_pointer_get_dy_unaccelerated, f64);
 }
 
-ffi_event_struct!(PointerMotionAbsoluteEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
+ffi_event_struct!(struct PointerMotionAbsoluteEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
 
 impl PointerMotionAbsoluteEvent {
-    ffi_func!(pub absolute_x, ffi::libinput_event_pointer_get_absolute_x, f64);
-    ffi_func!(pub absolute_y, ffi::libinput_event_pointer_get_absolute_y, f64);
+    ffi_func!(pub fn absolute_x, ffi::libinput_event_pointer_get_absolute_x, f64);
+    ffi_func!(pub fn absolute_y, ffi::libinput_event_pointer_get_absolute_y, f64);
 
     pub fn absolute_x_transformed(&self, width: u32) -> f64 {
         unsafe { ffi::libinput_event_pointer_get_absolute_x_transformed(self.as_raw_mut(), width) }
@@ -90,11 +90,11 @@ pub enum ButtonState {
     Released,
 }
 
-ffi_event_struct!(PointerButtonEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
+ffi_event_struct!(struct PointerButtonEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
 
 impl PointerButtonEvent {
-    ffi_func!(pub button, ffi::libinput_event_pointer_get_button, u32);
-    ffi_func!(pub seat_button_count, ffi::libinput_event_pointer_get_seat_button_count, u32);
+    ffi_func!(pub fn button, ffi::libinput_event_pointer_get_button, u32);
+    ffi_func!(pub fn seat_button_count, ffi::libinput_event_pointer_get_seat_button_count, u32);
 
     pub fn button_state(&self) -> ButtonState {
         match unsafe { ffi::libinput_event_pointer_get_button_state(self.as_raw_mut()) } {
@@ -118,7 +118,7 @@ pub enum Axis {
     Horizontal,
 }
 
-ffi_event_struct!(PointerAxisEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
+ffi_event_struct!(struct PointerAxisEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
 
 impl PointerAxisEvent {
     pub fn has_axis(&self, axis: Axis) -> bool {

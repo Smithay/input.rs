@@ -71,8 +71,8 @@ impl AsRaw<ffi::libinput_event> for Event {
 }
 
 macro_rules! ffi_event_struct {
-    ($struct_name:ident, $ffi_name:path, $get_base_fn:path) => (
-        ffi_struct!($struct_name, $ffi_name);
+    ($(#[$attr:meta])* struct $struct_name:ident, $ffi_name:path, $get_base_fn:path) => (
+        ffi_struct!($(#[$attr])* struct $struct_name, $ffi_name);
 
         impl EventTrait for $struct_name {
             fn as_raw_event(&self) -> *mut ffi::libinput_event {

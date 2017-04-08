@@ -6,9 +6,9 @@ mod mode_group;
 pub use self::mode_group::*;
 
 pub trait TabletPadEventTrait: AsRaw<ffi::libinput_event_tablet_pad> {
-    ffi_func!(time, ffi::libinput_event_tablet_pad_get_time, u32);
-    ffi_func!(time_usec, ffi::libinput_event_tablet_pad_get_time_usec, u64);
-    ffi_func!(mode, ffi::libinput_event_tablet_pad_get_mode, u32);
+    ffi_func!(fn time, ffi::libinput_event_tablet_pad_get_time, u32);
+    ffi_func!(fn time_usec, ffi::libinput_event_tablet_pad_get_time_usec, u64);
+    ffi_func!(fn mode, ffi::libinput_event_tablet_pad_get_mode, u32);
 
     fn mode_group(&self) -> TabletPadModeGroup {
         unsafe { TabletPadModeGroup::from_raw(ffi::libinput_event_tablet_pad_get_mode_group(self.as_raw_mut())) }
@@ -63,10 +63,10 @@ impl AsRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
     }
 }
 
-ffi_event_struct!(TabletPadButtonEvent, ffi::libinput_event_tablet_pad, ffi::libinput_event_tablet_pad_get_base_event);
+ffi_event_struct!(struct TabletPadButtonEvent, ffi::libinput_event_tablet_pad, ffi::libinput_event_tablet_pad_get_base_event);
 
 impl TabletPadButtonEvent {
-    ffi_func!(pub button_number, ffi::libinput_event_tablet_pad_get_button_number, u32);
+    ffi_func!(pub fn button_number, ffi::libinput_event_tablet_pad_get_button_number, u32);
 
     pub fn button_state(&self) -> ButtonState {
         match unsafe { ffi::libinput_event_tablet_pad_get_button_state(self.as_raw_mut()) } {
@@ -82,11 +82,11 @@ pub enum RingAxisSource {
     Finger,
 }
 
-ffi_event_struct!(TabletPadRingEvent, ffi::libinput_event_tablet_pad, ffi::libinput_event_tablet_pad_get_base_event);
+ffi_event_struct!(struct TabletPadRingEvent, ffi::libinput_event_tablet_pad, ffi::libinput_event_tablet_pad_get_base_event);
 
 impl TabletPadRingEvent {
-    ffi_func!(pub number, ffi::libinput_event_tablet_pad_get_ring_number, u32);
-    ffi_func!(pub position, ffi::libinput_event_tablet_pad_get_ring_position, f64);
+    ffi_func!(pub fn number, ffi::libinput_event_tablet_pad_get_ring_number, u32);
+    ffi_func!(pub fn position, ffi::libinput_event_tablet_pad_get_ring_position, f64);
 
     pub fn source(&self) -> RingAxisSource {
         match unsafe { ffi::libinput_event_tablet_pad_get_ring_source(self.as_raw_mut()) } {
@@ -102,11 +102,11 @@ pub enum StripAxisSource {
     Finger,
 }
 
-ffi_event_struct!(TabletPadStripEvent, ffi::libinput_event_tablet_pad, ffi::libinput_event_tablet_pad_get_base_event);
+ffi_event_struct!(struct TabletPadStripEvent, ffi::libinput_event_tablet_pad, ffi::libinput_event_tablet_pad_get_base_event);
 
 impl TabletPadStripEvent {
-    ffi_func!(pub number, ffi::libinput_event_tablet_pad_get_strip_number, u32);
-    ffi_func!(pub position, ffi::libinput_event_tablet_pad_get_strip_position, f64);
+    ffi_func!(pub fn number, ffi::libinput_event_tablet_pad_get_strip_number, u32);
+    ffi_func!(pub fn position, ffi::libinput_event_tablet_pad_get_strip_position, f64);
 
     pub fn source(&self) -> StripAxisSource {
         match unsafe { ffi::libinput_event_tablet_pad_get_strip_source(self.as_raw_mut()) } {

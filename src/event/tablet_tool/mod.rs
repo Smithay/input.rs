@@ -7,29 +7,29 @@ pub use self::tool::TabletTool;
 
 pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool>
 {
-    ffi_func!(time, ffi::libinput_event_tablet_tool_get_time, u32);
-    ffi_func!(time_usec, ffi::libinput_event_tablet_tool_get_time_usec, u64);
-    ffi_func!(distance_has_changed, ffi::libinput_event_tablet_tool_distance_has_changed, bool);
-    ffi_func!(distance, ffi::libinput_event_tablet_tool_get_distance, f64);
-    ffi_func!(dx, ffi::libinput_event_tablet_tool_get_dx, f64);
-    ffi_func!(dy, ffi::libinput_event_tablet_tool_get_dy, f64);
-    ffi_func!(pressure_has_changed, ffi::libinput_event_tablet_tool_pressure_has_changed, bool);
-    ffi_func!(pressure, ffi::libinput_event_tablet_tool_get_pressure, f64);
-    ffi_func!(rotation_has_changed, ffi::libinput_event_tablet_tool_rotation_has_changed, bool);
-    ffi_func!(rotation, ffi::libinput_event_tablet_tool_get_rotation, f64);
-    ffi_func!(slider_has_changed, ffi::libinput_event_tablet_tool_slider_has_changed, bool);
-    ffi_func!(slider_position, ffi::libinput_event_tablet_tool_get_slider_position, f64);
-    ffi_func!(tilt_x_has_changed, ffi::libinput_event_tablet_tool_tilt_x_has_changed, bool);
-    ffi_func!(tilt_y_has_changed, ffi::libinput_event_tablet_tool_tilt_y_has_changed, bool);
-    ffi_func!(tilt_x, ffi::libinput_event_tablet_tool_get_tilt_x, f64);
-    ffi_func!(tilt_y, ffi::libinput_event_tablet_tool_get_tilt_y, f64);
-    ffi_func!(wheel_has_changed, ffi::libinput_event_tablet_tool_wheel_has_changed, bool);
-    ffi_func!(wheel_delta, ffi::libinput_event_tablet_tool_get_wheel_delta, f64);
-    ffi_func!(wheel_delta_discrete, ffi::libinput_event_tablet_tool_get_wheel_delta_discrete, f64);
-    ffi_func!(x_has_changed, ffi::libinput_event_tablet_tool_x_has_changed, bool);
-    ffi_func!(y_has_changed, ffi::libinput_event_tablet_tool_y_has_changed, bool);
-    ffi_func!(x, ffi::libinput_event_tablet_tool_get_x, f64);
-    ffi_func!(y, ffi::libinput_event_tablet_tool_get_y, f64);
+    ffi_func!(fn time, ffi::libinput_event_tablet_tool_get_time, u32);
+    ffi_func!(fn time_usec, ffi::libinput_event_tablet_tool_get_time_usec, u64);
+    ffi_func!(fn distance_has_changed, ffi::libinput_event_tablet_tool_distance_has_changed, bool);
+    ffi_func!(fn distance, ffi::libinput_event_tablet_tool_get_distance, f64);
+    ffi_func!(fn dx, ffi::libinput_event_tablet_tool_get_dx, f64);
+    ffi_func!(fn dy, ffi::libinput_event_tablet_tool_get_dy, f64);
+    ffi_func!(fn pressure_has_changed, ffi::libinput_event_tablet_tool_pressure_has_changed, bool);
+    ffi_func!(fn pressure, ffi::libinput_event_tablet_tool_get_pressure, f64);
+    ffi_func!(fn rotation_has_changed, ffi::libinput_event_tablet_tool_rotation_has_changed, bool);
+    ffi_func!(fn rotation, ffi::libinput_event_tablet_tool_get_rotation, f64);
+    ffi_func!(fn slider_has_changed, ffi::libinput_event_tablet_tool_slider_has_changed, bool);
+    ffi_func!(fn slider_position, ffi::libinput_event_tablet_tool_get_slider_position, f64);
+    ffi_func!(fn tilt_x_has_changed, ffi::libinput_event_tablet_tool_tilt_x_has_changed, bool);
+    ffi_func!(fn tilt_y_has_changed, ffi::libinput_event_tablet_tool_tilt_y_has_changed, bool);
+    ffi_func!(fn tilt_x, ffi::libinput_event_tablet_tool_get_tilt_x, f64);
+    ffi_func!(fn tilt_y, ffi::libinput_event_tablet_tool_get_tilt_y, f64);
+    ffi_func!(fn wheel_has_changed, ffi::libinput_event_tablet_tool_wheel_has_changed, bool);
+    ffi_func!(fn wheel_delta, ffi::libinput_event_tablet_tool_get_wheel_delta, f64);
+    ffi_func!(fn wheel_delta_discrete, ffi::libinput_event_tablet_tool_get_wheel_delta_discrete, f64);
+    ffi_func!(fn x_has_changed, ffi::libinput_event_tablet_tool_x_has_changed, bool);
+    ffi_func!(fn y_has_changed, ffi::libinput_event_tablet_tool_y_has_changed, bool);
+    ffi_func!(fn x, ffi::libinput_event_tablet_tool_get_x, f64);
+    ffi_func!(fn y, ffi::libinput_event_tablet_tool_get_y, f64);
 
     fn x_transformed(&self, width: u32) -> f64 {
         unsafe { ffi::libinput_event_tablet_tool_get_x_transformed(self.as_raw_mut(), width) }
@@ -97,7 +97,7 @@ impl AsRaw<ffi::libinput_event_tablet_tool> for TabletToolEvent {
     }
 }
 
-ffi_event_struct!(TabletToolAxisEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
+ffi_event_struct!(struct TabletToolAxisEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ProximityState {
@@ -105,7 +105,7 @@ pub enum ProximityState {
     In,
 }
 
-ffi_event_struct!(TabletToolProximityEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
+ffi_event_struct!(struct TabletToolProximityEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
 
 impl TabletToolProximityEvent {
     pub fn proximity_state(&self) -> ProximityState {
@@ -122,7 +122,7 @@ pub enum TipState {
     Down,
 }
 
-ffi_event_struct!(TabletToolTipEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
+ffi_event_struct!(struct TabletToolTipEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
 
 impl TabletToolTipEvent {
     pub fn tip_state(&self) -> TipState {
@@ -133,11 +133,11 @@ impl TabletToolTipEvent {
     }
 }
 
-ffi_event_struct!(TabletToolButtonEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
+ffi_event_struct!(struct TabletToolButtonEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
 
 impl TabletToolButtonEvent {
-    ffi_func!(pub button, ffi::libinput_event_tablet_tool_get_button, u32);
-    ffi_func!(pub seat_button_count, ffi::libinput_event_tablet_tool_get_seat_button_count, u32);
+    ffi_func!(pub fn button, ffi::libinput_event_tablet_tool_get_button, u32);
+    ffi_func!(pub fn seat_button_count, ffi::libinput_event_tablet_tool_get_seat_button_count, u32);
 
     pub fn button_state(&self) -> ButtonState {
         match unsafe { ffi::libinput_event_tablet_tool_get_button_state(self.as_raw_mut()) } {

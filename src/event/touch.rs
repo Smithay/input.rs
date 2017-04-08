@@ -3,8 +3,8 @@ use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
 pub trait TouchEventTrait: AsRaw<ffi::libinput_event_touch> {
-    ffi_func!(time, ffi::libinput_event_touch_get_time, u32);
-    ffi_func!(time_usec, ffi::libinput_event_touch_get_time_usec, u64);
+    ffi_func!(fn time, ffi::libinput_event_touch_get_time, u32);
+    ffi_func!(fn time_usec, ffi::libinput_event_touch_get_time_usec, u64);
 
     fn into_touch_event(self) -> TouchEvent where Self: Sized {
         unsafe { TouchEvent::from_raw(self.as_raw_mut()) }
@@ -14,7 +14,7 @@ pub trait TouchEventTrait: AsRaw<ffi::libinput_event_touch> {
 impl<T: AsRaw<ffi::libinput_event_touch>> TouchEventTrait for T {}
 
 pub trait TouchEventSlot: AsRaw<ffi::libinput_event_touch> {
-    ffi_func!(seat_slot, ffi::libinput_event_touch_get_seat_slot, u32);
+    ffi_func!(fn seat_slot, ffi::libinput_event_touch_get_seat_slot, u32);
 
     fn slot(&self) -> Option<u32> {
         match unsafe { ffi::libinput_event_touch_get_slot(self.as_raw_mut()) } {
@@ -26,8 +26,8 @@ pub trait TouchEventSlot: AsRaw<ffi::libinput_event_touch> {
 }
 
 pub trait TouchEventPosition: AsRaw<ffi::libinput_event_touch> {
-    ffi_func!(x, ffi::libinput_event_touch_get_x, f64);
-    ffi_func!(y, ffi::libinput_event_touch_get_y, f64);
+    ffi_func!(fn x, ffi::libinput_event_touch_get_x, f64);
+    ffi_func!(fn y, ffi::libinput_event_touch_get_y, f64);
 
     fn x_transformed(&self, width: u32) -> f64 {
         unsafe { ffi::libinput_event_touch_get_x_transformed(self.as_raw_mut(), width) }
@@ -90,24 +90,24 @@ impl AsRaw<ffi::libinput_event_touch> for TouchEvent {
     }
 }
 
-ffi_event_struct!(TouchDownEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
+ffi_event_struct!(struct TouchDownEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
 
 impl TouchEventSlot for TouchDownEvent {}
 
 impl TouchEventPosition for TouchDownEvent {}
 
-ffi_event_struct!(TouchUpEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
+ffi_event_struct!(struct TouchUpEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
 
 impl TouchEventSlot for TouchUpEvent {}
 
-ffi_event_struct!(TouchMotionEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
+ffi_event_struct!(struct TouchMotionEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
 
 impl TouchEventSlot for TouchMotionEvent {}
 
 impl TouchEventPosition for TouchMotionEvent {}
 
-ffi_event_struct!(TouchCancelEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
+ffi_event_struct!(struct TouchCancelEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
 
 impl TouchEventSlot for TouchCancelEvent {}
 
-ffi_event_struct!(TouchFrameEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
+ffi_event_struct!(struct TouchFrameEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);

@@ -67,9 +67,9 @@ pub enum Led {
     ScrollLock,
 }
 
-ffi_ref_struct!(DeviceGroup, ffi::libinput_device_group, ffi::libinput_device_group_ref, ffi::libinput_device_group_unref, ffi::libinput_device_group_get_user_data, ffi::libinput_device_group_set_user_data);
+ffi_ref_struct!(struct DeviceGroup, ffi::libinput_device_group, ffi::libinput_device_group_ref, ffi::libinput_device_group_unref, ffi::libinput_device_group_get_user_data, ffi::libinput_device_group_set_user_data);
 
-ffi_ref_struct!(Device, ffi::libinput_device, ffi::libinput_device_ref, ffi::libinput_device_unref, ffi::libinput_device_get_user_data, ffi::libinput_device_set_user_data);
+ffi_ref_struct!(struct Device, ffi::libinput_device, ffi::libinput_device_ref, ffi::libinput_device_unref, ffi::libinput_device_get_user_data, ffi::libinput_device_set_user_data);
 
 impl Device
 {
@@ -113,8 +113,8 @@ impl Device
         }
     }
 
-    ffi_func!(pub id_product, ffi::libinput_device_get_id_product, u32);
-    ffi_func!(pub id_vendor, ffi::libinput_device_get_id_product, u32);
+    ffi_func!(pub fn id_product, ffi::libinput_device_get_id_product, u32);
+    ffi_func!(pub fn id_vendor, ffi::libinput_device_get_id_product, u32);
 
     pub fn seat(&self) -> Seat
     {
@@ -135,7 +135,7 @@ impl Device
         }
     }
 
-    ffi_func!(pub udev_device, ffi::libinput_device_get_udev_device, *mut libc::c_void);
+    ffi_func!(pub fn udev_device, ffi::libinput_device_get_udev_device, *mut libc::c_void);
 
     pub fn led_update(&mut self, leds: &[Led]) {
         let mut bitmask = 0u32;
@@ -195,10 +195,10 @@ impl Device
         }
     }
 
-    ffi_func!(pub tablet_pad_number_of_buttons, ffi::libinput_device_tablet_pad_get_num_buttons, i32);
-    ffi_func!(pub tablet_pad_number_of_rings, ffi::libinput_device_tablet_pad_get_num_rings, i32);
-    ffi_func!(pub tablet_pad_number_of_strips, ffi::libinput_device_tablet_pad_get_num_strips, i32);
-    ffi_func!(pub tablet_pad_number_of_mode_groups, ffi::libinput_device_tablet_pad_get_num_mode_groups, i32);
+    ffi_func!(pub fn tablet_pad_number_of_buttons, ffi::libinput_device_tablet_pad_get_num_buttons, i32);
+    ffi_func!(pub fn tablet_pad_number_of_rings, ffi::libinput_device_tablet_pad_get_num_rings, i32);
+    ffi_func!(pub fn tablet_pad_number_of_strips, ffi::libinput_device_tablet_pad_get_num_strips, i32);
+    ffi_func!(pub fn tablet_pad_number_of_mode_groups, ffi::libinput_device_tablet_pad_get_num_mode_groups, i32);
 
     pub fn tablet_pad_get_mode_group(&self, index: u32) -> Option<TabletPadModeGroup> {
         let ptr = unsafe { ffi::libinput_device_tablet_pad_get_mode_group(self.as_raw_mut(), index) };
@@ -251,8 +251,8 @@ impl Device
         }
     }
 
-    ffi_func!(pub config_accel_default_speed, ffi::libinput_device_config_accel_get_default_speed, f64);
-    ffi_func!(pub config_accel_speed, ffi::libinput_device_config_accel_get_speed, f64);
+    ffi_func!(pub fn config_accel_default_speed, ffi::libinput_device_config_accel_get_default_speed, f64);
+    ffi_func!(pub fn config_accel_speed, ffi::libinput_device_config_accel_get_speed, f64);
 
     pub fn config_accel_set_speed(&mut self, speed: f64) -> DeviceConfigResult {
         match unsafe { ffi::libinput_device_config_accel_set_speed(self.as_raw_mut(), speed) } {
@@ -262,7 +262,7 @@ impl Device
         }
     }
 
-    ffi_func!(pub config_accel_is_available, ffi::libinput_device_config_accel_is_available, bool);
+    ffi_func!(pub fn config_accel_is_available, ffi::libinput_device_config_accel_is_available, bool);
 
     pub fn config_calibration_default_matrix(&self) -> Option<[f32; 6]> {
         let mut matrix = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
@@ -282,7 +282,7 @@ impl Device
         }
     }
 
-    ffi_func!(pub config_calibration_has_matrix, ffi::libinput_device_config_calibration_has_matrix, bool);
+    ffi_func!(pub fn config_calibration_has_matrix, ffi::libinput_device_config_calibration_has_matrix, bool);
 
     pub fn config_calibration_set_matrix(&mut self, matrix: [f32; 6]) -> DeviceConfigResult {
         match unsafe { ffi::libinput_device_config_calibration_set_matrix(self.as_raw_mut(), matrix.as_ptr()) } {
@@ -348,7 +348,7 @@ impl Device
         }
     }
 
-    ffi_func!(pub config_dwt_is_available, ffi::libinput_device_config_dwt_is_available, bool);
+    ffi_func!(pub fn config_dwt_is_available, ffi::libinput_device_config_dwt_is_available, bool);
 
     pub fn config_dwt_set_enabled(&self, enabled: bool) -> DeviceConfigResult {
         match unsafe { ffi::libinput_device_config_dwt_set_enabled(self.as_raw_mut(), match enabled {
@@ -361,9 +361,9 @@ impl Device
         }
     }
 
-    ffi_func!(pub config_left_handed, ffi::libinput_device_config_left_handed_get, bool);
-    ffi_func!(pub config_left_handed_default, ffi::libinput_device_config_left_handed_get_default, bool);
-    ffi_func!(pub config_left_handed_is_available, ffi::libinput_device_config_left_handed_is_available, bool);
+    ffi_func!(pub fn config_left_handed, ffi::libinput_device_config_left_handed_get, bool);
+    ffi_func!(pub fn config_left_handed_default, ffi::libinput_device_config_left_handed_get_default, bool);
+    ffi_func!(pub fn config_left_handed_is_available, ffi::libinput_device_config_left_handed_is_available, bool);
 
 
     pub fn config_left_handed_set(&self, enabled: bool) -> DeviceConfigResult {
@@ -388,7 +388,7 @@ impl Device
         }
     }
 
-    ffi_func!(pub config_middle_emulation_is_available, ffi::libinput_device_config_middle_emulation_is_available, bool);
+    ffi_func!(pub fn config_middle_emulation_is_available, ffi::libinput_device_config_middle_emulation_is_available, bool);
 
     pub fn config_middle_emulation_set_enabled(&self, enabled: bool) -> DeviceConfigResult {
         match unsafe { ffi::libinput_device_config_middle_emulation_set_enabled(self.as_raw_mut(), match enabled {
@@ -401,9 +401,9 @@ impl Device
         }
     }
 
-    ffi_func!(pub config_rotation_angle, ffi::libinput_device_config_rotation_get_angle, u32);
-    ffi_func!(pub config_rotation_default_angle, ffi::libinput_device_config_rotation_get_default_angle, u32);
-    ffi_func!(pub config_rotation_is_available, ffi::libinput_device_config_rotation_is_available, bool);
+    ffi_func!(pub fn config_rotation_angle, ffi::libinput_device_config_rotation_get_angle, u32);
+    ffi_func!(pub fn config_rotation_default_angle, ffi::libinput_device_config_rotation_get_default_angle, u32);
+    ffi_func!(pub fn config_rotation_is_available, ffi::libinput_device_config_rotation_is_available, bool);
 
     pub fn config_rotation_set_angle(&self, angle: u32) -> DeviceConfigResult {
         match unsafe { ffi::libinput_device_config_rotation_set_angle(self.as_raw_mut(), angle) } {
@@ -413,8 +413,8 @@ impl Device
         }
     }
 
-    ffi_func!(pub config_scroll_button, ffi::libinput_device_config_scroll_get_button, u32);
-    ffi_func!(pub config_scroll_default_button, ffi::libinput_device_config_scroll_get_default_button, u32);
+    ffi_func!(pub fn config_scroll_button, ffi::libinput_device_config_scroll_get_button, u32);
+    ffi_func!(pub fn config_scroll_default_button, ffi::libinput_device_config_scroll_get_default_button, u32);
 
     pub fn config_scroll_default_method(&self) -> ScrollMethod
     {
@@ -468,9 +468,9 @@ impl Device
         }
     }
 
-    ffi_func!(pub config_scroll_default_natural_scroll_enabled, ffi::libinput_device_config_scroll_get_default_natural_scroll_enabled, bool);
-    ffi_func!(pub config_scroll_natural_scroll_enabled, ffi::libinput_device_config_scroll_get_natural_scroll_enabled, bool);
-    ffi_func!(pub config_scroll_has_natural_scroll, ffi::libinput_device_config_scroll_has_natural_scroll, bool);
+    ffi_func!(pub fn config_scroll_default_natural_scroll_enabled, ffi::libinput_device_config_scroll_get_default_natural_scroll_enabled, bool);
+    ffi_func!(pub fn config_scroll_natural_scroll_enabled, ffi::libinput_device_config_scroll_get_natural_scroll_enabled, bool);
+    ffi_func!(pub fn config_scroll_has_natural_scroll, ffi::libinput_device_config_scroll_has_natural_scroll, bool);
 
     pub fn config_scroll_set_natural_scroll_enabled(&mut self, enabled: bool) -> DeviceConfigResult {
         match unsafe { ffi::libinput_device_config_scroll_set_natural_scroll_enabled(self.as_raw_mut(), enabled as i32) } {
@@ -597,7 +597,7 @@ impl Device
         }
     }
 
-    ffi_func!(config_tap_finger_count, ffi::libinput_device_config_tap_get_finger_count, u32);
+    ffi_func!(pub fn config_tap_finger_count, ffi::libinput_device_config_tap_get_finger_count, u32);
 
     pub fn config_tap_set_button_map(&mut self, map: TapButtonMap) -> DeviceConfigResult {
         match unsafe { ffi::libinput_device_config_tap_set_button_map(self.as_raw_mut(), match map {

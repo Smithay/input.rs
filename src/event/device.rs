@@ -47,5 +47,5 @@ impl AsRaw<ffi::libinput_event_device_notify> for DeviceEvent {
     }
 }
 
-ffi_event_struct!(DeviceAddedEvent, ffi::libinput_event_device_notify, ffi::libinput_event_device_notify_get_base_event);
-ffi_event_struct!(DeviceRemovedEvent, ffi::libinput_event_device_notify, ffi::libinput_event_device_notify_get_base_event);
+ffi_event_struct!(struct DeviceAddedEvent, ffi::libinput_event_device_notify, ffi::libinput_event_device_notify_get_base_event);
+ffi_event_struct!(struct DeviceRemovedEvent, ffi::libinput_event_device_notify, ffi::libinput_event_device_notify_get_base_event);

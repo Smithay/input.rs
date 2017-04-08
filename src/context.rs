@@ -18,7 +18,7 @@ pub type LibinputInterface = ffi::libinput_interface;
 ///
 /// Either way you then have to use `dispatch()` and `next()` (provided by the `Iterator` trait) to
 /// receive events.
-ffi_ref_struct!(Libinput, ffi::libinput, ffi::libinput_ref, ffi::libinput_unref, ffi::libinput_get_user_data, ffi::libinput_set_user_data);
+ffi_ref_struct!(struct Libinput, ffi::libinput, ffi::libinput_ref, ffi::libinput_unref, ffi::libinput_get_user_data, ffi::libinput_set_user_data);
 
 impl Iterator for Libinput {
     type Item = Event;
@@ -35,6 +35,8 @@ impl Iterator for Libinput {
 impl Libinput
 {
     /// Create a new libinput context using a udev context.
+    ///
+    /// This context is inactive until `udev_assign_seat` is called.
     ///
     /// ## Arguments
     ///
@@ -64,6 +66,18 @@ impl Libinput
         context
     }
 
+    /// Create a new libinput context that requires the caller to manually add or remove devices.
+    ///
+    /// The returned context is active, but will not yield any events
+    /// until at least one device is added.
+    ///
+    /// Devices can be added and removed by calling `path_add_device` and `path_remove_device` respectively.
+    ///
+    /// ## Arguments
+    ///
+    /// - interface - A `LibinputInterface` providing functions to open and close devices.
+    /// - userdata - Optionally some userdata attached to the newly created context (see [`Userdata`](./trait.Userdata.html))
+    ///
     pub fn new_from_path<T: 'static>(interface: LibinputInterface, userdata: Option<T>) -> Libinput {
         let boxed_interface = Box::new(interface);
         let mut boxed_userdata = Box::new(userdata);
@@ -83,14 +97,44 @@ impl Libinput
         context
     }
 
-    pub fn path_add_device(&mut self, path: &str) -> Device
+    /// Add a device to a libinput context initialized with
+    /// `new_from_context`.
+    ///
+    /// If successful, the device will be added to the internal list
+    /// and re-opened on `resume`. The device can be removed with
+    /// `path_remove_device()`.
+    ///
+    /// If the device was successfully initialized, it is returned.
+    ///
+    /// ## Warning
+    ///
+    /// It is an application bug to call this function on a context
+    /// initialized with `new_from_udev`.
+    pub fn path_add_device(&mut self, path: &str) -> Option<Device>
     {
         let path = CString::new(path).expect("Device Path contained a null-byte");
         unsafe {
-            Device::from_raw(ffi::libinput_path_add_device(self.as_raw_mut(), path.as_ptr()))
+            let ptr = ffi::libinput_path_add_device(self.as_raw_mut(), path.as_ptr());
+            if ptr.is_null() {
+                None
+            } else {
+                Some(Device::from_raw(ptr))
+            }
         }
     }
 
+    /// Remove a device from a libinput context initialized with
+    /// `new_from_path` and added to such a context with
+    /// `path_add_device`.
+    ///
+    /// Events already processed from this input device are kept in
+    /// the queue, the `DeviceRemovedEvent` event marks the end of
+    /// events for this device.
+    ///
+    /// ## Warning
+    ///
+    /// It is an application bug to call this function on a context
+    /// initialized with `new_from_udev`.
     pub fn path_remove_device(&mut self, device: Device)
     {
         unsafe {
@@ -98,6 +142,22 @@ impl Libinput
         }
     }
 
+    /// Assign a seat to this libinput context.
+    ///
+    /// New devices or the removal of existing devices will appear as
+    /// events during `dispatch`.
+    ///
+    /// `udev_assign_seat` succeeds even if no input devices are
+    /// currently available on this seat, or if devices are available
+    /// but fail to open in `LibinputInterface::open_restricted`.
+    ///
+    /// Devices that do not have the minimum capabilities to be
+    /// recognized as pointer, keyboard or touch device are ignored. /// Such devices and those that failed to open ignored until the
+    /// next call to `resume`.
+    ///
+    /// ## Warning
+    ///
+    /// This function may only be called once per context.
     pub fn udev_assign_seat(&mut self, seat_id: &str) -> Result<(), ()> {
         let id = CString::new(seat_id).expect("Seat Id contained a null-byte");
         unsafe {
@@ -109,8 +169,18 @@ impl Libinput
         }
     }
 
-    ffi_func!(pub suspend, ffi::libinput_suspend, ());
+    ffi_func!(
+        /// Suspend monitoring for new devices and close existing
+        /// devices.
+        ///
+        /// This closes all open devices and terminates libinput but
+        /// does keep the context valid to be resumed with `resume`.
+        pub fn suspend, ffi::libinput_suspend, ()
+    );
 
+    /// Resume a suspended libinput context.
+    ///
+    /// This re-enables device monitoring and adds existing devices.
     pub fn resume(&mut self) -> Result<(), ()> {
         unsafe {
             match ffi::libinput_resume(self.as_raw_mut()) {
@@ -121,6 +191,19 @@ impl Libinput
         }
     }
 
+    /// Main event dispatchment function.
+    ///
+    /// Reads events of the file descriptors and processes them
+    /// internally. Use `next` or any other function provided by the
+    /// `Iterator` trait to retrieve the events until `None` is
+    /// returned.
+    ///
+    /// Dispatching does not necessarily queue libinput events. This
+    /// function should be called immediately once data is available
+    /// on the file descriptor returned by `fd`. libinput has a number
+    /// of timing-sensitive features (e.g. tap-to-click), any delay in
+    /// calling `dispatch` may prevent these features from working
+    /// correctly.
     pub fn dispatch(&mut self) -> IoResult<()> {
         unsafe {
             match ffi::libinput_dispatch(self.as_raw_mut()) {
@@ -131,7 +214,29 @@ impl Libinput
         }
     }
 
-    pub unsafe fn fd(&mut self) -> RawFd {
+    /// libinput keeps a single file descriptor for all events.
+    ///
+    /// Call into `dispatch` if any events become available on this fd.
+    ///
+    /// The most simple variant to check for available bytes is to use
+    /// the `libc`:
+    ///
+    ///     loop {
+    ///         let mut count = 0i32;
+    ///         libc::ioctl(context.fd(), libc::FIONREAD, &mut count);
+    ///         if (count > 0) {
+    ///             context.dispatch().unwrap();
+    ///             for event in context {
+    ///                 // do some processing...
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// For more complex operations you may wish to use other approches
+    /// as event loops e.g. in the `wayland-server` or the `tokio`
+    /// crates to wait for data to become available on this file
+    /// descriptor.
+    pub unsafe fn fd(&self) -> RawFd {
         ffi::libinput_get_fd(self.as_raw_mut())
     }
 }
