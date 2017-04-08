@@ -16,7 +16,7 @@ use ::{ffi, FromRaw, AsRaw, Userdata, Device, Event};
 /// `close` respectively, but doing so would require root permissions
 /// to open devices. This interface provides an api agnostic way to
 /// use ConsoleKit or similar endpoints to open devices without
-/// direct priviledge escalation.  
+/// direct priviledge escalation.
 pub type LibinputInterface = ffi::libinput_interface;
 
 ffi_ref_struct!(
@@ -180,13 +180,12 @@ impl Libinput
     }
 
     ffi_func!(
-        /// Suspend monitoring for new devices and close existing
-        /// devices.
-        ///
-        /// This closes all open devices and terminates libinput but
-        /// does keep the context valid to be resumed with `resume`.
-        pub fn suspend, ffi::libinput_suspend, ()
-    );
+    /// Suspend monitoring for new devices and close existing
+    /// devices.
+    ///
+    /// This closes all open devices and terminates libinput but
+    /// does keep the context valid to be resumed with `resume`.
+    pub fn suspend, ffi::libinput_suspend, ());
 
     /// Resume a suspended libinput context.
     ///

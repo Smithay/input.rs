@@ -1,31 +1,47 @@
 use ::{ffi, Libinput, Device, FromRaw, AsRaw};
 
+/// A libinput `Event`
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Event {
+    /// A device related `Event`
     Device(DeviceEvent),
+    /// A keyboard related `Event`
     Keyboard(KeyboardEvent),
+    /// A pointer related `Event`
     Pointer(PointerEvent),
+    /// A touch related `Event`
     Touch(TouchEvent),
+    /// A tablet related `Event`
     Tablet(TabletToolEvent),
+    /// A tabled pad related `Event`
     TabletPad(TabletPadEvent),
+    /// A gesture related `Event`
     Gesture(GestureEvent),
+    /// A switch related `Event`
     Switch(SwitchEvent),
 }
 
+/// Common functions all (Sub-)Events implement.
 pub trait EventTrait {
     #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event;
 
+    /// Convert into a full blown `Event` again
     fn into_event(self) -> Event where Self: Sized {
         unsafe { Event::from_raw(self.as_raw_event()) }
     }
 
+    /// Get the libinput context from the event.
     fn context(&self) -> Libinput {
         unsafe {
             Libinput::from_raw(ffi::libinput_event_get_context(self.as_raw_event()))
         }
     }
 
+    /// Return the device associated with this event.
+    ///
+    /// For device added/removed events this is the device added or removed.
+    /// For all other device events, this is the device that generated the event.
     fn device(&self) -> Device {
         unsafe {
             Device::from_raw(ffi::libinput_event_get_device(self.as_raw_event()))

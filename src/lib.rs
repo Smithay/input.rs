@@ -33,6 +33,8 @@
 //! To get started check out the [`Libinput` struct](./struct.Libinput.html).
 //!
 
+#![deny(missing_docs)]
+
 extern crate input_sys;
 extern crate libc;
 
