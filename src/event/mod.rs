@@ -1,45 +1,45 @@
 use ::{ffi, Libinput, Device, FromRaw, AsRaw};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum Event<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
-    Device(DeviceEvent<C, D, G, S, T, M>),
-    Keyboard(KeyboardEvent<C, D, G, S, T, M>),
-    Pointer(PointerEvent<C, D, G, S, T, M>),
-    Touch(TouchEvent<C, D, G, S, T, M>),
-    Tablet(TabletToolEvent<C, D, G, S, T, M>),
-    TabletPad(TabletPadEvent<C, D, G, S, T, M>),
-    Gesture(GestureEvent<C, D, G, S, T, M>),
-    Switch(SwitchEvent<C, D, G, S, T, M>),
+pub enum Event {
+    Device(DeviceEvent),
+    Keyboard(KeyboardEvent),
+    Pointer(PointerEvent),
+    Touch(TouchEvent),
+    Tablet(TabletToolEvent),
+    TabletPad(TabletPadEvent),
+    Gesture(GestureEvent),
+    Switch(SwitchEvent),
 }
 
-pub trait EventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
+pub trait EventTrait {
     #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event;
 
-    fn into_event(self) -> Event<C, D, G, S, T, M> where Self: Sized {
+    fn into_event(self) -> Event where Self: Sized {
         unsafe { Event::from_raw(self.as_raw_event()) }
     }
 
-    fn context(&self) -> Libinput<C, D, G, S, T, M> {
+    fn context(&self) -> Libinput {
         unsafe {
             Libinput::from_raw(ffi::libinput_event_get_context(self.as_raw_event()))
         }
     }
 
-    fn device(&self) -> Device<C, D, G, S, T, M> {
+    fn device(&self) -> Device {
         unsafe {
             Device::from_raw(ffi::libinput_event_get_device(self.as_raw_event()))
         }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for Event<C, D, G, S, T, M> {
+impl EventTrait for Event {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         self.as_raw_mut()
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event> for Event<C, D, G, S, T, M> {
+impl FromRaw<ffi::libinput_event> for Event {
     unsafe fn from_raw(event: *mut ffi::libinput_event) -> Self {
         match ffi::libinput_event_get_type(event) {
             ffi::libinput_event_type::LIBINPUT_EVENT_NONE => panic!("Trying to convert null event"),
@@ -55,7 +55,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Fro
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event> for Event<C, D, G, S, T, M> {
+impl AsRaw<ffi::libinput_event> for Event {
     fn as_raw(&self) -> *const ffi::libinput_event {
         match *self {
             Event::Device(ref event) => event.as_raw_event() as *const _,
@@ -74,13 +74,13 @@ macro_rules! ffi_event_struct {
     ($struct_name:ident, $ffi_name:path, $get_base_fn:path) => (
         ffi_struct!($struct_name, $ffi_name);
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for $struct_name<C, D, G, S, T, M> {
+        impl EventTrait for $struct_name {
             fn as_raw_event(&self) -> *mut ffi::libinput_event {
                 unsafe { $get_base_fn(self.as_raw_mut()) }
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Drop for $struct_name<C, D, G, S, T, M> {
+        impl Drop for $struct_name {
             fn drop(&mut self) {
                 unsafe { ffi::libinput_event_destroy(self.as_raw_event()) }
             }

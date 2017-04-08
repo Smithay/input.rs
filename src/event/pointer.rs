@@ -2,26 +2,26 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
-pub trait PointerEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>: AsRaw<ffi::libinput_event_pointer> {
+pub trait PointerEventTrait: AsRaw<ffi::libinput_event_pointer> {
     ffi_func!(time, ffi::libinput_event_pointer_get_time, u32);
     ffi_func!(time_usec, ffi::libinput_event_pointer_get_time_usec, u64);
 
-    fn into_pointer_event(self) -> PointerEvent<C, D, G, S, T, M> where Self: Sized {
+    fn into_pointer_event(self) -> PointerEvent where Self: Sized {
         unsafe { PointerEvent::from_raw(self.as_raw_mut()) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static, R: AsRaw<ffi::libinput_event_pointer>> PointerEventTrait<C, D, G, S, T, M> for R {}
+impl<T: AsRaw<ffi::libinput_event_pointer>> PointerEventTrait for T {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum PointerEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
-    Motion(PointerMotionEvent<C, D, G, S, T, M>),
-    MotionAbsolute(PointerMotionAbsoluteEvent<C, D, G, S, T, M>),
-    Button(PointerButtonEvent<C, D, G, S, T, M>),
-    Axis(PointerAxisEvent<C, D, G, S, T, M>),
+pub enum PointerEvent {
+    Motion(PointerMotionEvent),
+    MotionAbsolute(PointerMotionAbsoluteEvent),
+    Button(PointerButtonEvent),
+    Axis(PointerAxisEvent),
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for PointerEvent<C, D, G, S, T, M> {
+impl EventTrait for PointerEvent {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             PointerEvent::Motion(ref event) => event.as_raw_event(),
@@ -32,7 +32,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Eve
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_pointer> for PointerEvent<C, D, G, S, T, M> {
+impl FromRaw<ffi::libinput_event_pointer> for PointerEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_pointer) -> Self {
         let base = ffi::libinput_event_pointer_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
@@ -49,7 +49,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Fro
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_pointer> for PointerEvent<C, D, G, S, T, M> {
+impl AsRaw<ffi::libinput_event_pointer> for PointerEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_pointer {
         match *self {
             PointerEvent::Motion(ref event) => event.as_raw(),
@@ -62,7 +62,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsR
 
 ffi_event_struct!(PointerMotionEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> PointerMotionEvent<C, D, G, S, T, M> {
+impl PointerMotionEvent {
     ffi_func!(pub dx, ffi::libinput_event_pointer_get_dx, f64);
     ffi_func!(pub dx_unaccelerated, ffi::libinput_event_pointer_get_dx_unaccelerated, f64);
     ffi_func!(pub dy, ffi::libinput_event_pointer_get_dy, f64);
@@ -71,7 +71,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Poi
 
 ffi_event_struct!(PointerMotionAbsoluteEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> PointerMotionAbsoluteEvent<C, D, G, S, T, M> {
+impl PointerMotionAbsoluteEvent {
     ffi_func!(pub absolute_x, ffi::libinput_event_pointer_get_absolute_x, f64);
     ffi_func!(pub absolute_y, ffi::libinput_event_pointer_get_absolute_y, f64);
 
@@ -92,7 +92,7 @@ pub enum ButtonState {
 
 ffi_event_struct!(PointerButtonEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> PointerButtonEvent<C, D, G, S, T, M> {
+impl PointerButtonEvent {
     ffi_func!(pub button, ffi::libinput_event_pointer_get_button, u32);
     ffi_func!(pub seat_button_count, ffi::libinput_event_pointer_get_seat_button_count, u32);
 
@@ -120,7 +120,7 @@ pub enum Axis {
 
 ffi_event_struct!(PointerAxisEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> PointerAxisEvent<C, D, G, S, T, M> {
+impl PointerAxisEvent {
     pub fn has_axis(&self, axis: Axis) -> bool {
         unsafe { ffi::libinput_event_pointer_has_axis(self.as_raw_mut(), match axis {
             Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,

@@ -1,15 +1,14 @@
 use std::ffi::CStr;
-use std::{mem, ptr};
 
 use libc;
 
 use ::{ffi, FromRaw, AsRaw, Userdata, Libinput};
 
-ffi_ref_struct!(Seat, ffi::libinput_seat, S, ffi::libinput_seat_ref, ffi::libinput_seat_unref, ffi::libinput_seat_get_user_data, ffi::libinput_seat_set_user_data);
+ffi_ref_struct!(Seat, ffi::libinput_seat, ffi::libinput_seat_ref, ffi::libinput_seat_unref, ffi::libinput_seat_get_user_data, ffi::libinput_seat_set_user_data);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Seat<C, D, G, S, T, M>
+impl Seat
 {
-    pub fn context(&self) -> Libinput<C, D, G, S, T, M> {
+    pub fn context(&self) -> Libinput {
         unsafe {
             Libinput::from_raw(ffi::libinput_seat_get_context(self.as_raw_mut()))
         }

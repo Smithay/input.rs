@@ -1,6 +1,4 @@
 use std::ffi::{CStr, CString};
-use std::mem;
-use std::ptr;
 
 use libc;
 
@@ -69,20 +67,20 @@ pub enum Led {
     ScrollLock,
 }
 
-ffi_ref_struct!(DeviceGroup, ffi::libinput_device_group, G, ffi::libinput_device_group_ref, ffi::libinput_device_group_unref, ffi::libinput_device_group_get_user_data, ffi::libinput_device_group_set_user_data);
+ffi_ref_struct!(DeviceGroup, ffi::libinput_device_group, ffi::libinput_device_group_ref, ffi::libinput_device_group_unref, ffi::libinput_device_group_get_user_data, ffi::libinput_device_group_set_user_data);
 
-ffi_ref_struct!(Device, ffi::libinput_device, D, ffi::libinput_device_ref, ffi::libinput_device_unref, ffi::libinput_device_get_user_data, ffi::libinput_device_set_user_data);
+ffi_ref_struct!(Device, ffi::libinput_device, ffi::libinput_device_ref, ffi::libinput_device_unref, ffi::libinput_device_get_user_data, ffi::libinput_device_set_user_data);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Device<C, D, G, S, T, M>
+impl Device
 {
-    pub fn context(&self) -> Libinput<C, D, G, S, T, M>
+    pub fn context(&self) -> Libinput
     {
         unsafe {
             Libinput::from_raw(ffi::libinput_device_get_context(self.as_raw_mut()))
         }
     }
 
-    pub fn device_group(&self) -> DeviceGroup<C, D, G, S, T, M>
+    pub fn device_group(&self) -> DeviceGroup
     {
         unsafe {
             DeviceGroup::from_raw(ffi::libinput_device_get_device_group(self.as_raw_mut()))
@@ -118,7 +116,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Dev
     ffi_func!(pub id_product, ffi::libinput_device_get_id_product, u32);
     ffi_func!(pub id_vendor, ffi::libinput_device_get_id_product, u32);
 
-    pub fn seat(&self) -> Seat<C, D, G, S, T, M>
+    pub fn seat(&self) -> Seat
     {
         unsafe {
             Seat::from_raw(ffi::libinput_device_get_seat(self.as_raw_mut()))
@@ -202,7 +200,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Dev
     ffi_func!(pub tablet_pad_number_of_strips, ffi::libinput_device_tablet_pad_get_num_strips, i32);
     ffi_func!(pub tablet_pad_number_of_mode_groups, ffi::libinput_device_tablet_pad_get_num_mode_groups, i32);
 
-    pub fn tablet_pad_get_mode_group(&self, index: u32) -> Option<TabletPadModeGroup<C, D, G, S, T, M>> {
+    pub fn tablet_pad_get_mode_group(&self, index: u32) -> Option<TabletPadModeGroup> {
         let ptr = unsafe { ffi::libinput_device_tablet_pad_get_mode_group(self.as_raw_mut(), index) };
         if ptr.is_null() {
             None

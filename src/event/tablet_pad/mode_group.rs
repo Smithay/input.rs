@@ -2,11 +2,9 @@ use ::{ffi, FromRaw, AsRaw, Userdata};
 
 use libc;
 
-use std::{mem, ptr};
+ffi_ref_struct!(TabletPadModeGroup, ffi::libinput_tablet_pad_mode_group, ffi::libinput_tablet_pad_mode_group_ref, ffi::libinput_tablet_pad_mode_group_unref, ffi::libinput_tablet_pad_mode_group_get_user_data, ffi::libinput_tablet_pad_mode_group_set_user_data);
 
-ffi_ref_struct!(TabletPadModeGroup, ffi::libinput_tablet_pad_mode_group, M, ffi::libinput_tablet_pad_mode_group_ref, ffi::libinput_tablet_pad_mode_group_unref, ffi::libinput_tablet_pad_mode_group_get_user_data, ffi::libinput_tablet_pad_mode_group_set_user_data);
-
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> TabletPadModeGroup<C, D, G, S, T, M> {
+impl TabletPadModeGroup {
     pub fn button_is_toggle(&self, button: u32) -> bool {
         unsafe { ffi::libinput_tablet_pad_mode_group_button_is_toggle(self.as_raw_mut(), button) != 0 }
     }

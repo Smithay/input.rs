@@ -5,7 +5,7 @@ use super::EventTrait;
 mod tool;
 pub use self::tool::TabletTool;
 
-pub trait TabletToolEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>: AsRaw<ffi::libinput_event_tablet_tool>
+pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool>
 {
     ffi_func!(time, ffi::libinput_event_tablet_tool_get_time, u32);
     ffi_func!(time_usec, ffi::libinput_event_tablet_tool_get_time_usec, u64);
@@ -39,26 +39,26 @@ pub trait TabletToolEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T
         unsafe { ffi::libinput_event_tablet_tool_get_x_transformed(self.as_raw_mut(), height) }
     }
 
-    fn tool(&self) -> TabletTool<C, D, G, S, T, M> {
+    fn tool(&self) -> TabletTool {
         unsafe { TabletTool::from_raw(ffi::libinput_event_tablet_tool_get_tool(self.as_raw_mut())) }
     }
 
-    fn into_tablet_tool_event(self) -> TabletToolEvent<C, D, G, S, T, M> where Self: Sized {
+    fn into_tablet_tool_event(self) -> TabletToolEvent where Self: Sized {
         unsafe { TabletToolEvent::from_raw(self.as_raw_mut()) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static, R: AsRaw<ffi::libinput_event_tablet_tool>> TabletToolEventTrait<C, D, G, S, T, M> for R {}
+impl<T: AsRaw<ffi::libinput_event_tablet_tool>> TabletToolEventTrait for T {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum TabletToolEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
-    Axis(TabletToolAxisEvent<C, D, G, S, T, M>),
-    Proximity(TabletToolProximityEvent<C, D, G, S, T, M>),
-    Tip(TabletToolTipEvent<C, D, G, S, T, M>),
-    Button(TabletToolButtonEvent<C, D, G, S, T, M>),
+pub enum TabletToolEvent {
+    Axis(TabletToolAxisEvent),
+    Proximity(TabletToolProximityEvent),
+    Tip(TabletToolTipEvent),
+    Button(TabletToolButtonEvent),
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for TabletToolEvent<C, D, G, S, T, M> {
+impl EventTrait for TabletToolEvent {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             TabletToolEvent::Axis(ref event) => event.as_raw_event(),
@@ -69,7 +69,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Eve
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_tablet_tool> for TabletToolEvent<C, D, G, S, T, M> {
+impl FromRaw<ffi::libinput_event_tablet_tool> for TabletToolEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_tool) -> Self {
         let base = ffi::libinput_event_tablet_tool_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
@@ -86,7 +86,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Fro
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_tablet_tool> for TabletToolEvent<C, D, G, S, T, M> {
+impl AsRaw<ffi::libinput_event_tablet_tool> for TabletToolEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_tablet_tool {
         match *self {
             TabletToolEvent::Axis(ref event) => event.as_raw(),
@@ -107,7 +107,7 @@ pub enum ProximityState {
 
 ffi_event_struct!(TabletToolProximityEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> TabletToolProximityEvent<C, D, G, S, T, M> {
+impl TabletToolProximityEvent {
     pub fn proximity_state(&self) -> ProximityState {
         match unsafe { ffi::libinput_event_tablet_tool_get_proximity_state(self.as_raw_mut()) } {
             ffi::libinput_tablet_tool_proximity_state::LIBINPUT_TABLET_TOOL_PROXIMITY_STATE_OUT => ProximityState::Out,
@@ -124,7 +124,7 @@ pub enum TipState {
 
 ffi_event_struct!(TabletToolTipEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> TabletToolTipEvent<C, D, G, S, T, M> {
+impl TabletToolTipEvent {
     pub fn tip_state(&self) -> TipState {
         match unsafe { ffi::libinput_event_tablet_tool_get_tip_state(self.as_raw_mut()) } {
             ffi::libinput_tablet_tool_tip_state::LIBINPUT_TABLET_TOOL_TIP_UP => TipState::Up,
@@ -135,7 +135,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Tab
 
 ffi_event_struct!(TabletToolButtonEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> TabletToolButtonEvent<C, D, G, S, T, M> {
+impl TabletToolButtonEvent {
     ffi_func!(pub button, ffi::libinput_event_tablet_tool_get_button, u32);
     ffi_func!(pub seat_button_count, ffi::libinput_event_tablet_tool_get_seat_button_count, u32);
 

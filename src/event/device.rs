@@ -2,21 +2,21 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
-pub trait DeviceEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>: AsRaw<ffi::libinput_event_device_notify> {
-    fn into_device_event(self) -> DeviceEvent<C, D, G, S, T, M> where Self: Sized {
+pub trait DeviceEventTrait: AsRaw<ffi::libinput_event_device_notify> {
+    fn into_device_event(self) -> DeviceEvent where Self: Sized {
         unsafe { DeviceEvent::from_raw(self.as_raw_mut()) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static, R: AsRaw<ffi::libinput_event_device_notify>> DeviceEventTrait<C, D, G, S, T, M> for R {}
+impl<T: AsRaw<ffi::libinput_event_device_notify>> DeviceEventTrait for T {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum DeviceEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
-    Added(DeviceAddedEvent<C, D, G, S, T, M>),
-    Removed(DeviceRemovedEvent<C, D, G, S, T, M>),
+pub enum DeviceEvent {
+    Added(DeviceAddedEvent),
+    Removed(DeviceRemovedEvent),
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for DeviceEvent<C, D, G, S, T, M> {
+impl EventTrait for DeviceEvent {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             DeviceEvent::Added(ref event) => event.as_raw_event(),
@@ -25,7 +25,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Eve
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_device_notify> for DeviceEvent<C, D, G, S, T, M> {
+impl FromRaw<ffi::libinput_event_device_notify> for DeviceEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_device_notify) -> Self {
         let base = ffi::libinput_event_device_notify_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
@@ -38,7 +38,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Fro
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_device_notify> for DeviceEvent<C, D, G, S, T, M> {
+impl AsRaw<ffi::libinput_event_device_notify> for DeviceEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_device_notify {
         match *self {
             DeviceEvent::Added(ref event) => event.as_raw(),

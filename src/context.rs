@@ -18,10 +18,10 @@ pub type LibinputInterface = ffi::libinput_interface;
 ///
 /// Either way you then have to use `dispatch()` and `next()` (provided by the `Iterator` trait) to
 /// receive events.
-ffi_ref_struct!(Libinput, ffi::libinput, C, ffi::libinput_ref, ffi::libinput_unref, ffi::libinput_get_user_data, ffi::libinput_set_user_data);
+ffi_ref_struct!(Libinput, ffi::libinput, ffi::libinput_ref, ffi::libinput_unref, ffi::libinput_get_user_data, ffi::libinput_set_user_data);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Iterator for Libinput<C, D, G, S, T, M> {
-    type Item = Event<C, D, G, S, T, M>;
+impl Iterator for Libinput {
+    type Item = Event;
     fn next(&mut self) -> Option<Self::Item> {
         let ptr = unsafe { ffi::libinput_get_event(self.as_raw_mut()) };
         if ptr.is_null() {
@@ -32,7 +32,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Ite
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Libinput<C, D, G, S, T, M>
+impl Libinput
 {
     /// Create a new libinput context using a udev context.
     ///
@@ -45,18 +45,17 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Lib
     /// ## Unsafety
     ///
     /// This function is unsafe, because there is no way to verify that `udev_context` is indeed a valid udev context or even points to valid memory.
-    unsafe pub fn new_from_udev(interface: LibinputInterface, userdata: Option<C>, udev_context: *mut libc::c_void) -> Libinput<C, D, G, S, T, M> {
+    pub unsafe fn new_from_udev<T: 'static>(interface: LibinputInterface, userdata: Option<T>, udev_context: *mut libc::c_void) -> Libinput {
         let boxed_interface = Box::new(interface);
         let mut boxed_userdata = Box::new(userdata);
 
         let context = Libinput {
-            ffi: unsafe {
+            ffi: {
                 ffi::libinput_udev_create_context(&*boxed_interface as *const _, match (*boxed_userdata).as_mut() {
-                    Some(value) => value as *mut C as *mut libc::c_void,
+                    Some(value) => value as *mut T as *mut libc::c_void,
                     None => ptr::null_mut(),
                 }, udev_context as *mut _)
             },
-            _userdata_type: ::std::marker::PhantomData,
         };
 
         mem::forget(boxed_interface);
@@ -65,18 +64,17 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Lib
         context
     }
 
-    pub fn new_from_path(interface: LibinputInterface, userdata: Option<C>) -> Libinput<C, D, G, S, T, M> {
+    pub fn new_from_path<T: 'static>(interface: LibinputInterface, userdata: Option<T>) -> Libinput {
         let boxed_interface = Box::new(interface);
         let mut boxed_userdata = Box::new(userdata);
 
         let context = Libinput {
             ffi: unsafe {
                 ffi::libinput_path_create_context(&*boxed_interface as *const _, match (*boxed_userdata).as_mut() {
-                    Some(value) => value as *mut C as *mut libc::c_void,
+                    Some(value) => value as *mut T as *mut libc::c_void,
                     None => ptr::null_mut(),
                 })
             },
-            _userdata_type: ::std::marker::PhantomData,
         };
 
         mem::forget(boxed_interface);
@@ -85,7 +83,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Lib
         context
     }
 
-    pub fn path_add_device(&mut self, path: &str) -> Device<C, D, G, S, T, M>
+    pub fn path_add_device(&mut self, path: &str) -> Device
     {
         let path = CString::new(path).expect("Device Path contained a null-byte");
         unsafe {
@@ -93,7 +91,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Lib
         }
     }
 
-    pub fn path_remove_device(&mut self, device: Device<C, D, G, S, T, M>)
+    pub fn path_remove_device(&mut self, device: Device)
     {
         unsafe {
             ffi::libinput_path_remove_device(device.as_raw_mut())

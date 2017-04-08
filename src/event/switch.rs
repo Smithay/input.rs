@@ -2,23 +2,23 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
-pub trait SwitchEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>: AsRaw<ffi::libinput_event_switch> {
+pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> {
     ffi_func!(time, ffi::libinput_event_switch_get_time, u32);
     ffi_func!(time_usec, ffi::libinput_event_switch_get_time_usec, u64);
 
-    fn into_switch_event(self) -> SwitchEvent<C, D, G, S, T, M> where Self: Sized {
+    fn into_switch_event(self) -> SwitchEvent where Self: Sized {
         unsafe { SwitchEvent::from_raw(self.as_raw_mut()) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static, R: AsRaw<ffi::libinput_event_switch>> SwitchEventTrait<C, D, G, S, T, M> for R {}
+impl<T: AsRaw<ffi::libinput_event_switch>> SwitchEventTrait for T {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum SwitchEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
-    Toggle(SwitchToggleEvent<C, D, G, S, T, M>),
+pub enum SwitchEvent {
+    Toggle(SwitchToggleEvent),
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for SwitchEvent<C, D, G, S, T, M> {
+impl EventTrait for SwitchEvent {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             SwitchEvent::Toggle(ref event) => event.as_raw_event(),
@@ -26,7 +26,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Eve
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_switch> for SwitchEvent<C, D, G, S, T, M> {
+impl FromRaw<ffi::libinput_event_switch> for SwitchEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_switch) -> Self {
         let base = ffi::libinput_event_switch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
@@ -37,7 +37,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Fro
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_switch> for SwitchEvent<C, D, G, S, T, M> {
+impl AsRaw<ffi::libinput_event_switch> for SwitchEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_switch {
         match *self {
             SwitchEvent::Toggle(ref event) => event.as_raw(),
@@ -58,7 +58,7 @@ pub enum SwitchState {
 
 ffi_event_struct!(SwitchToggleEvent, ffi::libinput_event_switch, ffi::libinput_event_switch_get_base_event);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> SwitchToggleEvent<C, D, G, S, T, M> {
+impl SwitchToggleEvent {
     pub fn switch(&self) -> Switch {
         match unsafe { ffi::libinput_event_switch_get_switch(self.as_raw_mut()) } {
             ffi::libinput_switch::LIBINPUT_SWITCH_LID => Switch::Lid,

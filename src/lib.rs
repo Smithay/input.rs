@@ -10,6 +10,24 @@
 //! - Refcounting does not need to be done manually. Just call `clone` when you need an additional reference.
 //! - Logging cannot be customized the same way as in libinput. Instead the [`log` crate](https://github.com/rust-lang-nursery/log) is used for maximum compatibility with the rust ecosystem.
 //!
+//! ## Userdata handling
+//!
+//! Multiple types in the libinput library allow to attach a pointer of an arbitrary type, so called `userdata`.
+//! Using this data is unsafe as there is no way to find out what type is stored in the libinput struct.
+//! Additionally multiple references to the same libinput object may exist and userdata may be shared mutably.
+//!
+//! This is why using and setting userdata is an unsafe operation (except when creating an object).
+//!
+//! If you heavily rely on userdata, you should always stored them wrapped in a `Mutex` and use the same
+//! type for every userdata access to further simplify usage.
+//!
+//! You need to be especially cautious when initializing libinput types from raw pointers, you obtained
+//! from other libraries which may set their own userdata. If accessing their userdata make sure no shared
+//! mutable access may happen and don't store something else instead, if the library does not explicitly
+//! allow this.
+//!
+//! Generally usage of this api is error-prone and discouraged if not needed.
+//!
 //! ## Getting started
 //!
 //! To get started check out the [`Libinput` struct](./struct.Libinput.html).
@@ -17,6 +35,8 @@
 
 extern crate input_sys;
 extern crate libc;
+
+use std::{mem, ptr};
 
 /// Unsafe c-api.
 pub mod ffi {
@@ -43,7 +63,7 @@ pub trait FromRaw<T> {
     /// to allow receiving the set userdata. When dealing with raw pointers initialized by other
     /// libraries this must be done extra carefully to select a correct representation.
     ///
-    /// If you don't care and don't use userdata using `()` or any incompatible type is safe.
+    /// If unsure using `()` is always a safe option..
     ///
     /// ## Unsafety
     ///
@@ -54,77 +74,116 @@ pub trait FromRaw<T> {
 }
 
 /// Trait to deal with userdata attached to this struct.
-pub trait Userdata<T> {
-    /// Receive a raw pointer to the attached userdata.
+pub trait Userdata {
+    /// Receive a reference to the attached userdata, if one exists.
     ///
     /// ## Unsafety
     ///
     /// Receiving userdata is unsafe as multiple references to the same underlying libinput struct
-    /// may exist. As such any reference may become invalid if changed using `set_userdata` or be
-    /// shared mutably.
+    /// may exist. As such any reference may become invalid if changed using `set_userdata`.
     ///
-    /// Additionally the pointer might be unset and point to `NULL`.
+    unsafe fn userdata<T: 'static>(&self) -> Option<&T> {
+        self.userdata_raw().as_ref()
+    }
+
+    /// Receive a mutable reference to the attached userdata, if one exists.
     ///
-    unsafe fn userdata(&self) -> *mut T;
-    /// Set userdata and receive the current userdata
+    /// ## Unsafety
     ///
-    /// Sets new userdata or nothing in place of any existing on and returns the currently set
+    /// Receiving userdata is unsafe as multiple references to the same underlying libinput struct
+    /// may exist. As such any reference may become invalid if changed using `set_userdata`.
+    ///
+    /// Additionally multiple mutable references may be created through the existance of multiple
+    /// structs using the same libinput reference. If you have control over the userdata make sure
+    /// to store `Mutex` to be on the safe side.
+    ///
+    unsafe fn userdata_mut<T: 'static>(&mut self) -> Option<&mut T> {
+        self.userdata_raw().as_mut()
+    }
+
+    /// Set userdata and receive the currently set userdata
+    ///
+    /// Sets new userdata or nothing in place of any existing one and returns the currently set
     /// userdata if one exists.
     ///
     /// ## Unsafety
     ///
-    /// Multiple references to the same underlying libinput struct may exist. This means using this
-    /// function might result in shared mutable access, which is unsafe.
+    /// Multiple references to the same underlying libinput struct may exist. As such this function
+    /// allows for shared mutable access, which is unsafe. Also this means this function
+    /// might invalidate references to the currently set userdata, once dropped.
     ///
-    /// Additionally through `self.userdata()` more references to the returned userdata might exist.
-    unsafe fn set_userdata(&mut self, new: Option<T>) -> Option<T>;
+    /// Use a `Mutex` when storing new userdata to mitiage some of these problems.
+    ///
+    /// ## Note
+    ///
+    /// Stored userdata is dropped correctly, if the last reference is hold by rust and goes out of scope normally.
+    unsafe fn set_userdata<T: 'static, U: 'static>(&mut self, new: Option<T>) -> Option<U> {
+        let old = {
+            let ptr = self.userdata_raw();
+            if !ptr.is_null() {
+                Some(Box::from_raw(ptr as *mut U))
+            } else {
+                None
+            }
+        };
+        let mut boxed = Box::new(new);
+        self.set_userdata_raw(match (*boxed).as_mut() {
+            Some(value) => value as *mut T,
+            None => ptr::null_mut(),
+        });
+        mem::forget(boxed);
+        old.map(|x| *x)
+    }
+
+    #[doc(hidden)]
+    unsafe fn userdata_raw<T: 'static>(&self) -> *mut T;
+    #[doc(hidden)]
+    unsafe fn set_userdata_raw<T: 'static>(&self, ptr: *mut T);
 }
 
 macro_rules! ffi_struct {
     ($struct_name:ident, $ffi_name:path) => (
         #[derive(Eq)]
-        pub struct $struct_name<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>
+        pub struct $struct_name
         {
             ffi: *mut $ffi_name,
-            _userdata_type: ::std::marker::PhantomData<(C, D, G, S, T, M)>,
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> ::std::fmt::Debug for $struct_name<C, D, G, S, T, M> {
+        impl ::std::fmt::Debug for $struct_name {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
                 write!(f, "$struct_name @{:p}", self.as_raw())
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<$ffi_name> for $struct_name<C, D, G, S, T, M>
+        impl FromRaw<$ffi_name> for $struct_name
         {
             unsafe fn from_raw(ffi: *mut $ffi_name) -> Self {
                 $struct_name {
                     ffi: ffi,
-                    _userdata_type: ::std::marker::PhantomData,
                 }
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<$ffi_name> for $struct_name<C, D, G, S, T, M>
+        impl AsRaw<$ffi_name> for $struct_name
         {
             fn as_raw(&self) -> *const $ffi_name {
                 self.ffi as *const _
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Clone for $struct_name<C, D, G, S, T, M> {
+        impl Clone for $struct_name {
             fn clone(&self) -> Self {
                 unsafe { $struct_name::from_raw(self.as_raw_mut()) }
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> PartialEq for $struct_name<C, D, G, S, T, M> {
+        impl PartialEq for $struct_name {
             fn eq(&self, other: &Self) -> bool {
                 self.as_raw() == other.as_raw()
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> ::std::hash::Hash for $struct_name<C, D, G, S, T, M> {
+        impl ::std::hash::Hash for $struct_name {
             fn hash<H: ::std::hash::Hasher>(&self, state: &mut H) {
                 self.as_raw().hash(state);
             }
@@ -133,70 +192,51 @@ macro_rules! ffi_struct {
 }
 
 macro_rules! ffi_ref_struct {
-    ($struct_name:ident, $ffi_name:path, $userdata:tt, $ref_fn:path, $unref_fn:path, $get_userdata_fn:path, $set_userdata_fn:path) => (
+    ($struct_name:ident, $ffi_name:path, $ref_fn:path, $unref_fn:path, $get_userdata_fn:path, $set_userdata_fn:path) => (
         #[derive(Eq)]
-        pub struct $struct_name<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>
+        pub struct $struct_name
         {
             ffi: *mut $ffi_name,
-            _userdata_type: ::std::marker::PhantomData<(C, D, G, S, T, M)>,
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> ::std::fmt::Debug for $struct_name<C, D, G, S, T, M> {
+        impl ::std::fmt::Debug for $struct_name {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
                 write!(f, "$struct_name @{:p}", self.as_raw())
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<$ffi_name> for $struct_name<C, D, G, S, T, M>
+        impl FromRaw<$ffi_name> for $struct_name
         {
             unsafe fn from_raw(ffi: *mut $ffi_name) -> Self {
                 $struct_name {
                     ffi: $ref_fn(ffi),
-                    _userdata_type: ::std::marker::PhantomData,
                 }
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<$ffi_name> for $struct_name<C, D, G, S, T, M>
+        impl AsRaw<$ffi_name> for $struct_name
         {
             fn as_raw(&self) -> *const $ffi_name {
                 self.ffi as *const _
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Userdata<$userdata> for $struct_name<C, D, G, S, T, M> {
-            unsafe fn userdata(&self) -> *mut $userdata {
-                $get_userdata_fn(self.as_raw_mut()) as *mut $userdata
+        impl Userdata for $struct_name {
+            unsafe fn userdata_raw<T: 'static>(&self) -> *mut T {
+                $get_userdata_fn(self.as_raw_mut()) as *mut T
             }
-
-            unsafe fn set_userdata(&mut self, userdata: Option<$userdata>) -> Option<$userdata> {
-                let old = unsafe {
-                    let ptr = $get_userdata_fn(self.as_raw_mut());
-                    if !ptr.is_null() {
-                        Some(Box::from_raw(ptr as *mut $userdata))
-                    } else {
-                        None
-                    }
-                };
-                let mut boxed = Box::new(userdata);
-                unsafe {
-                    $set_userdata_fn(self.as_raw_mut(), match (*boxed).as_mut() {
-                        Some(value) => value as *mut $userdata as *mut libc::c_void,
-                        None => ptr::null_mut(),
-                    });
-                }
-                mem::forget(boxed);
-                old.map(|x| *x)
+            unsafe fn set_userdata_raw<T: 'static>(&self, ptr: *mut T) {
+                $set_userdata_fn(self.as_raw_mut(), ptr as *mut libc::c_void);
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Clone for $struct_name<C, D, G, S, T, M> {
+        impl Clone for $struct_name {
             fn clone(&self) -> Self {
                 unsafe { $struct_name::from_raw(self.as_raw_mut()) }
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Drop for $struct_name<C, D, G, S, T, M>
+        impl Drop for $struct_name
         {
             fn drop(&mut self) {
                 unsafe {
@@ -208,13 +248,13 @@ macro_rules! ffi_ref_struct {
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> PartialEq for $struct_name<C, D, G, S, T, M> {
+        impl PartialEq for $struct_name {
             fn eq(&self, other: &Self) -> bool {
                 self.as_raw() == other.as_raw()
             }
         }
 
-        impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> ::std::hash::Hash for $struct_name<C, D, G, S, T, M> {
+        impl ::std::hash::Hash for $struct_name {
             fn hash<H: ::std::hash::Hasher>(&self, state: &mut H) {
                 self.as_raw().hash(state);
             }

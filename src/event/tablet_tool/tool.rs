@@ -1,5 +1,3 @@
-use std::{mem, ptr};
-
 use libc;
 
 use ::{ffi, FromRaw, AsRaw, Userdata};
@@ -15,9 +13,9 @@ pub enum TabletToolType {
     Lens,
 }
 
-ffi_ref_struct!(TabletTool, ffi::libinput_tablet_tool, T, ffi::libinput_tablet_tool_ref, ffi::libinput_tablet_tool_unref, ffi::libinput_tablet_tool_get_user_data, ffi::libinput_tablet_tool_set_user_data);
+ffi_ref_struct!(TabletTool, ffi::libinput_tablet_tool, ffi::libinput_tablet_tool_ref, ffi::libinput_tablet_tool_unref, ffi::libinput_tablet_tool_get_user_data, ffi::libinput_tablet_tool_set_user_data);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> TabletTool<C, D, G, S, T, M> {
+impl TabletTool {
     ffi_func!(pub serial, ffi::libinput_tablet_tool_get_serial, u64);
     ffi_func!(pub tool_id, ffi::libinput_tablet_tool_get_tool_id, u64);
 

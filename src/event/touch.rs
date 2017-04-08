@@ -2,16 +2,16 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
-pub trait TouchEventTrait<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static>: AsRaw<ffi::libinput_event_touch> {
+pub trait TouchEventTrait: AsRaw<ffi::libinput_event_touch> {
     ffi_func!(time, ffi::libinput_event_touch_get_time, u32);
     ffi_func!(time_usec, ffi::libinput_event_touch_get_time_usec, u64);
 
-    fn into_touch_event(self) -> TouchEvent<C, D, G, S, T, M> where Self: Sized {
+    fn into_touch_event(self) -> TouchEvent where Self: Sized {
         unsafe { TouchEvent::from_raw(self.as_raw_mut()) }
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static, R: AsRaw<ffi::libinput_event_touch>> TouchEventTrait<C, D, G, S, T, M> for R {}
+impl<T: AsRaw<ffi::libinput_event_touch>> TouchEventTrait for T {}
 
 pub trait TouchEventSlot: AsRaw<ffi::libinput_event_touch> {
     ffi_func!(seat_slot, ffi::libinput_event_touch_get_seat_slot, u32);
@@ -39,15 +39,15 @@ pub trait TouchEventPosition: AsRaw<ffi::libinput_event_touch> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum TouchEvent<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> {
-    Down(TouchDownEvent<C, D, G, S, T, M>),
-    Up(TouchUpEvent<C, D, G, S, T, M>),
-    Motion(TouchMotionEvent<C, D, G, S, T, M>),
-    Cancel(TouchCancelEvent<C, D, G, S, T, M>),
-    Frame(TouchFrameEvent<C, D, G, S, T, M>),
+pub enum TouchEvent {
+    Down(TouchDownEvent),
+    Up(TouchUpEvent),
+    Motion(TouchMotionEvent),
+    Cancel(TouchCancelEvent),
+    Frame(TouchFrameEvent),
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> EventTrait<C, D, G, S, T, M> for TouchEvent<C, D, G, S, T, M> {
+impl EventTrait for TouchEvent {
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             TouchEvent::Down(ref event) => event.as_raw_event(),
@@ -59,7 +59,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Eve
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> FromRaw<ffi::libinput_event_touch> for TouchEvent<C, D, G, S, T, M> {
+impl FromRaw<ffi::libinput_event_touch> for TouchEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_touch) -> Self {
         let base = ffi::libinput_event_touch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
@@ -78,7 +78,7 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Fro
     }
 }
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsRaw<ffi::libinput_event_touch> for TouchEvent<C, D, G, S, T, M> {
+impl AsRaw<ffi::libinput_event_touch> for TouchEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_touch {
         match *self {
             TouchEvent::Down(ref event) => event.as_raw(),
@@ -92,22 +92,22 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> AsR
 
 ffi_event_struct!(TouchDownEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> TouchEventSlot for TouchDownEvent<C, D, G, S, T, M> {}
+impl TouchEventSlot for TouchDownEvent {}
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> TouchEventPosition for TouchDownEvent<C, D, G, S, T, M> {}
+impl TouchEventPosition for TouchDownEvent {}
 
 ffi_event_struct!(TouchUpEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> TouchEventSlot for TouchUpEvent<C, D, G, S, T, M> {}
+impl TouchEventSlot for TouchUpEvent {}
 
 ffi_event_struct!(TouchMotionEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> TouchEventSlot for TouchMotionEvent<C, D, G, S, T, M> {}
+impl TouchEventSlot for TouchMotionEvent {}
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> TouchEventPosition for TouchMotionEvent<C, D, G, S, T, M> {}
+impl TouchEventPosition for TouchMotionEvent {}
 
 ffi_event_struct!(TouchCancelEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
 
-impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> TouchEventSlot for TouchCancelEvent<C, D, G, S, T, M> {}
+impl TouchEventSlot for TouchCancelEvent {}
 
 ffi_event_struct!(TouchFrameEvent, ffi::libinput_event_touch, ffi::libinput_event_touch_get_base_event);
