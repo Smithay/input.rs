@@ -10,6 +10,14 @@ use ::{ffi, FromRaw, AsRaw, Userdata, Device, Event};
 
 pub type LibinputInterface = ffi::libinput_interface;
 
+/// Libinput context
+///
+/// Contexts can be used to track input devices and receive events from them.
+/// You can use either `new_from_udev` to create a context tracking all devices on a specific seat,
+/// or use `new_from_path` to track input devices manually.
+///
+/// Either way you then have to use `dispatch()` and `next()` (provided by the `Iterator` trait) to
+/// receive events.
 ffi_ref_struct!(Libinput, ffi::libinput, C, ffi::libinput_ref, ffi::libinput_unref, ffi::libinput_get_user_data, ffi::libinput_set_user_data);
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Iterator for Libinput<C, D, G, S, T, M> {
@@ -26,7 +34,18 @@ impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Ite
 
 impl<C: 'static, D: 'static, G: 'static, S: 'static, T: 'static, M: 'static> Libinput<C, D, G, S, T, M>
 {
-    pub fn new_from_udev(interface: LibinputInterface, userdata: Option<C>, udev_context: *mut libc::c_void) -> Libinput<C, D, G, S, T, M> {
+    /// Create a new libinput context using a udev context.
+    ///
+    /// ## Arguments
+    ///
+    /// - interface - A `LibinputInterface` providing functions to open and close devices.
+    /// - userdata - Optionally some userdata attached to the newly created context (see [`Userdata`](./trait.Userdata.html))
+    /// - udev_context - Raw pointer to a valid udev context.
+    ///
+    /// ## Unsafety
+    ///
+    /// This function is unsafe, because there is no way to verify that `udev_context` is indeed a valid udev context or even points to valid memory.
+    unsafe pub fn new_from_udev(interface: LibinputInterface, userdata: Option<C>, udev_context: *mut libc::c_void) -> Libinput<C, D, G, S, T, M> {
         let boxed_interface = Box::new(interface);
         let mut boxed_userdata = Box::new(userdata);
 
