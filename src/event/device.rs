@@ -2,7 +2,9 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
+/// Common functions all Device-Events implement.
 pub trait DeviceEventTrait: AsRaw<ffi::libinput_event_device_notify> {
+    /// Convert into a general `DeviceEvent` again
     fn into_device_event(self) -> DeviceEvent where Self: Sized {
         unsafe { DeviceEvent::from_raw(self.as_raw_mut()) }
     }
@@ -10,9 +12,12 @@ pub trait DeviceEventTrait: AsRaw<ffi::libinput_event_device_notify> {
 
 impl<T: AsRaw<ffi::libinput_event_device_notify>> DeviceEventTrait for T {}
 
+/// A device related `Event`
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum DeviceEvent {
+    /// Signals that a device has been added to the context.
     Added(DeviceAddedEvent),
+    /// Signals that a device has been removed.
     Removed(DeviceRemovedEvent),
 }
 
@@ -47,5 +52,20 @@ impl AsRaw<ffi::libinput_event_device_notify> for DeviceEvent {
     }
 }
 
-ffi_event_struct!(struct DeviceAddedEvent, ffi::libinput_event_device_notify, ffi::libinput_event_device_notify_get_base_event);
-ffi_event_struct!(struct DeviceRemovedEvent, ffi::libinput_event_device_notify, ffi::libinput_event_device_notify_get_base_event);
+ffi_event_struct!(
+/// Signals that a device has been added to the context.
+///
+/// The device will not be read until the next time the user calls
+/// `Libinput::dispatch` and data is available.
+///
+/// This allows setting up initial device configuration before any events are created.
+struct DeviceAddedEvent, ffi::libinput_event_device_notify, ffi::libinput_event_device_notify_get_base_event);
+ffi_event_struct!(
+/// Signals that a device has been added to the context.
+///
+/// The device will not be read until the next time the user calls
+/// `Libinput::dispatch` and data is available.
+///
+/// This allows setting up initial device configuration before any events are
+/// created.
+struct DeviceRemovedEvent, ffi::libinput_event_device_notify, ffi::libinput_event_device_notify_get_base_event);

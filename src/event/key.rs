@@ -2,17 +2,28 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
+/// State of a Key
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum KeyState {
+    /// Key is pressed
     Pressed,
+    /// Key is released
     Released,
 }
 
+/// Common functions for all Keyboard-Events implement.
 pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> {
-    ffi_func!(fn time, ffi::libinput_event_keyboard_get_time, u32);
-    ffi_func!(fn time_usec, ffi::libinput_event_keyboard_get_time_usec, u64);
-    ffi_func!(fn key, ffi::libinput_event_keyboard_get_key, u32);
+    ffi_func!(
+    /// The event time for this event
+    fn time, ffi::libinput_event_keyboard_get_time, u32);
+    ffi_func!(
+    /// The event time for this event in microseconds
+    fn time_usec, ffi::libinput_event_keyboard_get_time_usec, u64);
+    ffi_func!(
+    /// The keycode that triggered this key event
+    fn key, ffi::libinput_event_keyboard_get_key, u32);
 
+    /// The state change of the key
     fn key_state(&self) -> KeyState {
         match unsafe { ffi::libinput_event_keyboard_get_key_state(self.as_raw() as *mut _) } {
             ffi::libinput_key_state::LIBINPUT_KEY_STATE_PRESSED => KeyState::Pressed,
@@ -20,6 +31,7 @@ pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> {
         }
     }
 
+    /// Convert into a general `KeyboardEvent` again
     fn into_keyboard_event(self) -> KeyboardEvent where Self: Sized {
         unsafe { KeyboardEvent::from_raw(self.as_raw_mut()) }
     }
@@ -27,8 +39,10 @@ pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> {
 
 impl<T: AsRaw<ffi::libinput_event_keyboard>> KeyboardEventTrait for T {}
 
+/// A keyboard related `Event`
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum KeyboardEvent {
+    /// An event related to pressing a key
     Key(KeyboardKeyEvent),
 }
 
@@ -59,8 +73,13 @@ impl AsRaw<ffi::libinput_event_keyboard> for KeyboardEvent {
     }
 }
 
-ffi_event_struct!(struct KeyboardKeyEvent, ffi::libinput_event_keyboard, ffi::libinput_event_keyboard_get_base_event);
+ffi_event_struct!(
+/// An event related to pressing a key
+struct KeyboardKeyEvent, ffi::libinput_event_keyboard, ffi::libinput_event_keyboard_get_base_event);
 
 impl KeyboardKeyEvent {
-    ffi_func!(pub fn seat_key_count, ffi::libinput_event_keyboard_get_seat_key_count, u32);
+    ffi_func!(
+    /// For the key of a `KeyboardKeyEvent` event, return the total number of keys
+    /// pressed on all devices on the associated seat after the event was triggered.
+    pub fn seat_key_count, ffi::libinput_event_keyboard_get_seat_key_count, u32);
 }

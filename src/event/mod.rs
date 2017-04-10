@@ -26,7 +26,7 @@ pub trait EventTrait {
     #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event;
 
-    /// Convert into a full blown `Event` again
+    /// Convert into a general `Event` again
     fn into_event(self) -> Event where Self: Sized {
         unsafe { Event::from_raw(self.as_raw_event()) }
     }
