@@ -2,7 +2,7 @@ use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
 
-/// Common functions for all Gesture-Events implement.
+/// Common functions all Gesture-Events implement.
 pub trait GestureEventTrait: AsRaw<ffi::libinput_event_gesture> {
     ffi_func!(
     /// The event time for this event

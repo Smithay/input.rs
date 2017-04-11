@@ -437,7 +437,7 @@ impl Device {
     /// call to `dispatch`, this function returns the third mode but
     /// the events in the event queue will return the modes 1, 2 and
     /// 3, respectively.
-    pub fn tablet_pad_get_mode_group(&self, index: u32) -> Option<TabletPadModeGroup> {
+    pub fn tablet_pad_mode_group(&self, index: u32) -> Option<TabletPadModeGroup> {
         let ptr = unsafe { ffi::libinput_device_tablet_pad_get_mode_group(self.as_raw_mut(), index) };
         if ptr.is_null() {
             None
