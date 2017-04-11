@@ -1,6 +1,9 @@
+//! Tablet pad event types
+
 use ::ffi;
 use ::{FromRaw, AsRaw};
-use super::{EventTrait, ButtonState};
+use super::EventTrait;
+pub use super::pointer::ButtonState;
 
 mod mode_group;
 pub use self::mode_group::*;
@@ -67,6 +70,7 @@ pub enum TabletPadEvent {
 }
 
 impl EventTrait for TabletPadEvent {
+    #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             TabletPadEvent::Button(ref event) => event.as_raw_event(),

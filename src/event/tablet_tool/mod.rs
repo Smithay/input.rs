@@ -1,5 +1,8 @@
+//! Tablet tool event types
+
 use ::ffi;
-use ::{FromRaw, AsRaw, ButtonState};
+use ::{FromRaw, AsRaw};
+pub use ::event::pointer::ButtonState;
 use super::EventTrait;
 
 mod tool;
@@ -34,7 +37,7 @@ pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool>
     ///
     /// This value is in screen coordinate space, the delta is to be interpreted like
     /// the return value of `PointerMotionEvent::dx`. See
-    /// [Relative motion for tablet tools] (https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-relative-motion)
+    /// [Relative motion for tablet tools](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-relative-motion)
     /// for more details.
     fn dx, ffi::libinput_event_tablet_tool_get_dx, f64);
     ffi_func!(
@@ -45,7 +48,7 @@ pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool>
     ///
     /// This value is in screen coordinate space, the delta is to be interpreted like
     /// the return value of `PointerMotionEvent::dy`. See
-    /// [Relative motion for tablet tools] (https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-relative-motion)
+    /// [Relative motion for tablet tools](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-relative-motion)
     /// for more details.
     fn dy, ffi::libinput_event_tablet_tool_get_dy, f64);
     ffi_func!(
@@ -282,6 +285,7 @@ pub enum TabletToolEvent {
 }
 
 impl EventTrait for TabletToolEvent {
+    #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             TabletToolEvent::Axis(ref event) => event.as_raw_event(),

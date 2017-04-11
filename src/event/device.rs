@@ -1,3 +1,5 @@
+//! Device event types
+
 use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
@@ -22,6 +24,7 @@ pub enum DeviceEvent {
 }
 
 impl EventTrait for DeviceEvent {
+    #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             DeviceEvent::Added(ref event) => event.as_raw_event(),

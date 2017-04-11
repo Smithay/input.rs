@@ -1,3 +1,5 @@
+//! Keyboard event types
+
 use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
@@ -47,6 +49,7 @@ pub enum KeyboardEvent {
 }
 
 impl EventTrait for KeyboardEvent {
+    #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             KeyboardEvent::Key(ref event) => event.as_raw_event(),

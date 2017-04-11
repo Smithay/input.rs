@@ -1,3 +1,7 @@
+//!
+//! Libinput Events
+//!
+
 use ::{ffi, Libinput, Device, FromRaw, AsRaw};
 
 /// A libinput `Event`
@@ -91,6 +95,7 @@ macro_rules! ffi_event_struct {
         ffi_struct!($(#[$attr])* struct $struct_name, $ffi_name);
 
         impl EventTrait for $struct_name {
+            #[doc(hidden)]
             fn as_raw_event(&self) -> *mut ffi::libinput_event {
                 unsafe { $get_base_fn(self.as_raw_mut()) }
             }
@@ -104,20 +109,20 @@ macro_rules! ffi_event_struct {
     )
 }
 
-mod device;
-mod gesture;
-mod key;
-mod pointer;
-mod switch;
-mod tablet_tool;
-mod tablet_pad;
-mod touch;
+pub mod device;
+pub mod gesture;
+pub mod keyboard;
+pub mod pointer;
+pub mod switch;
+pub mod tablet_tool;
+pub mod tablet_pad;
+pub mod touch;
 
-pub use self::device::*;
-pub use self::gesture::*;
-pub use self::key::*;
-pub use self::pointer::*;
-pub use self::switch::*;
-pub use self::tablet_tool::*;
-pub use self::tablet_pad::*;
-pub use self::touch::*;
+pub use self::device::DeviceEvent;
+pub use self::gesture::GestureEvent;
+pub use self::keyboard::KeyboardEvent;
+pub use self::pointer::PointerEvent;
+pub use self::switch::SwitchEvent;
+pub use self::tablet_tool::TabletToolEvent;
+pub use self::tablet_pad::TabletPadEvent;
+pub use self::touch::TouchEvent;

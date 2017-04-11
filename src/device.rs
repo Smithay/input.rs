@@ -2,7 +2,8 @@ use std::ffi::{CStr, CString};
 
 use libc;
 
-use ::{ffi, FromRaw, AsRaw, Userdata, Libinput, Seat, TabletPadModeGroup};
+use ::{ffi, FromRaw, AsRaw, Userdata, Libinput, Seat};
+use ::event::tablet_pad::TabletPadModeGroup;
 
 /// Capabilities on a device.
 ///

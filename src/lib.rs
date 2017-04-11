@@ -295,10 +295,10 @@ macro_rules! ffi_func {
 
 mod context;
 mod device;
-mod event;
+pub mod event;
 mod seat;
 
 pub use context::*;
 pub use device::*;
-pub use event::*;
 pub use seat::*;
+pub use event::Event;

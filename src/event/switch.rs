@@ -1,3 +1,5 @@
+//! Switch event types
+
 use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
@@ -27,6 +29,7 @@ pub enum SwitchEvent {
 }
 
 impl EventTrait for SwitchEvent {
+    #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             SwitchEvent::Toggle(ref event) => event.as_raw_event(),

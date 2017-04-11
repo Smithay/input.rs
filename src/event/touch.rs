@@ -1,3 +1,5 @@
+//! Touch event types
+
 use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
@@ -101,6 +103,7 @@ pub enum TouchEvent {
 }
 
 impl EventTrait for TouchEvent {
+    #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             TouchEvent::Down(ref event) => event.as_raw_event(),

@@ -1,3 +1,5 @@
+//! Gesture event types
+
 use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
@@ -37,6 +39,7 @@ pub enum GestureEvent {
 }
 
 impl EventTrait for GestureEvent {
+    #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             GestureEvent::Swipe(ref event) => event.as_raw_event(),
@@ -89,7 +92,7 @@ pub trait GestureEventCoordinates: AsRaw<ffi::libinput_event_gesture> {
     /// 'raw' events as read from the device.
     ///
     /// Any rotation applied to the device also applies to gesture motion (see
-    /// `rotation_set_angle`.
+    /// `rotation_set_angle`).
     fn dx_unaccelerated, ffi::libinput_event_gesture_get_dx_unaccelerated, f64);
     ffi_func!(
     /// Return the delta between the last event and the current event.
@@ -111,7 +114,7 @@ pub trait GestureEventCoordinates: AsRaw<ffi::libinput_event_gesture> {
     /// 'raw' events as read from the device.
     ///
     /// Any rotation applied to the device also applies to gesture motion (see
-    /// `rotation_set_angle`.
+    /// `rotation_set_angle`).
     fn dy_unaccelerated, ffi::libinput_event_gesture_get_dy_unaccelerated, f64);
 }
 
@@ -144,6 +147,7 @@ pub trait GestureSwipeEventTrait: AsRaw<ffi::libinput_event_gesture> {
 impl GestureSwipeEventTrait for GestureSwipeEvent {}
 
 impl EventTrait for GestureSwipeEvent {
+    #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             GestureSwipeEvent::Begin(ref event) => event.as_raw_event(),
@@ -190,6 +194,7 @@ pub enum GesturePinchEvent {
 }
 
 impl EventTrait for GesturePinchEvent {
+    #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             GesturePinchEvent::Begin(ref event) => event.as_raw_event(),

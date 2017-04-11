@@ -1,3 +1,5 @@
+//! Pointer event types
+
 use ::ffi;
 use ::{FromRaw, AsRaw};
 use super::EventTrait;
@@ -33,6 +35,7 @@ pub enum PointerEvent {
 }
 
 impl EventTrait for PointerEvent {
+    #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
         match *self {
             PointerEvent::Motion(ref event) => event.as_raw_event(),
