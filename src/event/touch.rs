@@ -1,8 +1,8 @@
 //! Touch event types
 
-use ::ffi;
-use ::{FromRaw, AsRaw};
 use super::EventTrait;
+use {AsRaw, FromRaw};
+use ffi;
 
 /// Common functions all Touch-Events implement.
 pub trait TouchEventTrait: AsRaw<ffi::libinput_event_touch> {
@@ -14,7 +14,9 @@ pub trait TouchEventTrait: AsRaw<ffi::libinput_event_touch> {
     fn time_usec, ffi::libinput_event_touch_get_time_usec, u64);
 
     /// Convert into a general `TouchEvent` again
-    fn into_touch_event(self) -> TouchEvent where Self: Sized {
+    fn into_touch_event(self) -> TouchEvent
+        where Self: Sized
+    {
         unsafe { TouchEvent::from_raw(self.as_raw_mut()) }
     }
 }
@@ -119,16 +121,21 @@ impl FromRaw<ffi::libinput_event_touch> for TouchEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_touch) -> Self {
         let base = ffi::libinput_event_touch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_DOWN =>
-                TouchEvent::Down(TouchDownEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_UP =>
-                TouchEvent::Up(TouchUpEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_MOTION =>
-                TouchEvent::Motion(TouchMotionEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_CANCEL =>
-                TouchEvent::Cancel(TouchCancelEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_FRAME =>
-                TouchEvent::Frame(TouchFrameEvent::from_raw(event)),
+            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_DOWN => {
+                TouchEvent::Down(TouchDownEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_UP => {
+                TouchEvent::Up(TouchUpEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_MOTION => {
+                TouchEvent::Motion(TouchMotionEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_CANCEL => {
+                TouchEvent::Cancel(TouchCancelEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_FRAME => {
+                TouchEvent::Frame(TouchFrameEvent::from_raw(event))
+            }
             _ => unreachable!(),
         }
     }

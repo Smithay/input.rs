@@ -1,6 +1,7 @@
-use libc;
 
-use ::{ffi, FromRaw, AsRaw, Userdata};
+
+use {AsRaw, FromRaw, Userdata, ffi};
+use libc;
 
 /// Available tool types for a device with the `DeviceCapability::TabletTool` capability.
 ///

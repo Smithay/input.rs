@@ -1,4 +1,3 @@
-//!
 //! # Libinput bindings for rust
 //!
 //! These bindings closely follow libinput's concepts and it's original API.
@@ -132,9 +131,9 @@ pub trait Userdata {
         };
         let mut boxed = Box::new(new);
         self.set_userdata_raw(match (*boxed).as_mut() {
-            Some(value) => value as *mut T,
-            None => ptr::null_mut(),
-        });
+                                  Some(value) => value as *mut T,
+                                  None => ptr::null_mut(),
+                              });
         mem::forget(boxed);
         old.map(|x| *x)
     }
@@ -302,5 +301,5 @@ mod seat;
 
 pub use context::*;
 pub use device::*;
-pub use seat::*;
 pub use event::Event;
+pub use seat::*;

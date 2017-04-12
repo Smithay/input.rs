@@ -1,16 +1,15 @@
 //! Tablet tool event types
 
-use ::ffi;
-use ::{FromRaw, AsRaw};
-pub use ::event::pointer::ButtonState;
 use super::EventTrait;
+use {AsRaw, FromRaw};
+pub use event::pointer::ButtonState;
+use ffi;
 
 mod tool;
 pub use self::tool::*;
 
 /// Common functions all TabletTool-Events implement.
-pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool>
-{
+pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool> {
     ffi_func!(
     /// The event time for this event
     fn time, ffi::libinput_event_tablet_tool_get_time, u32);
@@ -212,7 +211,9 @@ pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool>
     }
 
     /// Convert into a general `TabletToolEvent` again
-    fn into_tablet_tool_event(self) -> TabletToolEvent where Self: Sized {
+    fn into_tablet_tool_event(self) -> TabletToolEvent
+        where Self: Sized
+    {
         unsafe { TabletToolEvent::from_raw(self.as_raw_mut()) }
     }
 }
@@ -300,14 +301,18 @@ impl FromRaw<ffi::libinput_event_tablet_tool> for TabletToolEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_tool) -> Self {
         let base = ffi::libinput_event_tablet_tool_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_TOOL_AXIS =>
-                TabletToolEvent::Axis(TabletToolAxisEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY =>
-                TabletToolEvent::Proximity(TabletToolProximityEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_TOOL_TIP =>
-                TabletToolEvent::Tip(TabletToolTipEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_TOOL_BUTTON =>
-                TabletToolEvent::Button(TabletToolButtonEvent::from_raw(event)),
+            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_TOOL_AXIS => {
+                TabletToolEvent::Axis(TabletToolAxisEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY => {
+                TabletToolEvent::Proximity(TabletToolProximityEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_TOOL_TIP => {
+                TabletToolEvent::Tip(TabletToolTipEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_TOOL_BUTTON => {
+                TabletToolEvent::Button(TabletToolButtonEvent::from_raw(event))
+            }
             _ => unreachable!(),
         }
     }
@@ -387,8 +392,12 @@ impl TabletToolProximityEvent {
     /// for recommendations on proximity handling.
     pub fn proximity_state(&self) -> ProximityState {
         match unsafe { ffi::libinput_event_tablet_tool_get_proximity_state(self.as_raw_mut()) } {
-            ffi::libinput_tablet_tool_proximity_state::LIBINPUT_TABLET_TOOL_PROXIMITY_STATE_OUT => ProximityState::Out,
-            ffi::libinput_tablet_tool_proximity_state::LIBINPUT_TABLET_TOOL_PROXIMITY_STATE_IN => ProximityState::In,
+            ffi::libinput_tablet_tool_proximity_state::LIBINPUT_TABLET_TOOL_PROXIMITY_STATE_OUT => {
+                ProximityState::Out
+            }
+            ffi::libinput_tablet_tool_proximity_state::LIBINPUT_TABLET_TOOL_PROXIMITY_STATE_IN => {
+                ProximityState::In
+            }
         }
     }
 }

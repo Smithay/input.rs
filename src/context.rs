@@ -1,12 +1,13 @@
-use std::ffi::CString;
-use std::io::{Result as IoResult, Error as IoError};
-use std::os::unix::io::RawFd;
-use std::{mem, ptr};
-use std::iter::Iterator;
+
+
+use {AsRaw, Device, Event, FromRaw, Userdata, ffi};
 
 use libc;
-
-use ::{ffi, FromRaw, AsRaw, Userdata, Device, Event};
+use std::{mem, ptr};
+use std::ffi::CString;
+use std::io::{Error as IoError, Result as IoResult};
+use std::iter::Iterator;
+use std::os::unix::io::RawFd;
 
 /// libinput does not open file descriptors to devices directly,
 /// instead `open_restricted` and `close_restricted` are called for
@@ -42,8 +43,7 @@ impl Iterator for Libinput {
     }
 }
 
-impl Libinput
-{
+impl Libinput {
     /// Create a new libinput context using a udev context.
     ///
     /// This context is inactive until `udev_assign_seat` is called.
@@ -57,16 +57,21 @@ impl Libinput
     /// ## Unsafety
     ///
     /// This function is unsafe, because there is no way to verify that `udev_context` is indeed a valid udev context or even points to valid memory.
-    pub unsafe fn new_from_udev<T: 'static>(interface: LibinputInterface, userdata: Option<T>, udev_context: *mut libc::c_void) -> Libinput {
+    pub unsafe fn new_from_udev<T: 'static>(interface: LibinputInterface,
+                                            userdata: Option<T>,
+                                            udev_context: *mut libc::c_void)
+                                            -> Libinput {
         let boxed_interface = Box::new(interface);
         let mut boxed_userdata = Box::new(userdata);
 
         let context = Libinput {
             ffi: {
-                ffi::libinput_udev_create_context(&*boxed_interface as *const _, match (*boxed_userdata).as_mut() {
-                    Some(value) => value as *mut T as *mut libc::c_void,
-                    None => ptr::null_mut(),
-                }, udev_context as *mut _)
+                ffi::libinput_udev_create_context(&*boxed_interface as *const _,
+                                                  match (*boxed_userdata).as_mut() {
+                                                      Some(value) => value as *mut T as *mut libc::c_void,
+                                                      None => ptr::null_mut(),
+                                                  },
+                                                  udev_context as *mut _)
             },
         };
 
@@ -94,10 +99,11 @@ impl Libinput
 
         let context = Libinput {
             ffi: unsafe {
-                ffi::libinput_path_create_context(&*boxed_interface as *const _, match (*boxed_userdata).as_mut() {
-                    Some(value) => value as *mut T as *mut libc::c_void,
-                    None => ptr::null_mut(),
-                })
+                ffi::libinput_path_create_context(&*boxed_interface as *const _,
+                                                  match (*boxed_userdata).as_mut() {
+                                                      Some(value) => value as *mut T as *mut libc::c_void,
+                                                      None => ptr::null_mut(),
+                                                  })
             },
         };
 
@@ -120,8 +126,7 @@ impl Libinput
     ///
     /// It is an application bug to call this function on a context
     /// initialized with `new_from_udev`.
-    pub fn path_add_device(&mut self, path: &str) -> Option<Device>
-    {
+    pub fn path_add_device(&mut self, path: &str) -> Option<Device> {
         let path = CString::new(path).expect("Device Path contained a null-byte");
         unsafe {
             let ptr = ffi::libinput_path_add_device(self.as_raw_mut(), path.as_ptr());
@@ -145,11 +150,8 @@ impl Libinput
     ///
     /// It is an application bug to call this function on a context
     /// initialized with `new_from_udev`.
-    pub fn path_remove_device(&mut self, device: Device)
-    {
-        unsafe {
-            ffi::libinput_path_remove_device(device.as_raw_mut())
-        }
+    pub fn path_remove_device(&mut self, device: Device) {
+        unsafe { ffi::libinput_path_remove_device(device.as_raw_mut()) }
     }
 
     /// Assign a seat to this libinput context.

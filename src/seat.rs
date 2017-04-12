@@ -1,8 +1,9 @@
-use std::ffi::CStr;
+
+
+use {AsRaw, FromRaw, Libinput, Userdata, ffi};
 
 use libc;
-
-use ::{ffi, FromRaw, AsRaw, Userdata, Libinput};
+use std::ffi::CStr;
 
 ffi_ref_struct!(
 /// A seat has two identifiers, the physical name and the logical name.
@@ -16,9 +17,7 @@ struct Seat, ffi::libinput_seat, ffi::libinput_seat_ref, ffi::libinput_seat_unre
 impl Seat {
     /// Get the libinput context from the seat.
     pub fn context(&self) -> Libinput {
-        unsafe {
-            Libinput::from_raw(ffi::libinput_seat_get_context(self.as_raw_mut()))
-        }
+        unsafe { Libinput::from_raw(ffi::libinput_seat_get_context(self.as_raw_mut())) }
     }
 
     /// Return the physical name of the seat.
@@ -32,7 +31,11 @@ impl Seat {
     /// base filter for devices - devices assigned to seats outside the
     /// current seat will not be available to the caller.
     pub fn physical_name(&self) -> &str {
-        unsafe { CStr::from_ptr(ffi::libinput_seat_get_physical_name(self.as_raw_mut())).to_str().expect("Seat physical_name is no valid utf-8") }
+        unsafe {
+            CStr::from_ptr(ffi::libinput_seat_get_physical_name(self.as_raw_mut()))
+                .to_str()
+                .expect("Seat physical_name is no valid utf-8")
+        }
     }
 
     /// Return the logical name of the seat.
@@ -40,6 +43,10 @@ impl Seat {
     /// This is an identifier to group sets of devices within the
     /// compositor.
     pub fn logical_name(&self) -> &str {
-        unsafe { CStr::from_ptr(ffi::libinput_seat_get_logical_name(self.as_raw_mut())).to_str().expect("Seat logical_name is no valid utf-8") }
+        unsafe {
+            CStr::from_ptr(ffi::libinput_seat_get_logical_name(self.as_raw_mut()))
+                .to_str()
+                .expect("Seat logical_name is no valid utf-8")
+        }
     }
 }

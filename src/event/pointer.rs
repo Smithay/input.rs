@@ -1,8 +1,8 @@
 //! Pointer event types
 
-use ::ffi;
-use ::{FromRaw, AsRaw};
 use super::EventTrait;
+use {AsRaw, FromRaw};
+use ffi;
 
 /// Common functions for all Pointer-Events implement.
 pub trait PointerEventTrait: AsRaw<ffi::libinput_event_pointer> {
@@ -14,7 +14,9 @@ pub trait PointerEventTrait: AsRaw<ffi::libinput_event_pointer> {
     fn time_usec, ffi::libinput_event_pointer_get_time_usec, u64);
 
     /// Convert into a general `TouchEvent` again
-    fn into_pointer_event(self) -> PointerEvent where Self: Sized {
+    fn into_pointer_event(self) -> PointerEvent
+        where Self: Sized
+    {
         unsafe { PointerEvent::from_raw(self.as_raw_mut()) }
     }
 }
@@ -50,14 +52,18 @@ impl FromRaw<ffi::libinput_event_pointer> for PointerEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_pointer) -> Self {
         let base = ffi::libinput_event_pointer_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_POINTER_MOTION =>
-                PointerEvent::Motion(PointerMotionEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE =>
-                PointerEvent::MotionAbsolute(PointerMotionAbsoluteEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_POINTER_BUTTON =>
-                PointerEvent::Button(PointerButtonEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_POINTER_AXIS =>
-                PointerEvent::Axis(PointerAxisEvent::from_raw(event)),
+            ffi::libinput_event_type::LIBINPUT_EVENT_POINTER_MOTION => {
+                PointerEvent::Motion(PointerMotionEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE => {
+                PointerEvent::MotionAbsolute(PointerMotionAbsoluteEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_POINTER_BUTTON => {
+                PointerEvent::Button(PointerButtonEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_POINTER_AXIS => {
+                PointerEvent::Axis(PointerAxisEvent::from_raw(event))
+            }
             _ => unreachable!(),
         }
     }
@@ -238,10 +244,13 @@ impl PointerAxisEvent {
     /// If this function returns non-zero for an axis and `axis_value` returns a
     /// value of 0, the event is a scroll stop event.
     pub fn has_axis(&self, axis: Axis) -> bool {
-        unsafe { ffi::libinput_event_pointer_has_axis(self.as_raw_mut(), match axis {
-            Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
-            Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
-        }) != 0 }
+        unsafe {
+            ffi::libinput_event_pointer_has_axis(self.as_raw_mut(),
+                                                 match axis {
+                                                     Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
+                                                     Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
+                                                 }) != 0
+        }
     }
 
     /// Return the source for a given axis event.
@@ -277,8 +286,12 @@ impl PointerAxisEvent {
         match unsafe { ffi::libinput_event_pointer_get_axis_source(self.as_raw_mut()) } {
             ffi::libinput_pointer_axis_source::LIBINPUT_POINTER_AXIS_SOURCE_WHEEL => AxisSource::Wheel,
             ffi::libinput_pointer_axis_source::LIBINPUT_POINTER_AXIS_SOURCE_FINGER => AxisSource::Finger,
-            ffi::libinput_pointer_axis_source::LIBINPUT_POINTER_AXIS_SOURCE_CONTINUOUS => AxisSource::Continuous,
-            ffi::libinput_pointer_axis_source::LIBINPUT_POINTER_AXIS_SOURCE_WHEEL_TILT => AxisSource::WheelTilt,
+            ffi::libinput_pointer_axis_source::LIBINPUT_POINTER_AXIS_SOURCE_CONTINUOUS => {
+                AxisSource::Continuous
+            }
+            ffi::libinput_pointer_axis_source::LIBINPUT_POINTER_AXIS_SOURCE_WHEEL_TILT => {
+                AxisSource::WheelTilt
+            }
         }
     }
 
@@ -292,10 +305,13 @@ impl PointerAxisEvent {
     /// If `has_axis` returns `false` for an axis, this function returns 0 for
     /// that axis.
     pub fn axis_value(&self, axis: Axis) -> f64 {
-        unsafe { ffi::libinput_event_pointer_get_axis_value(self.as_raw_mut(), match axis {
-            Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
-            Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
-        }) }
+        unsafe {
+            ffi::libinput_event_pointer_get_axis_value(self.as_raw_mut(),
+                                                       match axis {
+                                                           Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
+                                                           Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
+                                                       })
+        }
     }
 
     /// Return the axis value in discrete steps for a given axis event.
@@ -310,13 +326,15 @@ impl PointerAxisEvent {
     pub fn axis_value_discrete(&self, axis: Axis) -> Option<f64> {
         match self.axis_source() {
             AxisSource::Continuous | AxisSource::Finger => None,
-            _ =>
-            Some(unsafe { ffi::libinput_event_pointer_get_axis_value_discrete(self.as_raw_mut(),
-                match axis {
-                    Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
-                    Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
-                })
-            }),
+            _ => {
+                Some(unsafe {
+                         ffi::libinput_event_pointer_get_axis_value_discrete(self.as_raw_mut(),
+                                                                             match axis {
+                                                                                 Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
+                                                                                 Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
+                                                                             })
+                     })
+            }
         }
     }
 }

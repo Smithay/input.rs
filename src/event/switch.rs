@@ -1,8 +1,8 @@
 //! Switch event types
 
-use ::ffi;
-use ::{FromRaw, AsRaw};
 use super::EventTrait;
+use {AsRaw, FromRaw};
+use ffi;
 
 /// Common functions all Switch-Events implement.
 pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> {
@@ -14,7 +14,9 @@ pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> {
     fn time_usec, ffi::libinput_event_switch_get_time_usec, u64);
 
     /// Convert into a general `SwitchEvent` again
-    fn into_switch_event(self) -> SwitchEvent where Self: Sized {
+    fn into_switch_event(self) -> SwitchEvent
+        where Self: Sized
+    {
         unsafe { SwitchEvent::from_raw(self.as_raw_mut()) }
     }
 }
@@ -41,8 +43,9 @@ impl FromRaw<ffi::libinput_event_switch> for SwitchEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_switch) -> Self {
         let base = ffi::libinput_event_switch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_SWITCH_TOGGLE =>
-                SwitchEvent::Toggle(SwitchToggleEvent::from_raw(event)),
+            ffi::libinput_event_type::LIBINPUT_EVENT_SWITCH_TOGGLE => {
+                SwitchEvent::Toggle(SwitchToggleEvent::from_raw(event))
+            }
             _ => unreachable!(),
         }
     }
@@ -60,7 +63,7 @@ impl AsRaw<ffi::libinput_event_switch> for SwitchEvent {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Switch {
     /// Lid closing switch
-    Lid
+    Lid,
 }
 
 /// State of a Switch

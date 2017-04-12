@@ -1,4 +1,4 @@
-use ::{ffi, FromRaw, AsRaw, Userdata};
+use {AsRaw, FromRaw, Userdata, ffi};
 
 use libc;
 

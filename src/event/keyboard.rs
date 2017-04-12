@@ -1,8 +1,8 @@
 //! Keyboard event types
 
-use ::ffi;
-use ::{FromRaw, AsRaw};
 use super::EventTrait;
+use {AsRaw, FromRaw};
+use ffi;
 
 /// State of a Key
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -34,7 +34,9 @@ pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> {
     }
 
     /// Convert into a general `KeyboardEvent` again
-    fn into_keyboard_event(self) -> KeyboardEvent where Self: Sized {
+    fn into_keyboard_event(self) -> KeyboardEvent
+        where Self: Sized
+    {
         unsafe { KeyboardEvent::from_raw(self.as_raw_mut()) }
     }
 }
@@ -61,8 +63,9 @@ impl FromRaw<ffi::libinput_event_keyboard> for KeyboardEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_keyboard) -> Self {
         let base = ffi::libinput_event_keyboard_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_KEYBOARD_KEY =>
-                KeyboardEvent::Key(KeyboardKeyEvent::from_raw(event)),
+            ffi::libinput_event_type::LIBINPUT_EVENT_KEYBOARD_KEY => {
+                KeyboardEvent::Key(KeyboardKeyEvent::from_raw(event))
+            }
             _ => unreachable!(),
         }
     }

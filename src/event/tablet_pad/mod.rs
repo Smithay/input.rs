@@ -1,9 +1,9 @@
 //! Tablet pad event types
 
-use ::ffi;
-use ::{FromRaw, AsRaw};
 use super::EventTrait;
 pub use super::pointer::ButtonState;
+use {AsRaw, FromRaw};
+use ffi;
 
 mod mode_group;
 pub use self::mode_group::*;
@@ -41,11 +41,15 @@ pub trait TabletPadEventTrait: AsRaw<ffi::libinput_event_tablet_pad> {
     /// The mode is a virtual grouping of functionality, usually based on some
     /// visual feedback like LEDs on the pad. See [Tablet pad modes](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-pad-modes) for details.
     fn mode_group(&self) -> TabletPadModeGroup {
-        unsafe { TabletPadModeGroup::from_raw(ffi::libinput_event_tablet_pad_get_mode_group(self.as_raw_mut())) }
+        unsafe {
+            TabletPadModeGroup::from_raw(ffi::libinput_event_tablet_pad_get_mode_group(self.as_raw_mut()))
+        }
     }
 
     /// Convert into a general `TabletPadEvent` again
-    fn into_tablet_pad_event(self) -> TabletPadEvent where Self: Sized {
+    fn into_tablet_pad_event(self) -> TabletPadEvent
+        where Self: Sized
+    {
         unsafe { TabletPadEvent::from_raw(self.as_raw_mut()) }
     }
 }
@@ -84,12 +88,15 @@ impl FromRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_pad) -> Self {
         let base = ffi::libinput_event_tablet_pad_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_PAD_BUTTON =>
-                TabletPadEvent::Button(TabletPadButtonEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_PAD_RING =>
-                TabletPadEvent::Ring(TabletPadRingEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_PAD_STRIP =>
-                TabletPadEvent::Strip(TabletPadStripEvent::from_raw(event)),
+            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_PAD_BUTTON => {
+                TabletPadEvent::Button(TabletPadButtonEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_PAD_RING => {
+                TabletPadEvent::Ring(TabletPadRingEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_PAD_STRIP => {
+                TabletPadEvent::Strip(TabletPadStripEvent::from_raw(event))
+            }
             _ => unreachable!(),
         }
     }
@@ -170,8 +177,12 @@ impl TabletPadRingEvent {
     /// value of -1 to terminate the current interaction.
     pub fn source(&self) -> RingAxisSource {
         match unsafe { ffi::libinput_event_tablet_pad_get_ring_source(self.as_raw_mut()) } {
-            ffi::libinput_tablet_pad_ring_axis_source::LIBINPUT_TABLET_PAD_RING_SOURCE_UNKNOWN => RingAxisSource::Unknown,
-            ffi::libinput_tablet_pad_ring_axis_source::LIBINPUT_TABLET_PAD_RING_SOURCE_FINGER => RingAxisSource::Finger,
+            ffi::libinput_tablet_pad_ring_axis_source::LIBINPUT_TABLET_PAD_RING_SOURCE_UNKNOWN => {
+                RingAxisSource::Unknown
+            }
+            ffi::libinput_tablet_pad_ring_axis_source::LIBINPUT_TABLET_PAD_RING_SOURCE_FINGER => {
+                RingAxisSource::Finger
+            }
         }
     }
 }
@@ -214,8 +225,12 @@ impl TabletPadStripEvent {
     /// position value of -1 to terminate the current interaction
     pub fn source(&self) -> StripAxisSource {
         match unsafe { ffi::libinput_event_tablet_pad_get_strip_source(self.as_raw_mut()) } {
-            ffi::libinput_tablet_pad_strip_axis_source::LIBINPUT_TABLET_PAD_STRIP_SOURCE_UNKNOWN => StripAxisSource::Unknown,
-            ffi::libinput_tablet_pad_strip_axis_source::LIBINPUT_TABLET_PAD_STRIP_SOURCE_FINGER => StripAxisSource::Finger,
+            ffi::libinput_tablet_pad_strip_axis_source::LIBINPUT_TABLET_PAD_STRIP_SOURCE_UNKNOWN => {
+                StripAxisSource::Unknown
+            }
+            ffi::libinput_tablet_pad_strip_axis_source::LIBINPUT_TABLET_PAD_STRIP_SOURCE_FINGER => {
+                StripAxisSource::Finger
+            }
         }
     }
 }

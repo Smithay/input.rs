@@ -1,8 +1,8 @@
 //! Gesture event types
 
-use ::ffi;
-use ::{FromRaw, AsRaw};
 use super::EventTrait;
+use {AsRaw, FromRaw};
+use ffi;
 
 /// Common functions all Gesture-Events implement.
 pub trait GestureEventTrait: AsRaw<ffi::libinput_event_gesture> {
@@ -22,7 +22,9 @@ pub trait GestureEventTrait: AsRaw<ffi::libinput_event_gesture> {
     fn finger_count, ffi::libinput_event_gesture_get_finger_count, i32);
 
     /// Convert into a general `GestureEvent` again
-    fn into_gesture_event(self) -> GestureEvent where Self: Sized {
+    fn into_gesture_event(self) -> GestureEvent
+        where Self: Sized
+    {
         unsafe { GestureEvent::from_raw(self.as_raw_mut()) }
     }
 }
@@ -52,10 +54,16 @@ impl FromRaw<ffi::libinput_event_gesture> for GestureEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_gesture) -> Self {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN | ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE | ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_END =>
-                GestureEvent::Swipe(GestureSwipeEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_BEGIN | ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_UPDATE | ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_END =>
-                GestureEvent::Pinch(GesturePinchEvent::from_raw(event)),
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN |
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE |
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_END => {
+                GestureEvent::Swipe(GestureSwipeEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_BEGIN |
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_UPDATE |
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_END => {
+                GestureEvent::Pinch(GesturePinchEvent::from_raw(event))
+            }
             _ => unreachable!(),
         }
     }
@@ -139,7 +147,9 @@ pub enum GestureSwipeEvent {
 /// Common functions for swipe gesture events
 pub trait GestureSwipeEventTrait: AsRaw<ffi::libinput_event_gesture> {
     /// Convert into a general `GestureSwipeEvent`
-    fn into_gesture_swipe_event(self) -> GestureSwipeEvent where Self: Sized {
+    fn into_gesture_swipe_event(self) -> GestureSwipeEvent
+        where Self: Sized
+    {
         unsafe { GestureSwipeEvent::from_raw(self.as_raw_mut()) }
     }
 }
@@ -161,12 +171,18 @@ impl FromRaw<ffi::libinput_event_gesture> for GestureSwipeEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_gesture) -> Self {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN => GestureSwipeEvent::Begin(GestureSwipeBeginEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE => GestureSwipeEvent::Update(GestureSwipeUpdateEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_END =>
-                GestureSwipeEvent::End(GestureSwipeEndEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_BEGIN | ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_UPDATE | ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_END =>
-                panic!("Tried to make GestureSwipeEvent from Pinch event"),
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN => {
+                GestureSwipeEvent::Begin(GestureSwipeBeginEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE => {
+                GestureSwipeEvent::Update(GestureSwipeUpdateEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_END => {
+                GestureSwipeEvent::End(GestureSwipeEndEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_BEGIN |
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_UPDATE |
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_END => panic!("Tried to make GestureSwipeEvent from Pinch event"),
             _ => unreachable!(),
         }
     }
@@ -213,9 +229,9 @@ pub trait GesturePinchEventTrait: AsRaw<ffi::libinput_event_gesture> {
     ///
     /// The scale begins at 1.0, and if e.g. the fingers moved together by 50%
     /// then the scale will become 0.5, if they move twice as far apart as
-    // initially the scale becomes 2.0, etc.
+    /// initially the scale becomes 2.0, etc.
     ///
-    ///For gesture events that are of type `GesturePinchBeginEvent`, this function
+    /// For gesture events that are of type `GesturePinchBeginEvent`, this function
     /// returns 1.0.
     /// For gesture events that are of type `GesturePinchEndEvent`, this function
     /// returns the scale value of the most recent `GesturePinchUpdateEvent` event
@@ -223,7 +239,9 @@ pub trait GesturePinchEventTrait: AsRaw<ffi::libinput_event_gesture> {
     fn scale, ffi::libinput_event_gesture_get_scale, f64);
 
     /// Convert into a general `GesturePinchEvent`
-    fn into_gesture_pinch_event(self) -> GesturePinchEvent where Self: Sized {
+    fn into_gesture_pinch_event(self) -> GesturePinchEvent
+        where Self: Sized
+    {
         unsafe { GesturePinchEvent::from_raw(self.as_raw_mut()) }
     }
 }
@@ -234,14 +252,18 @@ impl FromRaw<ffi::libinput_event_gesture> for GesturePinchEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_gesture) -> Self {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN | ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE | ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_END =>
-                panic!("Tried to make GesturePinchEvent from Swipe event"),
-            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_BEGIN =>
-                GesturePinchEvent::Begin(GesturePinchBeginEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_UPDATE =>
-                GesturePinchEvent::Update(GesturePinchUpdateEvent::from_raw(event)),
-            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_END =>
-                GesturePinchEvent::End(GesturePinchEndEvent::from_raw(event)),
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN |
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE |
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_END => panic!("Tried to make GesturePinchEvent from Swipe event"),
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_BEGIN => {
+                GesturePinchEvent::Begin(GesturePinchBeginEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_UPDATE => {
+                GesturePinchEvent::Update(GesturePinchUpdateEvent::from_raw(event))
+            }
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_END => {
+                GesturePinchEvent::End(GesturePinchEndEvent::from_raw(event))
+            }
             _ => unreachable!(),
         }
     }
