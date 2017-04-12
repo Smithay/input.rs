@@ -34,6 +34,8 @@
 //!
 
 #![deny(missing_docs)]
+#![cfg_attr(feature="cargo-clippy", deny(clippy))]
+#![cfg_attr(feature="cargo-clippy", allow(doc_markdown))]
 
 extern crate input_sys;
 extern crate libc;

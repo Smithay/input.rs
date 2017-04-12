@@ -720,9 +720,10 @@ impl Device {
     /// Enabling or disabling disable-while-typing may not take
     /// effect immediately.
     pub fn config_dwt_set_enabled(&self, enabled: bool) -> DeviceConfigResult {
-        match unsafe { ffi::libinput_device_config_dwt_set_enabled(self.as_raw_mut(), match enabled {
-            true => ffi::libinput_config_dwt_state::LIBINPUT_CONFIG_DWT_ENABLED,
-            false => ffi::libinput_config_dwt_state::LIBINPUT_CONFIG_DWT_DISABLED,
+        match unsafe { ffi::libinput_device_config_dwt_set_enabled(self.as_raw_mut(), if enabled {
+            ffi::libinput_config_dwt_state::LIBINPUT_CONFIG_DWT_ENABLED
+        } else {
+            ffi::libinput_config_dwt_state::LIBINPUT_CONFIG_DWT_DISABLED
         }) } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => Err(DeviceConfigError::Unsupported),
@@ -826,9 +827,10 @@ impl Device {
     /// See [Middle button emulation](https://wayland.freedesktop.org/libinput/doc/latest/middle_button_emulation.html)
     /// for details.
     pub fn config_middle_emulation_set_enabled(&self, enabled: bool) -> DeviceConfigResult {
-        match unsafe { ffi::libinput_device_config_middle_emulation_set_enabled(self.as_raw_mut(), match enabled {
-            true => ffi::libinput_config_middle_emulation_state::LIBINPUT_CONFIG_MIDDLE_EMULATION_ENABLED,
-            false => ffi::libinput_config_middle_emulation_state::LIBINPUT_CONFIG_MIDDLE_EMULATION_DISABLED,
+        match unsafe { ffi::libinput_device_config_middle_emulation_set_enabled(self.as_raw_mut(), if enabled {
+            ffi::libinput_config_middle_emulation_state::LIBINPUT_CONFIG_MIDDLE_EMULATION_ENABLED
+        } else {
+            ffi::libinput_config_middle_emulation_state::LIBINPUT_CONFIG_MIDDLE_EMULATION_DISABLED
         }) } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => Err(DeviceConfigError::Unsupported),
@@ -1272,9 +1274,10 @@ impl Device {
     /// See [Tap-and-drag](https://wayland.freedesktop.org/libinput/doc/latest/tapping.html#tapndrag)
     /// for more details.
     pub fn config_tap_set_drag_enabled(&mut self, enabled: bool) -> DeviceConfigResult {
-        match unsafe { ffi::libinput_device_config_tap_set_drag_enabled(self.as_raw_mut(), match enabled {
-            true => ffi::libinput_config_drag_state::LIBINPUT_CONFIG_DRAG_ENABLED,
-            false => ffi::libinput_config_drag_state::LIBINPUT_CONFIG_DRAG_DISABLED,
+        match unsafe { ffi::libinput_device_config_tap_set_drag_enabled(self.as_raw_mut(),if enabled {
+            ffi::libinput_config_drag_state::LIBINPUT_CONFIG_DRAG_ENABLED
+        } else {
+            ffi::libinput_config_drag_state::LIBINPUT_CONFIG_DRAG_DISABLED
         }) } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => Err(DeviceConfigError::Unsupported),
@@ -1294,9 +1297,10 @@ impl Device {
     /// Enabling drag lock on a device that has tapping disabled is
     /// permitted, but has no effect until tapping is enabled.
     pub fn config_tap_set_drag_lock_enabled(&mut self, enabled: bool) -> DeviceConfigResult {
-        match unsafe { ffi::libinput_device_config_tap_set_drag_lock_enabled(self.as_raw_mut(), match enabled {
-            true => ffi::libinput_config_drag_lock_state::LIBINPUT_CONFIG_DRAG_LOCK_ENABLED,
-            false => ffi::libinput_config_drag_lock_state::LIBINPUT_CONFIG_DRAG_LOCK_DISABLED,
+        match unsafe { ffi::libinput_device_config_tap_set_drag_lock_enabled(self.as_raw_mut(), if enabled {
+            ffi::libinput_config_drag_lock_state::LIBINPUT_CONFIG_DRAG_LOCK_ENABLED
+        } else {
+            ffi::libinput_config_drag_lock_state::LIBINPUT_CONFIG_DRAG_LOCK_DISABLED
         }) } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => Err(DeviceConfigError::Unsupported),
@@ -1311,9 +1315,10 @@ impl Device {
     /// Tapping is limited by the number of simultaneous touches
     /// supported by the device, see `config_tap_finger_count`.
     pub fn config_tap_set_enabled(&mut self, enabled: bool) -> DeviceConfigResult {
-        match unsafe { ffi::libinput_device_config_tap_set_enabled(self.as_raw_mut(), match enabled {
-            true => ffi::libinput_config_tap_state::LIBINPUT_CONFIG_TAP_ENABLED,
-            false => ffi::libinput_config_tap_state::LIBINPUT_CONFIG_TAP_DISABLED,
+        match unsafe { ffi::libinput_device_config_tap_set_enabled(self.as_raw_mut(), if enabled {
+            ffi::libinput_config_tap_state::LIBINPUT_CONFIG_TAP_ENABLED
+        } else {
+            ffi::libinput_config_tap_state::LIBINPUT_CONFIG_TAP_DISABLED
         }) } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => Err(DeviceConfigError::Unsupported),
