@@ -9,9 +9,9 @@ addons:
     - libdw-dev
 cache:
   directories:
-      - .vagga/nightly-home/.cargo
-      - .vagga/nightly-home/.rustup
-      - .vagga/.cache
+  - ".vagga/nightly-home/.cargo"
+  - ".vagga/nightly-home/.rustup"
+  - ".vagga/.cache"
 before_script:
 - 'echo ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/ > ~/.vagga.yaml'
 - 'echo alpine-mirror: http://mirrors.gigenet.com/alpinelinux/ >> ~/.vagga.yaml'
@@ -27,3 +27,6 @@ script:
 before_deploy:
 - vagga doc
 - vagga --use-env=GH_TOKEN doc_upload
+env:
+  global:
+    secure: a/XwAYvO4LtAG/kBf+lY93TatHoR/nFLUwZS0jTrYAi0FWf7fcbPCsM1UDMkgKyuVqi2ZobMr1XxicBlIlsiECNqoRTT3S0mJroY69KLiOB5wl8YDFLOxgI6IZfvmvBgnw0+lFYbw2qKinvcffUG58azx+NLM5CJNasBsdIwA535GSoqAnsKTGd1NdGojeuhWiruL6O5O7WpP4oNn4XEL+/IOzqv0uToxq8u/VXB32qf1dJjYnHpEjEmiKNtwiiIKhp0C9QyMkrhkTjNLiFUUmfVYKwGDzvvXzJIO4u3PvCXD4evAXHGVTyTG99UyaqezDZV7OBB058f1K8SuxmbiucGtjuqphH5RKfdYwDmJ+qhv9a8X40siQV65Q2u0C1be2Mdj+FO+RRcNt+2x+IIxrFaqGMY1xCBM742NBpN8STQyPvR7YHTm2bN1wTuu733vbHQwy9i8RCX1Z4L+ZtI/BbJIa3sDArDhWlyUJQ+DiFiCzVHVPVTgFDHdkwr5Bx//xQbKtIMV0tv1iSPZJm02xUiec6Nk0Gli94DarPbPZbMWu8EK1cLV+InqKL9BRPES+tWNKpxOL2iu0UU2oGZcPkbOVnMtn5xJahsd8LJyVRpRWwHGhgOJceM704PSZcTI8r2KYXxGIHZQLW9+bjgIq28vEnCaG6U+h+PPP1xrB8=
