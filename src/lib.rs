@@ -8,7 +8,7 @@
 //! ## Differences to the C-Library:
 //!
 //! - Refcounting does not need to be done manually. Just call `clone` when you need an additional reference.
-//! - Logging cannot be customized the same way as in libinput. Instead the [`log` crate](https://github.com/rust-lang-nursery/log) is used for maximum compatibility with the rust ecosystem.
+//! - Libinput logging cannot (currently) not be customized.
 //!
 //! ## Userdata handling
 //!
