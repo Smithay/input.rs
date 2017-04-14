@@ -1,6 +1,14 @@
-## In process of creation.
+# libinput for rust [![Build Status](https://travis-ci.org/Drakulix/input.rs.svg?branch=master)](https://travis-ci.org/Drakulix/input.rs) [![Crates.io](https://img.shields.io/crates/v/input.rs.svg)](https://crates.io/crates/input.rs) [![Crates.io](https://img.shields.io/crates/l/input.rs.svg)](https://crates.io/crates/input.rs)
 
-Aims to provide full featured rust bindings for `libinput`.
+[libinput](https://wayland.freedesktop.org/libinput/doc/latest/) bindings for [Rust](https://www.rust-lang.org)
 
-The goal is to make use of them in [vberger/smithay](https://github.com/vberger/smithay),
-but they will be generic enough to be used everywhere.
+**Warning**: This is and will remain largely untested until this is being used in [vberger/smithay](https://github.com/vberger/smithay).
+
+## [Documentation](https://drakulix.github.io/input.rs/)
+
+## Usage
+
+Add to your Cargo.toml
+```
+input = "0.1"
+```
