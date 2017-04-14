@@ -24,7 +24,7 @@ script:
 - vagga check-fmt
 - vagga build
 - vagga clippy
-before_deploy:
+after_success:
 - vagga doc
 - vagga --use-env=GH_TOKEN doc_upload
 env:
