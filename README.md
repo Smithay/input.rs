@@ -1,4 +1,4 @@
-# libinput for rust [![Build Status](https://travis-ci.org/Drakulix/input.rs.svg?branch=master)](https://travis-ci.org/Drakulix/input.rs) [![Crates.io](https://img.shields.io/crates/v/input.rs.svg)](https://crates.io/crates/input.rs) [![Crates.io](https://img.shields.io/crates/l/input.rs.svg)](https://crates.io/crates/input.rs)
+# libinput for rust [![Build Status](https://travis-ci.org/Drakulix/input.rs.svg?branch=master)](https://travis-ci.org/Drakulix/input.rs) [![Crates.io](https://img.shields.io/crates/v/input.svg)](https://crates.io/crates/input) [![Crates.io](https://img.shields.io/crates/l/input.svg)](https://crates.io/crates/input)
 
 [libinput](https://wayland.freedesktop.org/libinput/doc/latest/) bindings for [Rust](https://www.rust-lang.org)
 
