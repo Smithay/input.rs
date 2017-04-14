@@ -31,7 +31,7 @@ containers:
             - !Sh rustup install stable
             - !Sh rustup install beta
             - !Sh rustup install nightly
-            - !Sh rustup run nightly cargo install -f cargo-update
+            - !Sh rustup run nightly cargo install -f --git https://github.com/nabijaczleweli/cargo-update 
             - !Sh rustup run nightly cargo install -f clippy
             - !Sh rustup run nightly cargo install rustfmt || rustup run nightly cargo install-update rustfmt
             - !Sh cd $HOME; rm -rf ghp-import; git clone https://github.com/davisp/ghp-import.git
