@@ -26,7 +26,7 @@ containers:
                 pacman-key --populate archlinux
                 pacman -Syu --noconfirm
             - !Env HOME: /work/.vagga/nightly-home
-            - !Sh pacman -S --noconfirm base-devel wget clang rustup libinput git
+            - !Sh pacman -S --noconfirm base-devel wget clang rustup libinput git python
             - !Env PATH: /bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/work/.vagga/nightly-home/.cargo/bin
             - !Sh rustup install stable
             - !Sh rustup install beta
@@ -65,6 +65,6 @@ commands:
         description: Upload Documentation
         container: rust
         run: |
-                echo "<meta http-equiv=refresh content=0;url=fireplace_lib/index.html>" > target/doc/index.html
+                echo "<meta http-equiv=refresh content=0;url=input/index.html>" > target/doc/index.html
                 $HOME/ghp-import/ghp_import.py -n -m "Documentation for $(git rev-parse --short HEAD)" target/doc
-                git push -fq https://$GH_TOKEN@github.com/Drakulix/fireplace.git gh-pages
+                git push -fq https://$GH_TOKEN@github.com/Drakulix/input.rs.git gh-pages
