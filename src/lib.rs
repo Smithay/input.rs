@@ -144,57 +144,6 @@ pub trait Userdata {
     unsafe fn set_userdata_raw<T: 'static>(&self, ptr: *mut T);
 }
 
-macro_rules! ffi_struct {
-    ($(#[$attr:meta])* struct $struct_name:ident, $ffi_name:path) => (
-        #[derive(Eq)]
-        $(#[$attr])*
-        pub struct $struct_name
-        {
-            ffi: *mut $ffi_name,
-        }
-
-        impl ::std::fmt::Debug for $struct_name {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-                write!(f, "$struct_name @{:p}", self.as_raw())
-            }
-        }
-
-        impl FromRaw<$ffi_name> for $struct_name
-        {
-            unsafe fn from_raw(ffi: *mut $ffi_name) -> Self {
-                $struct_name {
-                    ffi: ffi,
-                }
-            }
-        }
-
-        impl AsRaw<$ffi_name> for $struct_name
-        {
-            fn as_raw(&self) -> *const $ffi_name {
-                self.ffi as *const _
-            }
-        }
-
-        impl Clone for $struct_name {
-            fn clone(&self) -> Self {
-                unsafe { $struct_name::from_raw(self.as_raw_mut()) }
-            }
-        }
-
-        impl PartialEq for $struct_name {
-            fn eq(&self, other: &Self) -> bool {
-                self.as_raw() == other.as_raw()
-            }
-        }
-
-        impl ::std::hash::Hash for $struct_name {
-            fn hash<H: ::std::hash::Hasher>(&self, state: &mut H) {
-                self.as_raw().hash(state);
-            }
-        }
-    )
-}
-
 macro_rules! ffi_ref_struct {
     ($(#[$attr:meta])* struct $struct_name:ident, $ffi_name:path, $ref_fn:path, $unref_fn:path, $get_userdata_fn:path, $set_userdata_fn:path) => (
         #[derive(Eq)]

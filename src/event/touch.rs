@@ -90,7 +90,7 @@ pub trait TouchEventPosition: AsRaw<ffi::libinput_event_touch> {
 }
 
 /// A touch related `Event`
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum TouchEvent {
     /// An event related to resting the finger on the screen
     Down(TouchDownEvent),

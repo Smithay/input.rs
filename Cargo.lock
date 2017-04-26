@@ -1,6 +1,6 @@
 [root]
 name = "input"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "input-sys 1.7.0",
  "libc 0.2.21 (registry+https://github.com/rust-lang/crates.io-index)",

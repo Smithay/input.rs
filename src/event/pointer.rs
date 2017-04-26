@@ -24,7 +24,7 @@ pub trait PointerEventTrait: AsRaw<ffi::libinput_event_pointer> {
 impl<T: AsRaw<ffi::libinput_event_pointer>> PointerEventTrait for T {}
 
 /// A pointer related `Event`
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum PointerEvent {
     /// An event related to moving a pointer
     Motion(PointerMotionEvent),

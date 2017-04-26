@@ -221,7 +221,7 @@ pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool> {
 impl<T: AsRaw<ffi::libinput_event_tablet_tool>> TabletToolEventTrait for T {}
 
 /// An event related to a tablet tool
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum TabletToolEvent {
     /// One or more axes have changed state on a device with the
     /// `DeviceCapability::TabletTool` capability.

@@ -24,7 +24,7 @@ pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> {
 impl<T: AsRaw<ffi::libinput_event_switch>> SwitchEventTrait for T {}
 
 /// A switch related `Event`
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug,  PartialEq, Eq, Hash)]
 pub enum SwitchEvent {
     /// An event related a switch, that was toggled
     Toggle(SwitchToggleEvent),

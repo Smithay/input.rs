@@ -4,7 +4,7 @@
 use {AsRaw, Device, FromRaw, Libinput, ffi};
 
 /// A libinput `Event`
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum Event {
     /// A device related `Event`
     Device(DeviceEvent),
@@ -123,7 +123,46 @@ impl AsRaw<ffi::libinput_event> for Event {
 
 macro_rules! ffi_event_struct {
     ($(#[$attr:meta])* struct $struct_name:ident, $ffi_name:path, $get_base_fn:path) => (
-        ffi_struct!($(#[$attr])* struct $struct_name, $ffi_name);
+        #[derive(Eq)]
+        $(#[$attr])*
+        pub struct $struct_name
+        {
+            ffi: *mut $ffi_name,
+        }
+
+        impl ::std::fmt::Debug for $struct_name {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                write!(f, "$struct_name @{:p}", self.as_raw())
+            }
+        }
+
+        impl FromRaw<$ffi_name> for $struct_name
+        {
+            unsafe fn from_raw(ffi: *mut $ffi_name) -> Self {
+                $struct_name {
+                    ffi: ffi,
+                }
+            }
+        }
+
+        impl AsRaw<$ffi_name> for $struct_name
+        {
+            fn as_raw(&self) -> *const $ffi_name {
+                self.ffi as *const _
+            }
+        }
+
+        impl PartialEq for $struct_name {
+            fn eq(&self, other: &Self) -> bool {
+                self.as_raw() == other.as_raw()
+            }
+        }
+
+        impl ::std::hash::Hash for $struct_name {
+            fn hash<H: ::std::hash::Hasher>(&self, state: &mut H) {
+                self.as_raw().hash(state);
+            }
+        }
 
         impl EventTrait for $struct_name {
             #[doc(hidden)]

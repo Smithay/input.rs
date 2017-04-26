@@ -44,7 +44,7 @@ pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> {
 impl<T: AsRaw<ffi::libinput_event_keyboard>> KeyboardEventTrait for T {}
 
 /// A keyboard related `Event`
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum KeyboardEvent {
     /// An event related to pressing a key
     Key(KeyboardKeyEvent),

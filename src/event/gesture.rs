@@ -32,7 +32,7 @@ pub trait GestureEventTrait: AsRaw<ffi::libinput_event_gesture> {
 impl<T: AsRaw<ffi::libinput_event_gesture>> GestureEventTrait for T {}
 
 /// A gesture related `Event`
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum GestureEvent {
     /// A swipe gesture `Event`
     Swipe(GestureSwipeEvent),
@@ -134,7 +134,7 @@ pub trait GestureEndEvent: AsRaw<ffi::libinput_event_gesture> {
 }
 
 /// Events for swipe gestures
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum GestureSwipeEvent {
     /// Swipe gesture began
     Begin(GestureSwipeBeginEvent),
@@ -199,7 +199,7 @@ impl AsRaw<ffi::libinput_event_gesture> for GestureSwipeEvent {
 }
 
 /// Events for pinch gestures
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum GesturePinchEvent {
     /// Pinch gesture began
     Begin(GesturePinchBeginEvent),

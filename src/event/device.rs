@@ -17,7 +17,7 @@ pub trait DeviceEventTrait: AsRaw<ffi::libinput_event_device_notify> {
 impl<T: AsRaw<ffi::libinput_event_device_notify>> DeviceEventTrait for T {}
 
 /// A device related `Event`
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum DeviceEvent {
     /// Signals that a device has been added to the context.
     Added(DeviceAddedEvent),

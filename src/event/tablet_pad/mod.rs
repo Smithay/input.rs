@@ -57,7 +57,7 @@ pub trait TabletPadEventTrait: AsRaw<ffi::libinput_event_tablet_pad> {
 impl<T: AsRaw<ffi::libinput_event_tablet_pad>> TabletPadEventTrait for T {}
 
 /// A tablet-pad related `Event`
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum TabletPadEvent {
     /// A button pressed on a device with the `DeviceCapability::TabletPad`
     /// capability.
