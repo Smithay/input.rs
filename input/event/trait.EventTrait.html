@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `EventTrait` trait in crate `input`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, EventTrait">
+
+    <title>input::event::EventTrait - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc trait">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>input</a>::<wbr><a href='index.html'>event</a></p><script>window.sidebarCurrent = {name: 'EventTrait', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>input</a>::<wbr><a href='index.html'>event</a>::<wbr><a class="trait" href=''>EventTrait</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/input/event/mod.rs.html#28-51' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait EventTrait {
+    fn <a href='#method.into_event' class='fnname'>into_event</a>(self) -&gt; <a class="enum" href="../../input/event/enum.Event.html" title="enum input::event::Event">Event</a> <span class="where fmt-newline">where Self: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a></span> { ... }
+    fn <a href='#method.context' class='fnname'>context</a>(&amp;self) -&gt; <a class="struct" href="../../input/struct.Libinput.html" title="struct input::Libinput">Libinput</a> { ... }
+    fn <a href='#method.device' class='fnname'>device</a>(&amp;self) -&gt; <a class="struct" href="../../input/struct.Device.html" title="struct input::Device">Device</a> { ... }
+}</pre><div class='docblock'><p>Common functions all (Sub-)Events implement.</p>
+</div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.into_event' class='method'><span id='into_event.v' class='invisible'><code>fn <a href='#method.into_event' class='fnname'>into_event</a>(self) -&gt; <a class="enum" href="../../input/event/enum.Event.html" title="enum input::event::Event">Event</a> <span class="where fmt-newline">where Self: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a></span></code></span></h3><div class='docblock'><p>Convert into a general <code>Event</code> again</p>
+</div><h3 id='method.context' class='method'><span id='context.v' class='invisible'><code>fn <a href='#method.context' class='fnname'>context</a>(&amp;self) -&gt; <a class="struct" href="../../input/struct.Libinput.html" title="struct input::Libinput">Libinput</a></code></span></h3><div class='docblock'><p>Get the libinput context from the event.</p>
+</div><h3 id='method.device' class='method'><span id='device.v' class='invisible'><code>fn <a href='#method.device' class='fnname'>device</a>(&amp;self) -&gt; <a class="struct" href="../../input/struct.Device.html" title="struct input::Device">Device</a></code></span></h3><div class='docblock'><p>Return the device associated with this event.</p>
+
+<p>For device added/removed events this is the device added or removed.
+For all other device events, this is the device that generated the event.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl EventTrait for <a class="enum" href="../../input/event/device/enum.DeviceEvent.html" title="enum input::event::device::DeviceEvent">DeviceEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/device/struct.DeviceAddedEvent.html" title="struct input::event::device::DeviceAddedEvent">DeviceAddedEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/device/struct.DeviceRemovedEvent.html" title="struct input::event::device::DeviceRemovedEvent">DeviceRemovedEvent</a></code></li>
+<li><code>impl EventTrait for <a class="enum" href="../../input/event/gesture/enum.GestureEvent.html" title="enum input::event::gesture::GestureEvent">GestureEvent</a></code></li>
+<li><code>impl EventTrait for <a class="enum" href="../../input/event/gesture/enum.GestureSwipeEvent.html" title="enum input::event::gesture::GestureSwipeEvent">GestureSwipeEvent</a></code></li>
+<li><code>impl EventTrait for <a class="enum" href="../../input/event/gesture/enum.GesturePinchEvent.html" title="enum input::event::gesture::GesturePinchEvent">GesturePinchEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/gesture/struct.GestureSwipeBeginEvent.html" title="struct input::event::gesture::GestureSwipeBeginEvent">GestureSwipeBeginEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/gesture/struct.GestureSwipeUpdateEvent.html" title="struct input::event::gesture::GestureSwipeUpdateEvent">GestureSwipeUpdateEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/gesture/struct.GestureSwipeEndEvent.html" title="struct input::event::gesture::GestureSwipeEndEvent">GestureSwipeEndEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/gesture/struct.GesturePinchBeginEvent.html" title="struct input::event::gesture::GesturePinchBeginEvent">GesturePinchBeginEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/gesture/struct.GesturePinchUpdateEvent.html" title="struct input::event::gesture::GesturePinchUpdateEvent">GesturePinchUpdateEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/gesture/struct.GesturePinchEndEvent.html" title="struct input::event::gesture::GesturePinchEndEvent">GesturePinchEndEvent</a></code></li>
+<li><code>impl EventTrait for <a class="enum" href="../../input/event/keyboard/enum.KeyboardEvent.html" title="enum input::event::keyboard::KeyboardEvent">KeyboardEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/keyboard/struct.KeyboardKeyEvent.html" title="struct input::event::keyboard::KeyboardKeyEvent">KeyboardKeyEvent</a></code></li>
+<li><code>impl EventTrait for <a class="enum" href="../../input/event/pointer/enum.PointerEvent.html" title="enum input::event::pointer::PointerEvent">PointerEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/pointer/struct.PointerMotionEvent.html" title="struct input::event::pointer::PointerMotionEvent">PointerMotionEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/pointer/struct.PointerMotionAbsoluteEvent.html" title="struct input::event::pointer::PointerMotionAbsoluteEvent">PointerMotionAbsoluteEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/pointer/struct.PointerButtonEvent.html" title="struct input::event::pointer::PointerButtonEvent">PointerButtonEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/pointer/struct.PointerAxisEvent.html" title="struct input::event::pointer::PointerAxisEvent">PointerAxisEvent</a></code></li>
+<li><code>impl EventTrait for <a class="enum" href="../../input/event/switch/enum.SwitchEvent.html" title="enum input::event::switch::SwitchEvent">SwitchEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/switch/struct.SwitchToggleEvent.html" title="struct input::event::switch::SwitchToggleEvent">SwitchToggleEvent</a></code></li>
+<li><code>impl EventTrait for <a class="enum" href="../../input/event/tablet_tool/enum.TabletToolEvent.html" title="enum input::event::tablet_tool::TabletToolEvent">TabletToolEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/tablet_tool/struct.TabletToolAxisEvent.html" title="struct input::event::tablet_tool::TabletToolAxisEvent">TabletToolAxisEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/tablet_tool/struct.TabletToolProximityEvent.html" title="struct input::event::tablet_tool::TabletToolProximityEvent">TabletToolProximityEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/tablet_tool/struct.TabletToolTipEvent.html" title="struct input::event::tablet_tool::TabletToolTipEvent">TabletToolTipEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/tablet_tool/struct.TabletToolButtonEvent.html" title="struct input::event::tablet_tool::TabletToolButtonEvent">TabletToolButtonEvent</a></code></li>
+<li><code>impl EventTrait for <a class="enum" href="../../input/event/tablet_pad/enum.TabletPadEvent.html" title="enum input::event::tablet_pad::TabletPadEvent">TabletPadEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/tablet_pad/struct.TabletPadButtonEvent.html" title="struct input::event::tablet_pad::TabletPadButtonEvent">TabletPadButtonEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/tablet_pad/struct.TabletPadRingEvent.html" title="struct input::event::tablet_pad::TabletPadRingEvent">TabletPadRingEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/tablet_pad/struct.TabletPadStripEvent.html" title="struct input::event::tablet_pad::TabletPadStripEvent">TabletPadStripEvent</a></code></li>
+<li><code>impl EventTrait for <a class="enum" href="../../input/event/touch/enum.TouchEvent.html" title="enum input::event::touch::TouchEvent">TouchEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/touch/struct.TouchDownEvent.html" title="struct input::event::touch::TouchDownEvent">TouchDownEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/touch/struct.TouchUpEvent.html" title="struct input::event::touch::TouchUpEvent">TouchUpEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/touch/struct.TouchMotionEvent.html" title="struct input::event::touch::TouchMotionEvent">TouchMotionEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/touch/struct.TouchCancelEvent.html" title="struct input::event::touch::TouchCancelEvent">TouchCancelEvent</a></code></li>
+<li><code>impl EventTrait for <a class="struct" href="../../input/event/touch/struct.TouchFrameEvent.html" title="struct input::event::touch::TouchFrameEvent">TouchFrameEvent</a></code></li>
+<li><code>impl EventTrait for <a class="enum" href="../../input/event/enum.Event.html" title="enum input::event::Event">Event</a></code></li>
+</ul><script type="text/javascript" async
+                         src="../../implementors/input/event/trait.EventTrait.js">
+                 </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "input";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

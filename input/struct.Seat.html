@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Seat` struct in crate `input`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Seat">
+
+    <title>input::Seat - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc struct">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>input</a></p><script>window.sidebarCurrent = {name: 'Seat', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>input</a>::<wbr><a class="struct" href=''>Seat</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/input/lib.rs.html#151-154' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Seat { /* fields omitted */ }</pre><div class='docblock'><p>A seat has two identifiers, the physical name and the logical name.</p>
+
+<p>A device is always assigned to exactly one seat. It may change to a
+different logical seat but it cannot change physical seats. See
+<a href="https://wayland.freedesktop.org/libinput/doc/latest/seats.html">Seats</a>
+for details.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class="struct" href="../input/struct.Seat.html" title="struct input::Seat">Seat</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/seat.rs.html#17-52' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.context' class="method"><span id='context.v' class='invisible'><code>fn <a href='#method.context' class='fnname'>context</a>(&amp;self) -&gt; <a class="struct" href="../input/struct.Libinput.html" title="struct input::Libinput">Libinput</a></code></span></h4>
+<div class='docblock'><p>Get the libinput context from the seat.</p>
+</div><h4 id='method.physical_name' class="method"><span id='physical_name.v' class='invisible'><code>fn <a href='#method.physical_name' class='fnname'>physical_name</a>(&amp;self) -&gt; &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a></code></span></h4>
+<div class='docblock'><p>Return the physical name of the seat.</p>
+
+<p>For libinput contexts created from udev, this is always the
+same value as passed into <code>udev_assign_seat</code> and all
+seats from that context will have the same physical name.</p>
+
+<p>The physical name of the seat is one that is usually set by the
+system or lower levels of the stack. In most cases, this is the
+base filter for devices - devices assigned to seats outside the
+current seat will not be available to the caller.</p>
+</div><h4 id='method.logical_name' class="method"><span id='logical_name.v' class='invisible'><code>fn <a href='#method.logical_name' class='fnname'>logical_name</a>(&amp;self) -&gt; &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a></code></span></h4>
+<div class='docblock'><p>Return the logical name of the seat.</p>
+
+<p>This is an identifier to group sets of devices within the
+compositor.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html" title="trait core::cmp::Eq">Eq</a> for <a class="struct" href="../input/struct.Seat.html" title="struct input::Seat">Seat</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#149' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="../input/struct.Seat.html" title="struct input::Seat">Seat</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#156-160' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="../input/trait.FromRaw.html" title="trait input::FromRaw">FromRaw</a>&lt;<a class="struct" href="../input_sys/struct.libinput_seat.html" title="struct input_sys::libinput_seat">libinput_seat</a>&gt; for <a class="struct" href="../input/struct.Seat.html" title="struct input::Seat">Seat</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#162-169' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from_raw' class="method"><span id='from_raw.v' class='invisible'><code>unsafe fn <a href='../input/trait.FromRaw.html#tymethod.from_raw' class='fnname'>from_raw</a>(ffi: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../input_sys/struct.libinput_seat.html" title="struct input_sys::libinput_seat">libinput_seat</a>) -&gt; Self</code></span></h4>
+<div class='docblock'><p>Create a new instance of this type from a raw pointer. <a href="../input/trait.FromRaw.html#tymethod.from_raw">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="../input/trait.AsRaw.html" title="trait input::AsRaw">AsRaw</a>&lt;<a class="struct" href="../input_sys/struct.libinput_seat.html" title="struct input_sys::libinput_seat">libinput_seat</a>&gt; for <a class="struct" href="../input/struct.Seat.html" title="struct input::Seat">Seat</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#171-176' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.as_raw' class="method"><span id='as_raw.v' class='invisible'><code>fn <a href='../input/trait.AsRaw.html#tymethod.as_raw' class='fnname'>as_raw</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="struct" href="../input_sys/struct.libinput_seat.html" title="struct input_sys::libinput_seat">libinput_seat</a></code></span></h4>
+<div class='docblock'><p>Receive a raw pointer representing this type.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="../input/trait.Userdata.html" title="trait input::Userdata">Userdata</a> for <a class="struct" href="../input/struct.Seat.html" title="struct input::Seat">Seat</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#178-185' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.userdata_raw' class="method"><span id='userdata_raw.v' class='invisible'><code>unsafe fn <a href='../input/trait.Userdata.html#tymethod.userdata_raw' class='fnname'>userdata_raw</a>&lt;T:&nbsp;'static&gt;(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut T</a></code></span></h4>
+<h4 id='method.set_userdata_raw' class="method"><span id='set_userdata_raw.v' class='invisible'><code>unsafe fn <a href='../input/trait.Userdata.html#tymethod.set_userdata_raw' class='fnname'>set_userdata_raw</a>&lt;T:&nbsp;'static&gt;(&amp;self, ptr: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut T</a>)</code></span></h4>
+<h4 id='method.userdata' class="method"><span id='userdata.v' class='invisible'><code>unsafe fn <a href='../input/trait.Userdata.html#method.userdata' class='fnname'>userdata</a>&lt;T:&nbsp;'static&gt;(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;T&gt;</code></span></h4>
+<div class='docblock'><p>Receive a reference to the attached userdata, if one exists. <a href="../input/trait.Userdata.html#method.userdata">Read more</a></p>
+</div><h4 id='method.userdata_mut' class="method"><span id='userdata_mut.v' class='invisible'><code>unsafe fn <a href='../input/trait.Userdata.html#method.userdata_mut' class='fnname'>userdata_mut</a>&lt;T:&nbsp;'static&gt;(&amp;mut self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;mut T&gt;</code></span></h4>
+<div class='docblock'><p>Receive a mutable reference to the attached userdata, if one exists. <a href="../input/trait.Userdata.html#method.userdata_mut">Read more</a></p>
+</div><h4 id='method.set_userdata' class="method"><span id='set_userdata.v' class='invisible'><code>unsafe fn <a href='../input/trait.Userdata.html#method.set_userdata' class='fnname'>set_userdata</a>&lt;T:&nbsp;'static, U:&nbsp;'static&gt;(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;T&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;U&gt;</code></span></h4>
+<div class='docblock'><p>Set userdata and receive the currently set userdata <a href="../input/trait.Userdata.html#method.set_userdata">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="../input/struct.Seat.html" title="struct input::Seat">Seat</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#187-191' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class="method"><span id='clone.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; Self</code></span></h4>
+<div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div><h4 id='method.clone_from' class="method"><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
+<div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html" title="trait core::ops::Drop">Drop</a> for <a class="struct" href="../input/struct.Seat.html" title="struct input::Seat">Seat</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#193-203' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.drop' class="method"><span id='drop.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a> for <a class="struct" href="../input/struct.Seat.html" title="struct input::Seat">Seat</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#205-209' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.eq' class="method"><span id='eq.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, other: &amp;Self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>This method tests for <code>self</code> and <code>other</code> values to be equal, and is used by <code>==</code>. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq">Read more</a></p>
+</div><h4 id='method.ne' class="method"><span id='ne.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
+<div class='docblock'><p>This method tests for <code>!=</code>.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html" title="trait core::hash::Hash">Hash</a> for <a class="struct" href="../input/struct.Seat.html" title="struct input::Seat">Seat</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#211-215' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.hash' class="method"><span id='hash.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#tymethod.hash' class='fnname'>hash</a>&lt;H:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html" title="trait core::hash::Hasher">Hasher</a>&gt;(&amp;self, state: &amp;mut H)</code></span></h4>
+<div class='docblock'><p>Feeds this value into the state given, updating the hasher as necessary.</p>
+</div><h4 id='method.hash_slice' class="method"><span id='hash_slice.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#method.hash_slice' class='fnname'>hash_slice</a>&lt;H&gt;(data: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;[Self]</a>, state: &amp;mut H) <span class="where fmt-newline">where H: <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html" title="trait core::hash::Hasher">Hasher</a></span></code><div class='since' title='Stable since Rust version 1.3.0'>1.3.0</div></span></h4>
+<div class='docblock'><p>Feeds a slice of this type into the state provided.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "input";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

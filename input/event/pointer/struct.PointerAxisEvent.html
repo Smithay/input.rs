@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `PointerAxisEvent` struct in crate `input`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, PointerAxisEvent">
+
+    <title>input::event::pointer::PointerAxisEvent - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc struct">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>input</a>::<wbr><a href='../index.html'>event</a>::<wbr><a href='index.html'>pointer</a></p><script>window.sidebarCurrent = {name: 'PointerAxisEvent', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../../index.html'>input</a>::<wbr><a href='../index.html'>event</a>::<wbr><a href='index.html'>pointer</a>::<wbr><a class="struct" href=''>PointerAxisEvent</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../../src/input/event/mod.rs.html#128-131' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct PointerAxisEvent { /* fields omitted */ }</pre><div class='docblock'><p>An event related to moving axis on a pointer device</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class="struct" href="../../../input/event/pointer/struct.PointerAxisEvent.html" title="struct input::event::pointer::PointerAxisEvent">PointerAxisEvent</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/input/event/pointer.rs.html#241-340' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.has_axis' class="method"><span id='has_axis.v' class='invisible'><code>fn <a href='#method.has_axis' class='fnname'>has_axis</a>(&amp;self, axis: <a class="enum" href="../../../input/event/pointer/enum.Axis.html" title="enum input::event::pointer::Axis">Axis</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if the event has a valid value for the given axis.</p>
+
+<p>If this function returns non-zero for an axis and <code>axis_value</code> returns a
+value of 0, the event is a scroll stop event.</p>
+</div><h4 id='method.axis_source' class="method"><span id='axis_source.v' class='invisible'><code>fn <a href='#method.axis_source' class='fnname'>axis_source</a>(&amp;self) -&gt; <a class="enum" href="../../../input/event/pointer/enum.AxisSource.html" title="enum input::event::pointer::AxisSource">AxisSource</a></code></span></h4>
+<div class='docblock'><p>Return the source for a given axis event.</p>
+
+<p>Axis events (scroll events) can be caused by a hardware item such as a
+scroll wheel or emulated from other input sources, such as two-finger or
+edge scrolling on a touchpad.</p>
+
+<p>If the source is <code>Finger</code>, libinput guarantees that a scroll sequence is
+terminated with a scroll value of 0. A caller may use this information to
+decide on whether kinetic scrolling should be triggered on this scroll
+sequence. The coordinate system is identical to the cursor movement, i.e.
+a scroll value of 1 represents the equivalent relative motion of 1.</p>
+
+<p>If the source is <code>Wheel</code>, no terminating event is guaranteed (though it
+may happen). Scrolling is in discrete steps, the value is the angle the
+wheel moved in degrees. The default is 15 degrees per wheel click, but
+some mice may have differently grained wheels. It is up to the caller how
+to interpret such different step sizes.</p>
+
+<p>If the source is <code>Continuous</code>, no terminating event is guaranteed (though
+it may happen). The coordinate system is identical to the cursor movement,
+i.e. a scroll value of 1 represents the equivalent relative motion of 1.</p>
+
+<p>If the source is <code>WheelTilt</code>, no terminating event is guaranteed (though
+it may happen). Scrolling is in discrete steps and there is no physical
+equivalent for the value returned here. For backwards compatibility, the
+value returned by this function is identical to a single mouse wheel
+rotation by this device (see the documentation for <code>WheelTilt</code> above).
+Callers should not use this value but instead exclusively refer to the</p>
+</div><h4 id='method.axis_value' class="method"><span id='axis_value.v' class='invisible'><code>fn <a href='#method.axis_value' class='fnname'>axis_value</a>(&amp;self, axis: <a class="enum" href="../../../input/event/pointer/enum.Axis.html" title="enum input::event::pointer::Axis">Axis</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a></code></span></h4>
+<div class='docblock'><p>Return the axis value of the given axis.</p>
+
+<p>The interpretation of the value depends on the axis. For the two scrolling
+axes <code>Vertical</code> and <code>Horizontal</code>, the value of the event is in relative
+scroll units, with the positive direction being down or right,
+respectively. For the interpretation of the value, see <code>axis_source</code>.</p>
+
+<p>If <code>has_axis</code> returns <code>false</code> for an axis, this function returns 0 for
+that axis.</p>
+</div><h4 id='method.axis_value_discrete' class="method"><span id='axis_value_discrete.v' class='invisible'><code>fn <a href='#method.axis_value_discrete' class='fnname'>axis_value_discrete</a>(&amp;self, axis: <a class="enum" href="../../../input/event/pointer/enum.Axis.html" title="enum input::event::pointer::Axis">Axis</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt;</code></span></h4>
+<div class='docblock'><p>Return the axis value in discrete steps for a given axis event.</p>
+
+<p>How a value translates into a discrete step depends on the source.</p>
+
+<p>If the source is <code>Wheel</code>, the discrete value correspond to the number of
+physical mouse wheel clicks.</p>
+
+<p>If the source is <code>Continuous</code> or <code>Finger</code>, the discrete value is always
+<code>None</code>.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html" title="trait core::cmp::Eq">Eq</a> for <a class="struct" href="../../../input/event/pointer/struct.PointerAxisEvent.html" title="struct input::event::pointer::PointerAxisEvent">PointerAxisEvent</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/input/event/mod.rs.html#126' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="../../../input/event/pointer/struct.PointerAxisEvent.html" title="struct input::event::pointer::PointerAxisEvent">PointerAxisEvent</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/input/event/mod.rs.html#133-137' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="../../../input/trait.FromRaw.html" title="trait input::FromRaw">FromRaw</a>&lt;<a class="struct" href="../../../input_sys/struct.libinput_event_pointer.html" title="struct input_sys::libinput_event_pointer">libinput_event_pointer</a>&gt; for <a class="struct" href="../../../input/event/pointer/struct.PointerAxisEvent.html" title="struct input::event::pointer::PointerAxisEvent">PointerAxisEvent</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/input/event/mod.rs.html#139-146' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from_raw' class="method"><span id='from_raw.v' class='invisible'><code>unsafe fn <a href='../../../input/trait.FromRaw.html#tymethod.from_raw' class='fnname'>from_raw</a>(ffi: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../../../input_sys/struct.libinput_event_pointer.html" title="struct input_sys::libinput_event_pointer">libinput_event_pointer</a>) -&gt; Self</code></span></h4>
+<div class='docblock'><p>Create a new instance of this type from a raw pointer. <a href="../../../input/trait.FromRaw.html#tymethod.from_raw">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="../../../input/trait.AsRaw.html" title="trait input::AsRaw">AsRaw</a>&lt;<a class="struct" href="../../../input_sys/struct.libinput_event_pointer.html" title="struct input_sys::libinput_event_pointer">libinput_event_pointer</a>&gt; for <a class="struct" href="../../../input/event/pointer/struct.PointerAxisEvent.html" title="struct input::event::pointer::PointerAxisEvent">PointerAxisEvent</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/input/event/mod.rs.html#148-153' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.as_raw' class="method"><span id='as_raw.v' class='invisible'><code>fn <a href='../../../input/trait.AsRaw.html#tymethod.as_raw' class='fnname'>as_raw</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="struct" href="../../../input_sys/struct.libinput_event_pointer.html" title="struct input_sys::libinput_event_pointer">libinput_event_pointer</a></code></span></h4>
+<div class='docblock'><p>Receive a raw pointer representing this type.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a> for <a class="struct" href="../../../input/event/pointer/struct.PointerAxisEvent.html" title="struct input::event::pointer::PointerAxisEvent">PointerAxisEvent</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/input/event/mod.rs.html#155-159' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.eq' class="method"><span id='eq.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, other: &amp;Self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>This method tests for <code>self</code> and <code>other</code> values to be equal, and is used by <code>==</code>. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq">Read more</a></p>
+</div><h4 id='method.ne' class="method"><span id='ne.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
+<div class='docblock'><p>This method tests for <code>!=</code>.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html" title="trait core::hash::Hash">Hash</a> for <a class="struct" href="../../../input/event/pointer/struct.PointerAxisEvent.html" title="struct input::event::pointer::PointerAxisEvent">PointerAxisEvent</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/input/event/mod.rs.html#161-165' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.hash' class="method"><span id='hash.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#tymethod.hash' class='fnname'>hash</a>&lt;H:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html" title="trait core::hash::Hasher">Hasher</a>&gt;(&amp;self, state: &amp;mut H)</code></span></h4>
+<div class='docblock'><p>Feeds this value into the state given, updating the hasher as necessary.</p>
+</div><h4 id='method.hash_slice' class="method"><span id='hash_slice.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#method.hash_slice' class='fnname'>hash_slice</a>&lt;H&gt;(data: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;[Self]</a>, state: &amp;mut H) <span class="where fmt-newline">where H: <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html" title="trait core::hash::Hasher">Hasher</a></span></code><div class='since' title='Stable since Rust version 1.3.0'>1.3.0</div></span></h4>
+<div class='docblock'><p>Feeds a slice of this type into the state provided.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="../../../input/event/trait.EventTrait.html" title="trait input::event::EventTrait">EventTrait</a> for <a class="struct" href="../../../input/event/pointer/struct.PointerAxisEvent.html" title="struct input::event::pointer::PointerAxisEvent">PointerAxisEvent</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/input/event/mod.rs.html#167-172' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.into_event' class="method"><span id='into_event.v' class='invisible'><code>fn <a href='../../../input/event/trait.EventTrait.html#method.into_event' class='fnname'>into_event</a>(self) -&gt; <a class="enum" href="../../../input/event/enum.Event.html" title="enum input::event::Event">Event</a> <span class="where fmt-newline">where Self: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a></span></code></span></h4>
+<div class='docblock'><p>Convert into a general <code>Event</code> again</p>
+</div><h4 id='method.context' class="method"><span id='context.v' class='invisible'><code>fn <a href='../../../input/event/trait.EventTrait.html#method.context' class='fnname'>context</a>(&amp;self) -&gt; <a class="struct" href="../../../input/struct.Libinput.html" title="struct input::Libinput">Libinput</a></code></span></h4>
+<div class='docblock'><p>Get the libinput context from the event.</p>
+</div><h4 id='method.device' class="method"><span id='device.v' class='invisible'><code>fn <a href='../../../input/event/trait.EventTrait.html#method.device' class='fnname'>device</a>(&amp;self) -&gt; <a class="struct" href="../../../input/struct.Device.html" title="struct input::Device">Device</a></code></span></h4>
+<div class='docblock'><p>Return the device associated with this event. <a href="../../../input/event/trait.EventTrait.html#method.device">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html" title="trait core::ops::Drop">Drop</a> for <a class="struct" href="../../../input/event/pointer/struct.PointerAxisEvent.html" title="struct input::event::pointer::PointerAxisEvent">PointerAxisEvent</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/input/event/mod.rs.html#174-178' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.drop' class="method"><span id='drop.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "input";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    <script defer src="../../../search-index.js"></script>
+</body>
+</html>

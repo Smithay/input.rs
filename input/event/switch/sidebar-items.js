@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Switch","Types of Switches"],["SwitchEvent","A switch related `Event`"],["SwitchState","State of a Switch"]],"struct":[["SwitchToggleEvent","An event related a switch, that was toggled"]],"trait":[["SwitchEventTrait","Common functions all Switch-Events implement."]]});

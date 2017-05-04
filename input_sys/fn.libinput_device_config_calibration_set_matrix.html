@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `libinput_device_config_calibration_set_matrix` fn in crate `input_sys`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, libinput_device_config_calibration_set_matrix">
+
+    <title>input_sys::libinput_device_config_calibration_set_matrix - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc fn">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>input_sys</a></p><script>window.sidebarCurrent = {name: 'libinput_device_config_calibration_set_matrix', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Function <a href='index.html'>input_sys</a>::<wbr><a class="fn" href=''>libinput_device_config_calibration_set_matrix</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/input_sys/gen.rs.html#4087-4090' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub unsafe extern fn libinput_device_config_calibration_set_matrix(device: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../input_sys/struct.libinput_device.html" title="struct input_sys::libinput_device">libinput_device</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; matrix: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class="enum" href="../input_sys/enum.libinput_config_status.html" title="enum input_sys::libinput_config_status">libinput_config_status</a></pre><div class='docblock'><p>@ingroup config</p>
+
+<p>Apply the 3x3 transformation matrix to absolute device coordinates. This
+matrix has no effect on relative events.</p>
+
+<p>Given a 6-element array [a, b, c, d, e, f], the matrix is applied as
+@code
+[ a  b  c ]   [ x ]
+[ d  e  f ] * [ y ]
+[ 0  0  1 ]   [ 1 ]
+@endcode</p>
+
+<p>The translation component (c, f) is expected to be normalized to the
+device coordinate range. For example, the matrix
+@code
+[ 1 0  1 ]
+[ 0 1 -1 ]
+[ 0 0  1 ]
+@endcode
+moves all coordinates by 1 device-width to the right and 1 device-height
+up.</p>
+
+<p>The rotation matrix for rotation around the origin is defined as
+@code
+[ cos(a) -sin(a) 0 ]
+[ sin(a)  cos(a) 0 ]
+[   0      0     1 ]
+@endcode
+Note that any rotation requires an additional translation component to
+translate the rotated coordinates back into the original device space.
+The rotation matrixes for 90, 180 and 270 degrees clockwise are:
+@code
+90 deg cw:      180 deg cw:     270 deg cw:
+[ 0 -1 1]       [ -1  0 1]      [  0 1 0 ]
+[ 1  0 0]       [  0 -1 1]      [ -1 0 1 ]
+[ 0  0 1]       [  0  0 1]      [  0 0 1 ]
+@endcode</p>
+
+<p>@param device The device to configure
+@param matrix An array representing the first two rows of a 3x3 matrix as
+described above.</p>
+
+<p>@return A config status code.</p>
+
+<p>@see libinput_device_config_calibration_has_matrix
+@see libinput_device_config_calibration_get_matrix
+@see libinput_device_config_calibration_get_default_matrix</p>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "input_sys";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

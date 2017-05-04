@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `input` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, input">
+
+    <title>input - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc mod">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'input', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Crate <a class="mod" href=''>input</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/input/lib.rs.html#1-254' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'>
+<h1 id='libinput-bindings-for-rust' class='section-header'><a href='#libinput-bindings-for-rust'>Libinput bindings for rust</a></h1>
+<p>These bindings closely follow libinput&#39;s concepts and it&#39;s original API.
+Please refer to the <a href="https://wayland.freedesktop.org/libinput/doc/latest/">libinput documentation</a>
+to understand the general structure and concepts.</p>
+
+<h2 id='differences-to-the-c-library' class='section-header'><a href='#differences-to-the-c-library'>Differences to the C-Library:</a></h2>
+<ul>
+<li>Refcounting does not need to be done manually. Just call <code>clone</code> when you need an additional reference.</li>
+<li>Libinput logging cannot (currently) not be customized.</li>
+</ul>
+
+<h2 id='userdata-handling' class='section-header'><a href='#userdata-handling'>Userdata handling</a></h2>
+<p>Multiple types in the libinput library allow to attach a pointer of an arbitrary type, so called <code>userdata</code>.
+Using this data is unsafe as there is no way to find out what type is stored in the libinput struct.
+Additionally multiple references to the same libinput object may exist and userdata may be shared mutably.</p>
+
+<p>This is why using and setting userdata is an unsafe operation (except when creating an object).</p>
+
+<p>If you heavily rely on userdata, you should always stored them wrapped in a <code>Mutex</code> and use the same
+type for every userdata access to further simplify usage.</p>
+
+<p>You need to be especially cautious when initializing libinput types from raw pointers, you obtained
+from other libraries which may set their own userdata. If accessing their userdata make sure no shared
+mutable access may happen and don&#39;t store something else instead, if the library does not explicitly
+allow this.</p>
+
+<p>Generally usage of this api is error-prone and discouraged if not needed.</p>
+
+<h2 id='getting-started' class='section-header'><a href='#getting-started'>Getting started</a></h2>
+<p>To get started check out the <a href="./struct.Libinput.html"><code>Libinput</code> struct</a>.</p>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<table><tr><td><code>pub use event::<a class="enum" href="../input/event/enum.Event.html" title="enum input::event::Event">Event</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="mod" href="event/index.html"
+                                  title='mod input::event'>event</a></td>
+                           <td class='docblock-short'>
+                                <p>Libinput Events</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="mod" href="ffi/index.html"
+                                  title='mod input::ffi'>ffi</a></td>
+                           <td class='docblock-short'>
+                                <p>Unsafe c-api.</p>
+                           </td>
+                       </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.Device.html"
+                                  title='struct input::Device'>Device</a></td>
+                           <td class='docblock-short'>
+                                <p>Representation of a single input device as seen by the kernel.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.DeviceGroup.html"
+                                  title='struct input::DeviceGroup'>DeviceGroup</a></td>
+                           <td class='docblock-short'>
+                                <p>Device group</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.Libinput.html"
+                                  title='struct input::Libinput'>Libinput</a></td>
+                           <td class='docblock-short'>
+                                <p>Libinput context</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.Seat.html"
+                                  title='struct input::Seat'>Seat</a></td>
+                           <td class='docblock-short'>
+                                <p>A seat has two identifiers, the physical name and the logical name.</p>
+                           </td>
+                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.AccelProfile.html"
+                                  title='enum input::AccelProfile'>AccelProfile</a></td>
+                           <td class='docblock-short'>
+                                <p>Pointer Acceleration Profile</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.ClickMethod.html"
+                                  title='enum input::ClickMethod'>ClickMethod</a></td>
+                           <td class='docblock-short'>
+                                <p>The click method defines when to generate software-emulated
+buttons, usually on a device that does not have a specific
+physical button available.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.DeviceCapability.html"
+                                  title='enum input::DeviceCapability'>DeviceCapability</a></td>
+                           <td class='docblock-short'>
+                                <p>Capabilities on a device.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.DeviceConfigError.html"
+                                  title='enum input::DeviceConfigError'>DeviceConfigError</a></td>
+                           <td class='docblock-short'>
+                                <p>Errors returned when applying configuration settings.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.Led.html"
+                                  title='enum input::Led'>Led</a></td>
+                           <td class='docblock-short'>
+                                <p>Mask reflecting LEDs on a device.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.ScrollMethod.html"
+                                  title='enum input::ScrollMethod'>ScrollMethod</a></td>
+                           <td class='docblock-short'>
+                                <p>The scroll method of a device selects when to generate scroll axis
+events instead of pointer motion events.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.SendEventsMode.html"
+                                  title='enum input::SendEventsMode'>SendEventsMode</a></td>
+                           <td class='docblock-short'>
+                                <p>The send-event mode of a device defines when a device may generate
+events and pass those events to the caller.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.TapButtonMap.html"
+                                  title='enum input::TapButtonMap'>TapButtonMap</a></td>
+                           <td class='docblock-short'>
+                                <p>Map 1/2/3 finger tips to buttons</p>
+                           </td>
+                       </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.AsRaw.html"
+                                  title='trait input::AsRaw'>AsRaw</a></td>
+                           <td class='docblock-short'>
+                                <p>Trait for types that allow to optain the underlying raw libinput pointer.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.FromRaw.html"
+                                  title='trait input::FromRaw'>FromRaw</a></td>
+                           <td class='docblock-short'>
+                                <p>Trait for types that allow to be initialized from a raw pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.Userdata.html"
+                                  title='trait input::Userdata'>Userdata</a></td>
+                           <td class='docblock-short'>
+                                <p>Trait to deal with userdata attached to this struct.</p>
+                           </td>
+                       </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.DeviceConfigResult.html"
+                                  title='type input::DeviceConfigResult'>DeviceConfigResult</a></td>
+                           <td class='docblock-short'>
+                                <p>Result returned when applying configuration settings.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.LibinputInterface.html"
+                                  title='type input::LibinputInterface'>LibinputInterface</a></td>
+                           <td class='docblock-short'>
+                                <p>libinput does not open file descriptors to devices directly,
+instead <code>open_restricted</code> and <code>close_restricted</code> are called for
+each path that must be opened.</p>
+                           </td>
+                       </tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "input";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

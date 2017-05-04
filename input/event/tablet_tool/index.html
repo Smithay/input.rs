@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `tablet_tool` mod in crate `input`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, tablet_tool">
+
+    <title>input::event::tablet_tool - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc mod">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>input</a>::<wbr><a href='../index.html'>event</a></p><script>window.sidebarCurrent = {name: 'tablet_tool', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Module <a href='../../index.html'>input</a>::<wbr><a href='../index.html'>event</a>::<wbr><a class="mod" href=''>tablet_tool</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../../src/input/event/tablet_tool/mod.rs.html#1-477' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Tablet tool event types</p>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<table><tr><td><code>pub use event::pointer::<a class="enum" href="../../../input/event/pointer/enum.ButtonState.html" title="enum input::event::pointer::ButtonState">ButtonState</a>;</code></td></tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.TabletTool.html"
+                                  title='struct input::event::tablet_tool::TabletTool'>TabletTool</a></td>
+                           <td class='docblock-short'>
+                                <p>An object representing a tool being used by a device with the
+<code>DeviceCapability::TabletTool</code> capability.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.TabletToolAxisEvent.html"
+                                  title='struct input::event::tablet_tool::TabletToolAxisEvent'>TabletToolAxisEvent</a></td>
+                           <td class='docblock-short'>
+                                <p>One or more axes have changed state on a device with the
+<code>DeviceCapability::TabletTool</code> capability.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.TabletToolButtonEvent.html"
+                                  title='struct input::event::tablet_tool::TabletToolButtonEvent'>TabletToolButtonEvent</a></td>
+                           <td class='docblock-short'>
+                                <p>Signals that a tool has changed a logical button state on a device with the
+<code>DeviceCapability::TabletTool</code> capability.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.TabletToolProximityEvent.html"
+                                  title='struct input::event::tablet_tool::TabletToolProximityEvent'>TabletToolProximityEvent</a></td>
+                           <td class='docblock-short'>
+                                <p>Signals that a tool has come in or out of proximity of a device with the
+<code>DeviceCapability::TabletTool</code> capability.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.TabletToolTipEvent.html"
+                                  title='struct input::event::tablet_tool::TabletToolTipEvent'>TabletToolTipEvent</a></td>
+                           <td class='docblock-short'>
+                                <p>Signals that a tool has come in contact with the surface of a device with the
+<code>DeviceCapability::TabletTool</code> capability.</p>
+                           </td>
+                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.ProximityState.html"
+                                  title='enum input::event::tablet_tool::ProximityState'>ProximityState</a></td>
+                           <td class='docblock-short'>
+                                <p>The state of proximity for a tool on a device.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.TabletToolEvent.html"
+                                  title='enum input::event::tablet_tool::TabletToolEvent'>TabletToolEvent</a></td>
+                           <td class='docblock-short'>
+                                <p>An event related to a tablet tool</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.TabletToolType.html"
+                                  title='enum input::event::tablet_tool::TabletToolType'>TabletToolType</a></td>
+                           <td class='docblock-short'>
+                                <p>Available tool types for a device with the <code>DeviceCapability::TabletTool</code> capability.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.TipState.html"
+                                  title='enum input::event::tablet_tool::TipState'>TipState</a></td>
+                           <td class='docblock-short'>
+                                <p>The tip contact state for a tool on a device.</p>
+                           </td>
+                       </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.TabletToolEventTrait.html"
+                                  title='trait input::event::tablet_tool::TabletToolEventTrait'>TabletToolEventTrait</a></td>
+                           <td class='docblock-short'>
+                                <p>Common functions all TabletTool-Events implement.</p>
+                           </td>
+                       </tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "input";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    <script defer src="../../../search-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Device` struct in crate `input`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Device">
+
+    <title>input::Device - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc struct">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>input</a></p><script>window.sidebarCurrent = {name: 'Device', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>input</a>::<wbr><a class="struct" href=''>Device</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/input/lib.rs.html#151-154' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Device { /* fields omitted */ }</pre><div class='docblock'><p>Representation of a single input device as seen by the kernel.</p>
+
+<p>A single physical device might consist out of multiple input
+devices like a keyboard-touchpad combination. See <code>DeviceGroup</code>
+if you want to track such combined physical devices.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class="struct" href="../input/struct.Device.html" title="struct input::Device">Device</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/device.rs.html#171-1428' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.context' class="method"><span id='context.v' class='invisible'><code>fn <a href='#method.context' class='fnname'>context</a>(&amp;self) -&gt; <a class="struct" href="../input/struct.Libinput.html" title="struct input::Libinput">Libinput</a></code></span></h4>
+<div class='docblock'><p>Get the libinput context from the device.</p>
+</div><h4 id='method.device_group' class="method"><span id='device_group.v' class='invisible'><code>fn <a href='#method.device_group' class='fnname'>device_group</a>(&amp;self) -&gt; <a class="struct" href="../input/struct.DeviceGroup.html" title="struct input::DeviceGroup">DeviceGroup</a></code></span></h4>
+<div class='docblock'><p>Get the device group this device is assigned to.</p>
+
+<p>Some physical devices like graphics tablets are represented by
+multiple kernel devices and thus by multiple <code>Device</code>s.</p>
+
+<p>libinput assigns these devices to the same <code>DeviceGroup</code>
+allowing the caller to identify such devices and adjust
+configuration settings accordingly. For example, setting a
+tablet to left-handed often means turning it upside down. A
+touch device on the same tablet would need to be turned upside
+down too to work correctly.</p>
+
+<p>All devices are part of a device group though for most devices
+the group will be a singleton. A device is assigned to a
+device group on <code>DeviceAddedEvent</code> and removed from that group
+on <code>DeviceRemovedEvent</code>. It is up to the caller to track how
+many devices are in each device group.</p>
+
+<p>Device groups do not get re-used once the last device in the
+group was removed, i.e. unplugging and re-plugging a physical
+device with grouped devices will return a different device
+group after every unplug.</p>
+
+<p>Device groups are assigned based on the <code>LIBINPUT_DEVICE_GROUP</code>
+udev property, see <a href="https://wayland.freedesktop.org/libinput/doc/latest/udev_config.html">Static device configuration</a> via udev.</p>
+</div><h4 id='method.sysname' class="method"><span id='sysname.v' class='invisible'><code>fn <a href='#method.sysname' class='fnname'>sysname</a>(&amp;self) -&gt; &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a></code></span></h4>
+<div class='docblock'><p>Get the system name of the device.</p>
+
+<p>To get the descriptive device name, use <code>name</code>.</p>
+</div><h4 id='method.name' class="method"><span id='name.v' class='invisible'><code>fn <a href='#method.name' class='fnname'>name</a>(&amp;self) -&gt; &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a></code></span></h4>
+<div class='docblock'><p>The descriptive device name as advertised by the kernel and/or
+the hardware itself.</p>
+
+<p>To get the sysname for this device, use <code>sysname</code>.</p>
+</div><h4 id='method.output_name' class="method"><span id='output_name.v' class='invisible'><code>fn <a href='#method.output_name' class='fnname'>output_name</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;</code></span></h4>
+<div class='docblock'><p>A device may be mapped to a single output, or all available
+outputs.</p>
+
+<p>If a device is mapped to a single output only, a relative
+device may not move beyond the boundaries of this output. An
+absolute device has its input coordinates mapped to the
+extents of this output.</p>
+</div><h4 id='method.id_product' class="method"><span id='id_product.v' class='invisible'><code>fn <a href='#method.id_product' class='fnname'>id_product</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a></code></span></h4>
+<div class='docblock'><p>Get the product ID for this device.</p>
+</div><h4 id='method.id_vendor' class="method"><span id='id_vendor.v' class='invisible'><code>fn <a href='#method.id_vendor' class='fnname'>id_vendor</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a></code></span></h4>
+<div class='docblock'><p>Get the vendor ID for this device.</p>
+</div><h4 id='method.seat' class="method"><span id='seat.v' class='invisible'><code>fn <a href='#method.seat' class='fnname'>seat</a>(&amp;self) -&gt; <a class="struct" href="../input/struct.Seat.html" title="struct input::Seat">Seat</a></code></span></h4>
+<div class='docblock'><p>Get the seat associated with this input device, see
+<a href="https://wayland.freedesktop.org/libinput/doc/latest/seats.html">Seats</a>
+for details.</p>
+
+<p>A seat can be uniquely identified by the physical and logical
+seat name. There will ever be only one seat instance with a
+given physical and logical seat name pair at any given time,
+but if no external reference is kept, it may be destroyed if
+no device belonging to it is left.</p>
+</div><h4 id='method.set_seat_logical_name' class="method"><span id='set_seat_logical_name.v' class='invisible'><code>fn <a href='#method.set_seat_logical_name' class='fnname'>set_seat_logical_name</a>(&amp;mut self, name: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>&gt;</code></span></h4>
+<div class='docblock'><p>Change the logical seat associated with this device by removing the device and adding it to the new seat.</p>
+
+<p>This command is identical to physically unplugging the device,
+then re-plugging it as a member of the new seat. libinput will
+generate a <code>DeviceRemovedEvent</code> event and this <code>Device</code> is
+considered removed from the context; it will not generate
+further events and will be freed when it goes out of scope.
+A <code>DeviceAddedEvent</code> event is generated with a new <code>Device</code>
+handle. It is the caller&#39;s responsibility to update references
+to the new device accordingly.</p>
+
+<p>If the logical seat name already exists in the device&#39;s
+physical seat, the device is added to this seat. Otherwise, a
+new seat is created.</p>
+
+<h2 id='note' class='section-header'><a href='#note'>Note</a></h2>
+<p>This change applies to this device until removal or <code>suspend</code>,
+whichever happens earlier.</p>
+</div><h4 id='method.udev_device' class="method"><span id='udev_device.v' class='invisible'><code>fn <a href='#method.udev_device' class='fnname'>udev_device</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="enum" href="../libc/enum.c_void.html" title="enum libc::c_void">c_void</a></code></span></h4>
+<div class='docblock'><p>Return a udev handle to the device that is this libinput
+device, if any.</p>
+
+<p>The returned handle has a refcount of at least 1, the caller
+must call <code>udev_device_unref()</code>` once to release the
+associated resources. See the
+<a href="http://www.freedesktop.org/software/systemd/libudev/">libudev documentation</a>
+for details.</p>
+
+<p>Some devices may not have a udev device, or the udev device
+may be unobtainable. This function returns NULL if no udev
+device was available.</p>
+
+<p>Calling this function multiple times for the same device may
+not return the same udev handle each time.</p>
+</div><h4 id='method.led_update' class="method"><span id='led_update.v' class='invisible'><code>fn <a href='#method.led_update' class='fnname'>led_update</a>(&amp;mut self, leds: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;[</a><a class="enum" href="../input/enum.Led.html" title="enum input::Led">Led</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">]</a>)</code></span></h4>
+<div class='docblock'><p>Update the LEDs on the device, if any.</p>
+
+<p>If the device does not have LEDs, or does not have one or more
+of the LEDs given in the mask, this function does nothing.</p>
+
+<h2 id='arguments' class='section-header'><a href='#arguments'>Arguments</a></h2>
+<p>leds: Leds to turn on</p>
+
+<p>Missing <code>Led</code>s will be turned off.
+The slice is interpreted as a bitmap.</p>
+</div><h4 id='method.has_capability' class="method"><span id='has_capability.v' class='invisible'><code>fn <a href='#method.has_capability' class='fnname'>has_capability</a>(&amp;self, cap: <a class="enum" href="../input/enum.DeviceCapability.html" title="enum input::DeviceCapability">DeviceCapability</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if the given device has the specified capability.</p>
+</div><h4 id='method.size' class="method"><span id='size.v' class='invisible'><code>fn <a href='#method.size' class='fnname'>size</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">(</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">)</a>&gt;</code></span></h4>
+<div class='docblock'><p>Get the physical size of a device in mm, where meaningful.</p>
+
+<p>This function only succeeds on devices with the required data,
+i.e. tablets, touchpads and touchscreens.</p>
+</div><h4 id='method.pointer_has_button' class="method"><span id='pointer_has_button.v' class='invisible'><code>fn <a href='#method.pointer_has_button' class='fnname'>pointer_has_button</a>(&amp;self, button: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>&gt;</code></span></h4>
+<div class='docblock'><p>Check if a <code>DeviceCapability::Pointer</code> device has a button
+with the given code (see linux/input.h).</p>
+</div><h4 id='method.keyboard_has_key' class="method"><span id='keyboard_has_key.v' class='invisible'><code>fn <a href='#method.keyboard_has_key' class='fnname'>keyboard_has_key</a>(&amp;self, key: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>&gt;</code></span></h4>
+<div class='docblock'><p>Check if a <code>DeviceCapability::Keyboard</code> device has a key with
+the given code (see linux/input.h).</p>
+</div><h4 id='method.tablet_pad_number_of_buttons' class="method"><span id='tablet_pad_number_of_buttons.v' class='invisible'><code>fn <a href='#method.tablet_pad_number_of_buttons' class='fnname'>tablet_pad_number_of_buttons</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a></code></span></h4>
+<div class='docblock'><p>Return the number of buttons on a device with the
+<code>DeviceCapability::TabletPad</code> capability.</p>
+
+<p>Buttons on a pad device are numbered sequentially, see Tablet
+pad button numbers for details.</p>
+</div><h4 id='method.tablet_pad_number_of_rings' class="method"><span id='tablet_pad_number_of_rings.v' class='invisible'><code>fn <a href='#method.tablet_pad_number_of_rings' class='fnname'>tablet_pad_number_of_rings</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a></code></span></h4>
+<div class='docblock'><p>Return the number of rings a device with the
+<code>DeviceCapability::TabletPad</code> capability provides.</p>
+</div><h4 id='method.tablet_pad_number_of_strips' class="method"><span id='tablet_pad_number_of_strips.v' class='invisible'><code>fn <a href='#method.tablet_pad_number_of_strips' class='fnname'>tablet_pad_number_of_strips</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a></code></span></h4>
+<div class='docblock'><p>Return the number of strips a device with the
+<code>DeviceCapability::TabletPad</code> capability provides.</p>
+</div><h4 id='method.tablet_pad_number_of_mode_groups' class="method"><span id='tablet_pad_number_of_mode_groups.v' class='invisible'><code>fn <a href='#method.tablet_pad_number_of_mode_groups' class='fnname'>tablet_pad_number_of_mode_groups</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a></code></span></h4>
+<div class='docblock'><p>Most devices only provide a single mode group, however devices
+such as the Wacom Cintiq 22HD provide two mode groups.</p>
+
+<p>If multiple mode groups are available, a caller should use
+<code>TabletPadModeGroup::has_button</code>,
+<code>TabletPadModeGroup::has_ring</code> and
+<code>TabletPadModeGroup::has_strip()</code> to associate each button,
+ring and strip with the correct mode group.</p>
+</div><h4 id='method.tablet_pad_mode_group' class="method"><span id='tablet_pad_mode_group.v' class='invisible'><code>fn <a href='#method.tablet_pad_mode_group' class='fnname'>tablet_pad_mode_group</a>(&amp;self, index: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="../input/event/tablet_pad/struct.TabletPadModeGroup.html" title="struct input::event::tablet_pad::TabletPadModeGroup">TabletPadModeGroup</a>&gt;</code></span></h4>
+<div class='docblock'><p>Return the current mode this mode group is in.</p>
+
+<p>Note that the returned mode is the mode valid as of completing
+the last <code>dispatch</code>. The returned mode may thus be
+different than the mode returned by
+<code>TabletPadEventTrait::mode</code>.</p>
+
+<p>For example, if the mode was toggled three times between the
+call to <code>dispatch</code>, this function returns the third mode but
+the events in the event queue will return the modes 1, 2 and
+3, respectively.</p>
+</div><h4 id='method.config_accel_default_profile' class="method"><span id='config_accel_default_profile.v' class='invisible'><code>fn <a href='#method.config_accel_default_profile' class='fnname'>config_accel_default_profile</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../input/enum.AccelProfile.html" title="enum input::AccelProfile">AccelProfile</a>&gt;</code></span></h4>
+<div class='docblock'><p>Return the default pointer acceleration profile for this
+pointer device.</p>
+</div><h4 id='method.config_accel_profile' class="method"><span id='config_accel_profile.v' class='invisible'><code>fn <a href='#method.config_accel_profile' class='fnname'>config_accel_profile</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../input/enum.AccelProfile.html" title="enum input::AccelProfile">AccelProfile</a>&gt;</code></span></h4>
+<div class='docblock'><p>Get the current pointer acceleration profile for this pointer
+device.</p>
+</div><h4 id='method.config_accel_profiles' class="method"><span id='config_accel_profiles.v' class='invisible'><code>fn <a href='#method.config_accel_profiles' class='fnname'>config_accel_profiles</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html" title="struct collections::vec::Vec">Vec</a>&lt;<a class="enum" href="../input/enum.AccelProfile.html" title="enum input::AccelProfile">AccelProfile</a>&gt;</code></span></h4>
+<div class='docblock'><p>Returns a bitmask of the configurable acceleration modes
+available on this device.</p>
+</div><h4 id='method.config_accel_set_profile' class="method"><span id='config_accel_set_profile.v' class='invisible'><code>fn <a href='#method.config_accel_set_profile' class='fnname'>config_accel_set_profile</a>(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; profile: <a class="enum" href="../input/enum.AccelProfile.html" title="enum input::AccelProfile">AccelProfile</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Set the pointer acceleration profile of this pointer device to
+the given mode.</p>
+</div><h4 id='method.config_accel_default_speed' class="method"><span id='config_accel_default_speed.v' class='invisible'><code>fn <a href='#method.config_accel_default_speed' class='fnname'>config_accel_default_speed</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a></code></span></h4>
+<div class='docblock'><p>Return the default speed setting for this device, normalized
+to a range of [-1, 1].</p>
+</div><h4 id='method.config_accel_speed' class="method"><span id='config_accel_speed.v' class='invisible'><code>fn <a href='#method.config_accel_speed' class='fnname'>config_accel_speed</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a></code></span></h4>
+<div class='docblock'><p>Get the current pointer acceleration setting for this pointer
+device.</p>
+
+<p>The returned value is normalized to a range of [-1, 1]. See
+<code>config_accel_set_speed</code> for details.</p>
+</div><h4 id='method.config_accel_set_speed' class="method"><span id='config_accel_set_speed.v' class='invisible'><code>fn <a href='#method.config_accel_set_speed' class='fnname'>config_accel_set_speed</a>(&amp;mut self, speed: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Set the pointer acceleration speed of this pointer device
+within a range of [-1, 1], where 0 is the default acceleration
+for this device, -1 is the slowest acceleration and 1 is the
+maximum acceleration available on this device.</p>
+
+<p>The actual pointer acceleration mechanism is
+implementation-dependent, as is the number of steps available
+within the range. libinput picks the semantically closest
+acceleration step if the requested value does not match a
+discrete setting.</p>
+</div><h4 id='method.config_accel_is_available' class="method"><span id='config_accel_is_available.v' class='invisible'><code>fn <a href='#method.config_accel_is_available' class='fnname'>config_accel_is_available</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if a device uses libinput-internal pointer-acceleration.</p>
+</div><h4 id='method.config_calibration_default_matrix' class="method"><span id='config_calibration_default_matrix.v' class='invisible'><code>fn <a href='#method.config_calibration_default_matrix' class='fnname'>config_calibration_default_matrix</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.array.html">[</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.array.html">; 6]</a>&gt;</code></span></h4>
+<div class='docblock'><p>Return the default calibration matrix for this device.</p>
+
+<p>On most devices, this is the identity matrix. If the udev
+property <code>LIBINPUT_CALIBRATION_MATRIX</code> is set on the respective u
+dev device, that property&#39;s value becomes the default matrix,
+see <a href="https://wayland.freedesktop.org/libinput/doc/latest/udev_config.html">Static device configuration via udev</a>.</p>
+</div><h4 id='method.config_calibration_matrix' class="method"><span id='config_calibration_matrix.v' class='invisible'><code>fn <a href='#method.config_calibration_matrix' class='fnname'>config_calibration_matrix</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.array.html">[</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.array.html">; 6]</a>&gt;</code></span></h4>
+<div class='docblock'><p>Return the current calibration matrix for this device.</p>
+</div><h4 id='method.config_calibration_has_matrix' class="method"><span id='config_calibration_has_matrix.v' class='invisible'><code>fn <a href='#method.config_calibration_has_matrix' class='fnname'>config_calibration_has_matrix</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if the device can be calibrated via a calibration matrix.</p>
+</div><h4 id='method.config_calibration_set_matrix' class="method"><span id='config_calibration_set_matrix.v' class='invisible'><code>fn <a href='#method.config_calibration_set_matrix' class='fnname'>config_calibration_set_matrix</a>(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; matrix: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.array.html">[</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.array.html">; 6]</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Apply the 3x3 transformation matrix to absolute device
+coordinates.</p>
+
+<p>This matrix has no effect on relative events.</p>
+
+<p>Given a 6-element array [a, b, c, d, e, f], the matrix is
+applied as</p>
+
+<pre class="rust rust-example-rendered">
+[ <span class="ident">a</span>  <span class="ident">b</span>  <span class="ident">c</span> ]   [ <span class="ident">x</span> ]
+[ <span class="ident">d</span>  <span class="ident">e</span>  <span class="ident">f</span> ] <span class="op">*</span> [ <span class="ident">y</span> ]
+[ <span class="number">0</span>  <span class="number">0</span>  <span class="number">1</span> ]   [ <span class="number">1</span> ]</pre>
+
+<p>The translation component (c, f) is expected to be normalized
+to the device coordinate range. For example, the matrix</p>
+
+<pre class="rust rust-example-rendered">
+[ <span class="number">1</span> <span class="number">0</span>  <span class="number">1</span> ]
+[ <span class="number">0</span> <span class="number">1</span> <span class="op">-</span><span class="number">1</span> ]
+[ <span class="number">0</span> <span class="number">0</span>  <span class="number">1</span> ]</pre>
+
+<p>moves all coordinates by 1 device-width to the right and 1
+device-height up.</p>
+
+<p>The rotation matrix for rotation around the origin is defined
+as</p>
+
+<pre class="rust rust-example-rendered">
+[ <span class="ident">cos</span>(<span class="ident">a</span>) <span class="op">-</span><span class="ident">sin</span>(<span class="ident">a</span>) <span class="number">0</span> ]
+[ <span class="ident">sin</span>(<span class="ident">a</span>)  <span class="ident">cos</span>(<span class="ident">a</span>) <span class="number">0</span> ]
+[   <span class="number">0</span>      <span class="number">0</span>     <span class="number">1</span> ]</pre>
+
+<p>Note that any rotation requires an additional translation
+component to translate the rotated coordinates back into the
+original device space. The rotation matrixes for 90, 180 and
+270 degrees clockwise are:</p>
+
+<pre class="rust rust-example-rendered">
+<span class="number">90</span> <span class="ident">deg</span> <span class="ident">cw</span>:              <span class="number">180</span> <span class="ident">deg</span> <span class="ident">cw</span>:             <span class="number">270</span> <span class="ident">deg</span> <span class="ident">cw</span>:
+[ <span class="number">0</span> <span class="op">-</span><span class="number">1</span> <span class="number">1</span>]               [ <span class="op">-</span><span class="number">1</span>  <span class="number">0</span> <span class="number">1</span>]              [  <span class="number">0</span> <span class="number">1</span> <span class="number">0</span> ]
+[ <span class="number">1</span>  <span class="number">0</span> <span class="number">0</span>]               [  <span class="number">0</span> <span class="op">-</span><span class="number">1</span> <span class="number">1</span>]              [ <span class="op">-</span><span class="number">1</span> <span class="number">0</span> <span class="number">1</span> ]
+[ <span class="number">0</span>  <span class="number">0</span> <span class="number">1</span>]               [  <span class="number">0</span>  <span class="number">0</span> <span class="number">1</span>]              [  <span class="number">0</span> <span class="number">0</span> <span class="number">1</span> ]</pre>
+</div><h4 id='method.config_click_default_method' class="method"><span id='config_click_default_method.v' class='invisible'><code>fn <a href='#method.config_click_default_method' class='fnname'>config_click_default_method</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../input/enum.ClickMethod.html" title="enum input::ClickMethod">ClickMethod</a>&gt;</code></span></h4>
+<div class='docblock'><p>Get the default button click method for this device.</p>
+
+<p>The button click method defines when to generate
+software-emulated buttons, usually on a device that does not
+have a specific physical button available.</p>
+</div><h4 id='method.config_click_method' class="method"><span id='config_click_method.v' class='invisible'><code>fn <a href='#method.config_click_method' class='fnname'>config_click_method</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../input/enum.ClickMethod.html" title="enum input::ClickMethod">ClickMethod</a>&gt;</code></span></h4>
+<div class='docblock'><p>Get the button click method for this device.</p>
+
+<p>The button click method defines when to generate
+software-emulated buttons, usually on a device that does not
+have a specific physical button available.</p>
+</div><h4 id='method.config_click_methods' class="method"><span id='config_click_methods.v' class='invisible'><code>fn <a href='#method.config_click_methods' class='fnname'>config_click_methods</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html" title="struct collections::vec::Vec">Vec</a>&lt;<a class="enum" href="../input/enum.ClickMethod.html" title="enum input::ClickMethod">ClickMethod</a>&gt;</code></span></h4>
+<div class='docblock'><p>Check which button click methods a device supports.</p>
+
+<p>The button click method defines when to generate
+software-emulated buttons, usually on a device that does not
+have a specific physical button available.</p>
+</div><h4 id='method.config_click_set_method' class="method"><span id='config_click_set_method.v' class='invisible'><code>fn <a href='#method.config_click_set_method' class='fnname'>config_click_set_method</a>(&amp;mut self, method: <a class="enum" href="../input/enum.ClickMethod.html" title="enum input::ClickMethod">ClickMethod</a>) -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Set the button click method for this device.</p>
+
+<p>The button click method defines when to generate
+software-emulated buttons, usually on a device that does not
+have a specific physical button available.</p>
+
+<h2 id='note-1' class='section-header'><a href='#note-1'>Note</a></h2>
+<p>The selected click method may not take effect immediately. The
+device may require changing to a neutral state first before
+activating the new method.</p>
+</div><h4 id='method.config_dwt_default_enabled' class="method"><span id='config_dwt_default_enabled.v' class='invisible'><code>fn <a href='#method.config_dwt_default_enabled' class='fnname'>config_dwt_default_enabled</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if the disable-while typing feature is enabled on this
+device by default.</p>
+
+<p>If the device does not support disable-while-typing, this
+function returns <code>false</code>.</p>
+</div><h4 id='method.config_dwt_enabled' class="method"><span id='config_dwt_enabled.v' class='invisible'><code>fn <a href='#method.config_dwt_enabled' class='fnname'>config_dwt_enabled</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if the disable-while typing feature is currently enabled
+on this device.</p>
+
+<p>If the device does not support disable-while-typing, this
+function returns <code>false</code>.</p>
+</div><h4 id='method.config_dwt_is_available' class="method"><span id='config_dwt_is_available.v' class='invisible'><code>fn <a href='#method.config_dwt_is_available' class='fnname'>config_dwt_is_available</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if this device supports configurable
+disable-while-typing feature.</p>
+
+<p>This feature is usually available on built-in touchpads and
+disables the touchpad while typing. See <a href="https://wayland.freedesktop.org/libinput/doc/latest/palm_detection.html#disable-while-typing">Disable-while-typing</a>
+for details.</p>
+</div><h4 id='method.config_dwt_set_enabled' class="method"><span id='config_dwt_set_enabled.v' class='invisible'><code>fn <a href='#method.config_dwt_set_enabled' class='fnname'>config_dwt_set_enabled</a>(&amp;self, enabled: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Enable or disable the disable-while-typing feature.</p>
+
+<p>When enabled, the device will be disabled while typing and
+for a short period after. See Disable-while-typing for
+details.</p>
+
+<h2 id='note-2' class='section-header'><a href='#note-2'>Note</a></h2>
+<p>Enabling or disabling disable-while-typing may not take
+effect immediately.</p>
+</div><h4 id='method.config_left_handed' class="method"><span id='config_left_handed.v' class='invisible'><code>fn <a href='#method.config_left_handed' class='fnname'>config_left_handed</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Get the current left-handed configuration of the device.</p>
+</div><h4 id='method.config_left_handed_default' class="method"><span id='config_left_handed_default.v' class='invisible'><code>fn <a href='#method.config_left_handed_default' class='fnname'>config_left_handed_default</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Get the default left-handed configuration of the device.</p>
+</div><h4 id='method.config_left_handed_is_available' class="method"><span id='config_left_handed_is_available.v' class='invisible'><code>fn <a href='#method.config_left_handed_is_available' class='fnname'>config_left_handed_is_available</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if a device has a configuration that supports
+left-handed usage.</p>
+</div><h4 id='method.config_left_handed_set' class="method"><span id='config_left_handed_set.v' class='invisible'><code>fn <a href='#method.config_left_handed_set' class='fnname'>config_left_handed_set</a>(&amp;self, enabled: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Set the left-handed configuration of the device.</p>
+
+<p>The exact behavior is device-dependent. On a mouse and most
+pointing devices, left and right buttons are swapped but the
+middle button is unmodified. On a touchpad, physical buttons
+(if present) are swapped. On a clickpad, the top and bottom
+software-emulated buttons are swapped where present, the main
+area of the touchpad remains a left button. Tapping and
+clickfinger behavior is not affected by this setting.</p>
+
+<p>Changing the left-handed configuration of a device may not
+take effect until all buttons have been logically released.</p>
+</div><h4 id='method.config_middle_emulation_default_enabled' class="method"><span id='config_middle_emulation_default_enabled.v' class='invisible'><code>fn <a href='#method.config_middle_emulation_default_enabled' class='fnname'>config_middle_emulation_default_enabled</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if configurable middle button emulation is enabled by
+default on this device.</p>
+
+<p>See <a href="https://wayland.freedesktop.org/libinput/doc/latest/middle_button_emulation.html">Middle button emulation</a> for details.</p>
+
+<p>If the device does not have configurable middle button
+emulation, this function returns <code>false</code>.</p>
+
+<h2 id='note-3' class='section-header'><a href='#note-3'>Note</a></h2>
+<p>Some devices provide middle mouse button emulation but do not
+allow enabling/disabling that emulation. These devices always
+return <code>false</code>.</p>
+</div><h4 id='method.config_middle_emulation_enabled' class="method"><span id='config_middle_emulation_enabled.v' class='invisible'><code>fn <a href='#method.config_middle_emulation_enabled' class='fnname'>config_middle_emulation_enabled</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if configurable middle button emulation is enabled on
+this device.</p>
+
+<p>See <a href="https://wayland.freedesktop.org/libinput/doc/latest/middle_button_emulation.html">Middle button emulation</a>
+for details.</p>
+
+<p>If the device does not have configurable middle button
+emulation, this function returns <code>false</code>.</p>
+
+<h2 id='note-4' class='section-header'><a href='#note-4'>Note</a></h2>
+<p>Some devices provide middle mouse button emulation but do not
+allow enabling/disabling that emulation. These devices always
+return <code>false</code>.</p>
+</div><h4 id='method.config_middle_emulation_is_available' class="method"><span id='config_middle_emulation_is_available.v' class='invisible'><code>fn <a href='#method.config_middle_emulation_is_available' class='fnname'>config_middle_emulation_is_available</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if middle mouse button emulation configuration is
+available on this device.</p>
+
+<p>See <a href="https://wayland.freedesktop.org/libinput/doc/latest/middle_button_emulation.html">Middle button emulation</a>
+for details.</p>
+
+<h2 id='note-5' class='section-header'><a href='#note-5'>Note</a></h2>
+<p>Some devices provide middle mouse button emulation but do not
+allow enabling/disabling that emulation. These devices return
+<code>false</code> in <code>config_middle_emulation_is_available</code>.</p>
+</div><h4 id='method.config_middle_emulation_set_enabled' class="method"><span id='config_middle_emulation_set_enabled.v' class='invisible'><code>fn <a href='#method.config_middle_emulation_set_enabled' class='fnname'>config_middle_emulation_set_enabled</a>(&amp;self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enabled: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Enable or disable middle button emulation on this device.</p>
+
+<p>When enabled, a simultaneous press of the left and right
+button generates a middle mouse button event. Releasing the
+buttons generates a middle mouse button release, the left and
+right button events are discarded otherwise.</p>
+
+<p>See <a href="https://wayland.freedesktop.org/libinput/doc/latest/middle_button_emulation.html">Middle button emulation</a>
+for details.</p>
+</div><h4 id='method.config_rotation_angle' class="method"><span id='config_rotation_angle.v' class='invisible'><code>fn <a href='#method.config_rotation_angle' class='fnname'>config_rotation_angle</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a></code></span></h4>
+<div class='docblock'><p>Get the current rotation of a device in degrees clockwise off
+the logical neutral position.</p>
+
+<p>If this device does not support rotation, the return value is
+always 0.</p>
+</div><h4 id='method.config_rotation_default_angle' class="method"><span id='config_rotation_default_angle.v' class='invisible'><code>fn <a href='#method.config_rotation_default_angle' class='fnname'>config_rotation_default_angle</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a></code></span></h4>
+<div class='docblock'><p>Get the default rotation of a device in degrees clockwise off
+the logical neutral position.</p>
+
+<p>If this device does not support rotation, the return value is
+always 0.</p>
+</div><h4 id='method.config_rotation_is_available' class="method"><span id='config_rotation_is_available.v' class='invisible'><code>fn <a href='#method.config_rotation_is_available' class='fnname'>config_rotation_is_available</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check whether a device can have a custom rotation applied.</p>
+</div><h4 id='method.config_rotation_set_angle' class="method"><span id='config_rotation_set_angle.v' class='invisible'><code>fn <a href='#method.config_rotation_set_angle' class='fnname'>config_rotation_set_angle</a>(&amp;self, angle: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Set the rotation of a device in degrees clockwise off the
+logical neutral position.</p>
+
+<p>Any subsequent motion events are adjusted according to the
+given angle.</p>
+
+<p>The angle has to be in the range of [0, 360] degrees,
+otherwise this function returns <code>DeviceConfigError::Invalid</code>.
+If the angle is a multiple of 360 or negative, the caller
+must ensure the correct ranging before calling this function.</p>
+
+<p>libinput guarantees that this function accepts multiples of
+90 degrees. If a value is within the [0, 360] range but not a
+multiple of 90 degrees, this function may return
+<code>DeviceConfigError::Invalid</code> if the underlying device or
+implementation does not support finer-grained rotation angles.</p>
+
+<p>The rotation angle is applied to all motion events emitted by
+the device. Thus, rotating the device also changes the angle
+required or presented by scrolling, gestures, etc.</p>
+
+<p>Setting a rotation of 0 degrees on a device that does not
+support rotation always succeeds.</p>
+</div><h4 id='method.config_scroll_button' class="method"><span id='config_scroll_button.v' class='invisible'><code>fn <a href='#method.config_scroll_button' class='fnname'>config_scroll_button</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a></code></span></h4>
+<div class='docblock'><p>Get the button for the <code>ScrollMethod::OnButtonDown</code> method
+for this device.</p>
+
+<p>If <code>ScrollMethod::OnButtonDown</code> scroll method is not
+supported, or no button is set, this function returns 0.</p>
+
+<h2 id='note-6' class='section-header'><a href='#note-6'>Note</a></h2>
+<p>The return value is independent of the currently selected
+scroll-method. For button scrolling to activate, a device
+must have the <code>ScrollMethod::OnButtonDown</code> method enabled,
+and a non-zero button set as scroll button.</p>
+</div><h4 id='method.config_scroll_default_button' class="method"><span id='config_scroll_default_button.v' class='invisible'><code>fn <a href='#method.config_scroll_default_button' class='fnname'>config_scroll_default_button</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a></code></span></h4>
+<div class='docblock'><p>Get the default button for the <code>ScrollMethod::OnButtonDown</code>
+method for this device.</p>
+
+<p>If <code>ScrollMethod::OnButtonDown</code> scroll method is not
+supported, or no default button is set,
+this function returns 0.</p>
+</div><h4 id='method.config_scroll_default_method' class="method"><span id='config_scroll_default_method.v' class='invisible'><code>fn <a href='#method.config_scroll_default_method' class='fnname'>config_scroll_default_method</a>(&amp;self) -&gt; <a class="enum" href="../input/enum.ScrollMethod.html" title="enum input::ScrollMethod">ScrollMethod</a></code></span></h4>
+<div class='docblock'><p>Get the default scroll method for this device.</p>
+
+<p>The method defines when to generate scroll axis events
+instead of pointer motion events.</p>
+</div><h4 id='method.config_scroll_method' class="method"><span id='config_scroll_method.v' class='invisible'><code>fn <a href='#method.config_scroll_method' class='fnname'>config_scroll_method</a>(&amp;self) -&gt; <a class="enum" href="../input/enum.ScrollMethod.html" title="enum input::ScrollMethod">ScrollMethod</a></code></span></h4>
+<div class='docblock'><p>Get the scroll method for this device.</p>
+
+<p>The method defines when to generate scroll axis events
+instead of pointer motion events.</p>
+</div><h4 id='method.config_scroll_methods' class="method"><span id='config_scroll_methods.v' class='invisible'><code>fn <a href='#method.config_scroll_methods' class='fnname'>config_scroll_methods</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html" title="struct collections::vec::Vec">Vec</a>&lt;<a class="enum" href="../input/enum.ScrollMethod.html" title="enum input::ScrollMethod">ScrollMethod</a>&gt;</code></span></h4>
+<div class='docblock'><p>Check which scroll methods a device supports.</p>
+
+<p>The method defines when to generate scroll axis events
+instead of pointer motion events.</p>
+</div><h4 id='method.config_scroll_set_method' class="method"><span id='config_scroll_set_method.v' class='invisible'><code>fn <a href='#method.config_scroll_set_method' class='fnname'>config_scroll_set_method</a>(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; method: <a class="enum" href="../input/enum.ScrollMethod.html" title="enum input::ScrollMethod">ScrollMethod</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Set the scroll method for this device.</p>
+
+<p>The method defines when to generate scroll axis events
+instead of pointer motion events.</p>
+
+<h2 id='note-7' class='section-header'><a href='#note-7'>Note</a></h2>
+<p>Setting <code>ScrollMethod::OnButtonDown</code> enables the scroll
+method, but scrolling is only activated when the configured
+button is held down. If no button is set, i.e.
+<code>config_scroll_button</code> returns 0, scrolling cannot activate.</p>
+</div><h4 id='method.config_scroll_default_natural_scroll_enabled' class="method"><span id='config_scroll_default_natural_scroll_enabled.v' class='invisible'><code>fn <a href='#method.config_scroll_default_natural_scroll_enabled' class='fnname'>config_scroll_default_natural_scroll_enabled</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Get the default mode for scrolling on this device.</p>
+</div><h4 id='method.config_scroll_natural_scroll_enabled' class="method"><span id='config_scroll_natural_scroll_enabled.v' class='invisible'><code>fn <a href='#method.config_scroll_natural_scroll_enabled' class='fnname'>config_scroll_natural_scroll_enabled</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Get the current mode for scrolling on this device.</p>
+</div><h4 id='method.config_scroll_has_natural_scroll' class="method"><span id='config_scroll_has_natural_scroll.v' class='invisible'><code>fn <a href='#method.config_scroll_has_natural_scroll' class='fnname'>config_scroll_has_natural_scroll</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Return non-zero if the device supports &quot;natural scrolling&quot;.</p>
+
+<p>In traditional scroll mode, the movement of fingers on a
+touchpad when scrolling matches the movement of the scroll
+bars. When the fingers move down, the scroll bar moves down,
+a line of text on the screen moves towards the upper end of
+the screen. This also matches scroll wheels on mice (wheel
+down, content moves up).</p>
+
+<p>Natural scrolling is the term coined by Apple for inverted
+scrolling. In this mode, the effect of scrolling movement of
+fingers on a touchpad resemble physical manipulation of
+paper. When the fingers move down, a line of text on the
+screen moves down (scrollbars move up). This is the opposite
+of scroll wheels on mice.</p>
+
+<p>A device supporting natural scrolling can be switched between
+traditional scroll mode and natural scroll mode.</p>
+</div><h4 id='method.config_scroll_set_natural_scroll_enabled' class="method"><span id='config_scroll_set_natural_scroll_enabled.v' class='invisible'><code>fn <a href='#method.config_scroll_set_natural_scroll_enabled' class='fnname'>config_scroll_set_natural_scroll_enabled</a>(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enabled: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Enable or disable natural scrolling on the device.</p>
+</div><h4 id='method.config_scroll_set_button' class="method"><span id='config_scroll_set_button.v' class='invisible'><code>fn <a href='#method.config_scroll_set_button' class='fnname'>config_scroll_set_button</a>(&amp;mut self, button: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Set the button for the <code>ScrollMethod::OnButtonDown</code> method
+for this device.</p>
+
+<p>When the current scroll method is set to
+<code>ScrollMethod::OnButtonDown</code>, no button press/release events
+will be send for the configured button.</p>
+
+<p>When the configured button is pressed, any motion events
+along a scroll-capable axis are turned into scroll axis
+events.</p>
+
+<h2 id='note-8' class='section-header'><a href='#note-8'>Note</a></h2>
+<p>Setting the button does not change the scroll method. To
+change the scroll method call <code>config_scroll_set_method</code>.
+If the button is 0, button scrolling is effectively disabled.</p>
+</div><h4 id='method.config_send_events_mode' class="method"><span id='config_send_events_mode.v' class='invisible'><code>fn <a href='#method.config_send_events_mode' class='fnname'>config_send_events_mode</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html" title="struct collections::vec::Vec">Vec</a>&lt;<a class="enum" href="../input/enum.SendEventsMode.html" title="enum input::SendEventsMode">SendEventsMode</a>&gt;</code></span></h4>
+<div class='docblock'><p>Get the send-event mode for this device.</p>
+
+<p>The mode defines when the device processes and sends events
+to the caller.</p>
+
+<p>If a caller enables the bits for multiple modes, some of
+which are subsets of another mode libinput may drop the bits
+that are subsets. In other words, don&#39;t expect
+<code>config_send_events_mode</code> to always return exactly the same
+as passed into <code>config_send_events_set_mode</code>.</p>
+</div><h4 id='method.config_send_events_modes' class="method"><span id='config_send_events_modes.v' class='invisible'><code>fn <a href='#method.config_send_events_modes' class='fnname'>config_send_events_modes</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html" title="struct collections::vec::Vec">Vec</a>&lt;<a class="enum" href="../input/enum.SendEventsMode.html" title="enum input::SendEventsMode">SendEventsMode</a>&gt;</code></span></h4>
+<div class='docblock'><p>Return the possible send-event modes for this device.</p>
+
+<p>These modes define when a device may process and send events.</p>
+</div><h4 id='method.config_send_events_set_mode' class="method"><span id='config_send_events_set_mode.v' class='invisible'><code>fn <a href='#method.config_send_events_set_mode' class='fnname'>config_send_events_set_mode</a>(&amp;self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mode: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;[</a><a class="enum" href="../input/enum.SendEventsMode.html" title="enum input::SendEventsMode">SendEventsMode</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">]</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Set the send-event mode for this device.</p>
+
+<p>The mode defines when the device processes and sends events
+to the caller.</p>
+
+<p>The selected mode may not take effect immediately. Events
+already received and processed from this device are
+unaffected and will be passed to the caller on the next call
+to <code>&lt;Libinput as Iterator&gt;::next()</code>.</p>
+
+<p>If the mode is a mixture of <code>SendEventsMode</code>s, the device may
+wait for or generate events until it is in a neutral state.
+For example, this may include waiting for or generating
+button release events.</p>
+
+<p>If the device is already suspended, this function does
+nothing and returns success. Changing the send-event mode on
+a device that has been removed is permitted.</p>
+</div><h4 id='method.config_tap_button_map' class="method"><span id='config_tap_button_map.v' class='invisible'><code>fn <a href='#method.config_tap_button_map' class='fnname'>config_tap_button_map</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../input/enum.TapButtonMap.html" title="enum input::TapButtonMap">TapButtonMap</a>&gt;</code></span></h4>
+<div class='docblock'><p>Get the finger number to button number mapping for
+tap-to-click.</p>
+
+<p>The return value for a device that does not support tapping
+is always <code>TapButtonMap::LeftRightMiddle</code>.</p>
+
+<p>This will return <code>None</code> for devices
+where <code>config_tap_finger_count</code> returns 0.</p>
+</div><h4 id='method.config_tap_default_button_map' class="method"><span id='config_tap_default_button_map.v' class='invisible'><code>fn <a href='#method.config_tap_default_button_map' class='fnname'>config_tap_default_button_map</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../input/enum.TapButtonMap.html" title="enum input::TapButtonMap">TapButtonMap</a>&gt;</code></span></h4>
+<div class='docblock'><p>Get the default finger number to button number mapping for
+tap-to-click.</p>
+
+<p>The return value for a device that does not support tapping
+is always <code>TapButtonMap::LeftRightMiddle</code>.</p>
+
+<p>This will return <code>None</code> for devices
+where <code>config_tap_finger_count</code> returns 0.</p>
+</div><h4 id='method.config_tap_default_drag_enabled' class="method"><span id='config_tap_default_drag_enabled.v' class='invisible'><code>fn <a href='#method.config_tap_default_drag_enabled' class='fnname'>config_tap_default_drag_enabled</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Return whether tap-and-drag is enabled or disabled by default
+on this device.</p>
+</div><h4 id='method.config_tap_default_drag_lock_enabled' class="method"><span id='config_tap_default_drag_lock_enabled.v' class='invisible'><code>fn <a href='#method.config_tap_default_drag_lock_enabled' class='fnname'>config_tap_default_drag_lock_enabled</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if drag-lock during tapping is enabled by default on
+this device.</p>
+
+<p>If the device does not support tapping, this function always
+returns <code>false</code>.</p>
+
+<p>Drag lock may be enabled by default even when tapping is
+disabled by default.</p>
+</div><h4 id='method.config_tap_default_enabled' class="method"><span id='config_tap_default_enabled.v' class='invisible'><code>fn <a href='#method.config_tap_default_enabled' class='fnname'>config_tap_default_enabled</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Return the default setting for whether tap-to-click is
+enabled on this device.</p>
+</div><h4 id='method.config_tap_drag_enabled' class="method"><span id='config_tap_drag_enabled.v' class='invisible'><code>fn <a href='#method.config_tap_drag_enabled' class='fnname'>config_tap_drag_enabled</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Return whether tap-and-drag is enabled or disabled on this
+device.</p>
+</div><h4 id='method.config_tap_drag_lock_enabled' class="method"><span id='config_tap_drag_lock_enabled.v' class='invisible'><code>fn <a href='#method.config_tap_drag_lock_enabled' class='fnname'>config_tap_drag_lock_enabled</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if drag-lock during tapping is enabled on this device.</p>
+
+<p>If the device does not support tapping, this function always
+returns <code>false</code>.</p>
+
+<p>Drag lock may be enabled even when tapping is disabled.</p>
+</div><h4 id='method.config_tap_enabled' class="method"><span id='config_tap_enabled.v' class='invisible'><code>fn <a href='#method.config_tap_enabled' class='fnname'>config_tap_enabled</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Check if tap-to-click is enabled on this device.</p>
+
+<p>If the device does not support tapping, this function always
+returns <code>false</code>.</p>
+</div><h4 id='method.config_tap_finger_count' class="method"><span id='config_tap_finger_count.v' class='invisible'><code>fn <a href='#method.config_tap_finger_count' class='fnname'>config_tap_finger_count</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a></code></span></h4>
+<div class='docblock'><p>Check if the device supports tap-to-click and how many
+fingers can be used for tapping.</p>
+
+<p>See <code>config_tap_set_enabled</code> for more information.</p>
+</div><h4 id='method.config_tap_set_button_map' class="method"><span id='config_tap_set_button_map.v' class='invisible'><code>fn <a href='#method.config_tap_set_button_map' class='fnname'>config_tap_set_button_map</a>(&amp;mut self, map: <a class="enum" href="../input/enum.TapButtonMap.html" title="enum input::TapButtonMap">TapButtonMap</a>) -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Set the finger number to button number mapping for
+tap-to-click.</p>
+
+<p>The default mapping on most devices is to have a 1, 2 and 3
+finger tap to map to the left, right and middle button,
+respectively. A device may permit changing the button mapping
+but disallow specific maps. In this case
+<code>DeviceConfigError::Disabled</code> is returned, the caller is
+expected to handle this case correctly.</p>
+
+<p>Changing the button mapping may not take effect immediately,
+the device may wait until it is in a neutral state before
+applying any changes.</p>
+
+<p>The mapping may be changed when tap-to-click is disabled. The
+new mapping takes effect when tap-to-click is enabled in the
+future.</p>
+
+<h2 id='note-9' class='section-header'><a href='#note-9'>Note</a></h2>
+<p>This will return <code>None</code> for devices where
+<code>config_tap_finger_count</code> returns 0.</p>
+</div><h4 id='method.config_tap_set_drag_enabled' class="method"><span id='config_tap_set_drag_enabled.v' class='invisible'><code>fn <a href='#method.config_tap_set_drag_enabled' class='fnname'>config_tap_set_drag_enabled</a>(&amp;mut self, enabled: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Enable or disable tap-and-drag on this device.</p>
+
+<p>When enabled, a single-finger tap immediately followed by a
+finger down results in a button down event, subsequent finger
+motion thus triggers a drag. The button is released on finger
+up.
+See <a href="https://wayland.freedesktop.org/libinput/doc/latest/tapping.html#tapndrag">Tap-and-drag</a>
+for more details.</p>
+</div><h4 id='method.config_tap_set_drag_lock_enabled' class="method"><span id='config_tap_set_drag_lock_enabled.v' class='invisible'><code>fn <a href='#method.config_tap_set_drag_lock_enabled' class='fnname'>config_tap_set_drag_lock_enabled</a>(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enabled: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Enable or disable drag-lock during tapping on this device.</p>
+
+<p>When enabled, a finger may be lifted and put back on the
+touchpad within a timeout and the drag process continues.
+When disabled, lifting the finger during a tap-and-drag will
+immediately stop the drag.
+See <a href="https://wayland.freedesktop.org/libinput/doc/latest/tapping.html#tapndrag">Tap-and-drag</a>
+for details.</p>
+
+<p>Enabling drag lock on a device that has tapping disabled is
+permitted, but has no effect until tapping is enabled.</p>
+</div><h4 id='method.config_tap_set_enabled' class="method"><span id='config_tap_set_enabled.v' class='invisible'><code>fn <a href='#method.config_tap_set_enabled' class='fnname'>config_tap_set_enabled</a>(&amp;mut self, enabled: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a class="type" href="../input/type.DeviceConfigResult.html" title="type input::DeviceConfigResult">DeviceConfigResult</a></code></span></h4>
+<div class='docblock'><p>Enable or disable tap-to-click on this device, with a default
+mapping of 1, 2, 3 finger tap mapping to left, right, middle
+click, respectively.</p>
+
+<p>Tapping is limited by the number of simultaneous touches
+supported by the device, see <code>config_tap_finger_count</code>.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html" title="trait core::cmp::Eq">Eq</a> for <a class="struct" href="../input/struct.Device.html" title="struct input::Device">Device</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#149' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="../input/struct.Device.html" title="struct input::Device">Device</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#156-160' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="../input/trait.FromRaw.html" title="trait input::FromRaw">FromRaw</a>&lt;<a class="struct" href="../input_sys/struct.libinput_device.html" title="struct input_sys::libinput_device">libinput_device</a>&gt; for <a class="struct" href="../input/struct.Device.html" title="struct input::Device">Device</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#162-169' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from_raw' class="method"><span id='from_raw.v' class='invisible'><code>unsafe fn <a href='../input/trait.FromRaw.html#tymethod.from_raw' class='fnname'>from_raw</a>(ffi: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../input_sys/struct.libinput_device.html" title="struct input_sys::libinput_device">libinput_device</a>) -&gt; Self</code></span></h4>
+<div class='docblock'><p>Create a new instance of this type from a raw pointer. <a href="../input/trait.FromRaw.html#tymethod.from_raw">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="../input/trait.AsRaw.html" title="trait input::AsRaw">AsRaw</a>&lt;<a class="struct" href="../input_sys/struct.libinput_device.html" title="struct input_sys::libinput_device">libinput_device</a>&gt; for <a class="struct" href="../input/struct.Device.html" title="struct input::Device">Device</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#171-176' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.as_raw' class="method"><span id='as_raw.v' class='invisible'><code>fn <a href='../input/trait.AsRaw.html#tymethod.as_raw' class='fnname'>as_raw</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="struct" href="../input_sys/struct.libinput_device.html" title="struct input_sys::libinput_device">libinput_device</a></code></span></h4>
+<div class='docblock'><p>Receive a raw pointer representing this type.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="../input/trait.Userdata.html" title="trait input::Userdata">Userdata</a> for <a class="struct" href="../input/struct.Device.html" title="struct input::Device">Device</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#178-185' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.userdata_raw' class="method"><span id='userdata_raw.v' class='invisible'><code>unsafe fn <a href='../input/trait.Userdata.html#tymethod.userdata_raw' class='fnname'>userdata_raw</a>&lt;T:&nbsp;'static&gt;(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut T</a></code></span></h4>
+<h4 id='method.set_userdata_raw' class="method"><span id='set_userdata_raw.v' class='invisible'><code>unsafe fn <a href='../input/trait.Userdata.html#tymethod.set_userdata_raw' class='fnname'>set_userdata_raw</a>&lt;T:&nbsp;'static&gt;(&amp;self, ptr: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut T</a>)</code></span></h4>
+<h4 id='method.userdata' class="method"><span id='userdata.v' class='invisible'><code>unsafe fn <a href='../input/trait.Userdata.html#method.userdata' class='fnname'>userdata</a>&lt;T:&nbsp;'static&gt;(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;T&gt;</code></span></h4>
+<div class='docblock'><p>Receive a reference to the attached userdata, if one exists. <a href="../input/trait.Userdata.html#method.userdata">Read more</a></p>
+</div><h4 id='method.userdata_mut' class="method"><span id='userdata_mut.v' class='invisible'><code>unsafe fn <a href='../input/trait.Userdata.html#method.userdata_mut' class='fnname'>userdata_mut</a>&lt;T:&nbsp;'static&gt;(&amp;mut self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;mut T&gt;</code></span></h4>
+<div class='docblock'><p>Receive a mutable reference to the attached userdata, if one exists. <a href="../input/trait.Userdata.html#method.userdata_mut">Read more</a></p>
+</div><h4 id='method.set_userdata' class="method"><span id='set_userdata.v' class='invisible'><code>unsafe fn <a href='../input/trait.Userdata.html#method.set_userdata' class='fnname'>set_userdata</a>&lt;T:&nbsp;'static, U:&nbsp;'static&gt;(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;T&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;U&gt;</code></span></h4>
+<div class='docblock'><p>Set userdata and receive the currently set userdata <a href="../input/trait.Userdata.html#method.set_userdata">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="../input/struct.Device.html" title="struct input::Device">Device</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#187-191' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class="method"><span id='clone.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; Self</code></span></h4>
+<div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div><h4 id='method.clone_from' class="method"><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
+<div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html" title="trait core::ops::Drop">Drop</a> for <a class="struct" href="../input/struct.Device.html" title="struct input::Device">Device</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#193-203' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.drop' class="method"><span id='drop.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a> for <a class="struct" href="../input/struct.Device.html" title="struct input::Device">Device</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#205-209' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.eq' class="method"><span id='eq.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, other: &amp;Self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>This method tests for <code>self</code> and <code>other</code> values to be equal, and is used by <code>==</code>. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq">Read more</a></p>
+</div><h4 id='method.ne' class="method"><span id='ne.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
+<div class='docblock'><p>This method tests for <code>!=</code>.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html" title="trait core::hash::Hash">Hash</a> for <a class="struct" href="../input/struct.Device.html" title="struct input::Device">Device</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/input/lib.rs.html#211-215' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.hash' class="method"><span id='hash.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#tymethod.hash' class='fnname'>hash</a>&lt;H:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html" title="trait core::hash::Hasher">Hasher</a>&gt;(&amp;self, state: &amp;mut H)</code></span></h4>
+<div class='docblock'><p>Feeds this value into the state given, updating the hasher as necessary.</p>
+</div><h4 id='method.hash_slice' class="method"><span id='hash_slice.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#method.hash_slice' class='fnname'>hash_slice</a>&lt;H&gt;(data: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;[Self]</a>, state: &amp;mut H) <span class="where fmt-newline">where H: <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html" title="trait core::hash::Hasher">Hasher</a></span></code><div class='since' title='Stable since Rust version 1.3.0'>1.3.0</div></span></h4>
+<div class='docblock'><p>Feeds a slice of this type into the state provided.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "input";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

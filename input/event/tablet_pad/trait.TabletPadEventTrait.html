@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `TabletPadEventTrait` trait in crate `input`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, TabletPadEventTrait">
+
+    <title>input::event::tablet_pad::TabletPadEventTrait - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc trait">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>input</a>::<wbr><a href='../index.html'>event</a>::<wbr><a href='index.html'>tablet_pad</a></p><script>window.sidebarCurrent = {name: 'TabletPadEventTrait', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../../index.html'>input</a>::<wbr><a href='../index.html'>event</a>::<wbr><a href='index.html'>tablet_pad</a>::<wbr><a class="trait" href=''>TabletPadEventTrait</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../../src/input/event/tablet_pad/mod.rs.html#12-55' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait TabletPadEventTrait: <a class="trait" href="../../../input/trait.AsRaw.html" title="trait input::AsRaw">AsRaw</a>&lt;<a class="struct" href="../../../input_sys/struct.libinput_event_tablet_pad.html" title="struct input_sys::libinput_event_tablet_pad">libinput_event_tablet_pad</a>&gt; {
+    fn <a href='#method.time' class='fnname'>time</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> { ... }
+    fn <a href='#method.time_usec' class='fnname'>time_usec</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> { ... }
+    fn <a href='#method.mode' class='fnname'>mode</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> { ... }
+    fn <a href='#method.mode_group' class='fnname'>mode_group</a>(&amp;self) -&gt; <a class="struct" href="../../../input/event/tablet_pad/struct.TabletPadModeGroup.html" title="struct input::event::tablet_pad::TabletPadModeGroup">TabletPadModeGroup</a> { ... }
+    fn <a href='#method.into_tablet_pad_event' class='fnname'>into_tablet_pad_event</a>(self) -&gt; <a class="enum" href="../../../input/event/tablet_pad/enum.TabletPadEvent.html" title="enum input::event::tablet_pad::TabletPadEvent">TabletPadEvent</a> <span class="where fmt-newline">where Self: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a></span> { ... }
+}</pre><div class='docblock'><p>Common functions all TabletPad-Events implement.</p>
+</div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.time' class='method'><span id='time.v' class='invisible'><code>fn <a href='#method.time' class='fnname'>time</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a></code></span></h3><div class='docblock'><p>The event time for this event</p>
+</div><h3 id='method.time_usec' class='method'><span id='time_usec.v' class='invisible'><code>fn <a href='#method.time_usec' class='fnname'>time_usec</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></span></h3><div class='docblock'><p>The event time for this event in microseconds</p>
+</div><h3 id='method.mode' class='method'><span id='mode.v' class='invisible'><code>fn <a href='#method.mode' class='fnname'>mode</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a></code></span></h3><div class='docblock'><p>Returns the mode the button, ring, or strip that triggered this event is in, at the time of the event.</p>
+
+<p>The mode is a virtual grouping of functionality, usually based on some
+visual feedback like LEDs on the pad. See <a href="https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-pad-modes">Tablet pad modes</a>
+for details. Mode indices start at 0, a device that does not support modes
+always returns 0.</p>
+
+<p>Mode switching is controlled by libinput and more than one mode may exist
+on the tablet. This function returns the mode that this event&#39;s button,
+ring or strip is logically in. If the button is a mode toggle button and
+the button event caused a new mode to be toggled, the mode returned is the
+new mode the button is in.</p>
+
+<p>Note that the returned mode is the mode valid as of the time of the event.
+The returned mode may thus be different to the mode returned by
+<code>TabletPadModeGroup::mode</code>. See <code>TabletPadModeGroup::mode</code> for details.</p>
+</div><h3 id='method.mode_group' class='method'><span id='mode_group.v' class='invisible'><code>fn <a href='#method.mode_group' class='fnname'>mode_group</a>(&amp;self) -&gt; <a class="struct" href="../../../input/event/tablet_pad/struct.TabletPadModeGroup.html" title="struct input::event::tablet_pad::TabletPadModeGroup">TabletPadModeGroup</a></code></span></h3><div class='docblock'><p>Returns the mode group that the button, ring, or strip that triggered this
+event is considered in.</p>
+
+<p>The mode is a virtual grouping of functionality, usually based on some
+visual feedback like LEDs on the pad. See <a href="https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-pad-modes">Tablet pad modes</a> for details.</p>
+</div><h3 id='method.into_tablet_pad_event' class='method'><span id='into_tablet_pad_event.v' class='invisible'><code>fn <a href='#method.into_tablet_pad_event' class='fnname'>into_tablet_pad_event</a>(self) -&gt; <a class="enum" href="../../../input/event/tablet_pad/enum.TabletPadEvent.html" title="enum input::event::tablet_pad::TabletPadEvent">TabletPadEvent</a> <span class="where fmt-newline">where Self: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a></span></code></span></h3><div class='docblock'><p>Convert into a general <code>TabletPadEvent</code> again</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl&lt;T:&nbsp;<a class="trait" href="../../../input/trait.AsRaw.html" title="trait input::AsRaw">AsRaw</a>&lt;<a class="struct" href="../../../input_sys/struct.libinput_event_tablet_pad.html" title="struct input_sys::libinput_event_tablet_pad">libinput_event_tablet_pad</a>&gt;&gt; TabletPadEventTrait for T</code></li>
+</ul><script type="text/javascript" async
+                         src="../../../implementors/input/event/tablet_pad/trait.TabletPadEventTrait.js">
+                 </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "input";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    <script defer src="../../../search-index.js"></script>
+</body>
+</html>

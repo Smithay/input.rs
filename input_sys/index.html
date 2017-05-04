@@ -1,0 +1,2265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `input_sys` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, input_sys">
+
+    <title>input_sys - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc mod">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'input_sys', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Crate <a class="mod" href=''>input_sys</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/input_sys/lib.rs.html#1-5' title='goto source code'>[src]</a></span></h1>
+<h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.__va_list_tag.html"
+                                  title='struct input_sys::__va_list_tag'>__va_list_tag</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput.html"
+                                  title='struct input_sys::libinput'>libinput</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_device.html"
+                                  title='struct input_sys::libinput_device'>libinput_device</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_device_group.html"
+                                  title='struct input_sys::libinput_device_group'>libinput_device_group</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_event.html"
+                                  title='struct input_sys::libinput_event'>libinput_event</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_event_device_notify.html"
+                                  title='struct input_sys::libinput_event_device_notify'>libinput_event_device_notify</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_event_gesture.html"
+                                  title='struct input_sys::libinput_event_gesture'>libinput_event_gesture</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_event_keyboard.html"
+                                  title='struct input_sys::libinput_event_keyboard'>libinput_event_keyboard</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_event_pointer.html"
+                                  title='struct input_sys::libinput_event_pointer'>libinput_event_pointer</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_event_switch.html"
+                                  title='struct input_sys::libinput_event_switch'>libinput_event_switch</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_event_tablet_pad.html"
+                                  title='struct input_sys::libinput_event_tablet_pad'>libinput_event_tablet_pad</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_event_tablet_tool.html"
+                                  title='struct input_sys::libinput_event_tablet_tool'>libinput_event_tablet_tool</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_event_touch.html"
+                                  title='struct input_sys::libinput_event_touch'>libinput_event_touch</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_interface.html"
+                                  title='struct input_sys::libinput_interface'>libinput_interface</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base
+@struct libinput_interface</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_seat.html"
+                                  title='struct input_sys::libinput_seat'>libinput_seat</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_tablet_pad_mode_group.html"
+                                  title='struct input_sys::libinput_tablet_pad_mode_group'>libinput_tablet_pad_mode_group</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.libinput_tablet_tool.html"
+                                  title='struct input_sys::libinput_tablet_tool'>libinput_tablet_tool</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.udev.html"
+                                  title='struct input_sys::udev'>udev</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.udev_device.html"
+                                  title='struct input_sys::udev_device'>udev_device</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_button_state.html"
+                                  title='enum input_sys::libinput_button_state'>libinput_button_state</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_config_accel_profile.html"
+                                  title='enum input_sys::libinput_config_accel_profile'>libinput_config_accel_profile</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_config_click_method.html"
+                                  title='enum input_sys::libinput_config_click_method'>libinput_config_click_method</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_config_drag_lock_state.html"
+                                  title='enum input_sys::libinput_config_drag_lock_state'>libinput_config_drag_lock_state</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_config_drag_state.html"
+                                  title='enum input_sys::libinput_config_drag_state'>libinput_config_drag_state</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_config_dwt_state.html"
+                                  title='enum input_sys::libinput_config_dwt_state'>libinput_config_dwt_state</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_config_middle_emulation_state.html"
+                                  title='enum input_sys::libinput_config_middle_emulation_state'>libinput_config_middle_emulation_state</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_config_scroll_method.html"
+                                  title='enum input_sys::libinput_config_scroll_method'>libinput_config_scroll_method</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_config_status.html"
+                                  title='enum input_sys::libinput_config_status'>libinput_config_status</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_config_tap_button_map.html"
+                                  title='enum input_sys::libinput_config_tap_button_map'>libinput_config_tap_button_map</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_config_tap_state.html"
+                                  title='enum input_sys::libinput_config_tap_state'>libinput_config_tap_state</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_device_capability.html"
+                                  title='enum input_sys::libinput_device_capability'>libinput_device_capability</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_event_type.html"
+                                  title='enum input_sys::libinput_event_type'>libinput_event_type</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_key_state.html"
+                                  title='enum input_sys::libinput_key_state'>libinput_key_state</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_log_priority.html"
+                                  title='enum input_sys::libinput_log_priority'>libinput_log_priority</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_pointer_axis.html"
+                                  title='enum input_sys::libinput_pointer_axis'>libinput_pointer_axis</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_pointer_axis_source.html"
+                                  title='enum input_sys::libinput_pointer_axis_source'>libinput_pointer_axis_source</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_switch.html"
+                                  title='enum input_sys::libinput_switch'>libinput_switch</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_switch_state.html"
+                                  title='enum input_sys::libinput_switch_state'>libinput_switch_state</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_tablet_pad_ring_axis_source.html"
+                                  title='enum input_sys::libinput_tablet_pad_ring_axis_source'>libinput_tablet_pad_ring_axis_source</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_tablet_pad_strip_axis_source.html"
+                                  title='enum input_sys::libinput_tablet_pad_strip_axis_source'>libinput_tablet_pad_strip_axis_source</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_tablet_tool_proximity_state.html"
+                                  title='enum input_sys::libinput_tablet_tool_proximity_state'>libinput_tablet_tool_proximity_state</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_tablet_tool_tip_state.html"
+                                  title='enum input_sys::libinput_tablet_tool_tip_state'>libinput_tablet_tool_tip_state</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.libinput_tablet_tool_type.html"
+                                  title='enum input_sys::libinput_tablet_tool_type'>libinput_tablet_tool_type</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED.html"
+                                  title='constant input_sys::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED'>libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED_ON_EXTERNAL_MOUSE.html"
+                                  title='constant input_sys::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED_ON_EXTERNAL_MOUSE'>libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED_ON_EXTERNAL_MOUSE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_ENABLED.html"
+                                  title='constant input_sys::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_ENABLED'>libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_ENABLED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.libinput_led_LIBINPUT_LED_CAPS_LOCK.html"
+                                  title='constant input_sys::libinput_led_LIBINPUT_LED_CAPS_LOCK'>libinput_led_LIBINPUT_LED_CAPS_LOCK</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.libinput_led_LIBINPUT_LED_NUM_LOCK.html"
+                                  title='constant input_sys::libinput_led_LIBINPUT_LED_NUM_LOCK'>libinput_led_LIBINPUT_LED_NUM_LOCK</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.libinput_led_LIBINPUT_LED_SCROLL_LOCK.html"
+                                  title='constant input_sys::libinput_led_LIBINPUT_LED_SCROLL_LOCK'>libinput_led_LIBINPUT_LED_SCROLL_LOCK</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_config_status_to_str.html"
+                                  title='fn input_sys::libinput_config_status_to_str'>libinput_config_status_to_str</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_accel_get_default_profile.html"
+                                  title='fn input_sys::libinput_device_config_accel_get_default_profile'>libinput_device_config_accel_get_default_profile</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_accel_get_default_speed.html"
+                                  title='fn input_sys::libinput_device_config_accel_get_default_speed'>libinput_device_config_accel_get_default_speed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_accel_get_profile.html"
+                                  title='fn input_sys::libinput_device_config_accel_get_profile'>libinput_device_config_accel_get_profile</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_accel_get_profiles.html"
+                                  title='fn input_sys::libinput_device_config_accel_get_profiles'>libinput_device_config_accel_get_profiles</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_accel_get_speed.html"
+                                  title='fn input_sys::libinput_device_config_accel_get_speed'>libinput_device_config_accel_get_speed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_accel_is_available.html"
+                                  title='fn input_sys::libinput_device_config_accel_is_available'>libinput_device_config_accel_is_available</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_accel_set_profile.html"
+                                  title='fn input_sys::libinput_device_config_accel_set_profile'>libinput_device_config_accel_set_profile</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_accel_set_speed.html"
+                                  title='fn input_sys::libinput_device_config_accel_set_speed'>libinput_device_config_accel_set_speed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_calibration_get_default_matrix.html"
+                                  title='fn input_sys::libinput_device_config_calibration_get_default_matrix'>libinput_device_config_calibration_get_default_matrix</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_calibration_get_matrix.html"
+                                  title='fn input_sys::libinput_device_config_calibration_get_matrix'>libinput_device_config_calibration_get_matrix</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_calibration_has_matrix.html"
+                                  title='fn input_sys::libinput_device_config_calibration_has_matrix'>libinput_device_config_calibration_has_matrix</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_calibration_set_matrix.html"
+                                  title='fn input_sys::libinput_device_config_calibration_set_matrix'>libinput_device_config_calibration_set_matrix</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_click_get_default_method.html"
+                                  title='fn input_sys::libinput_device_config_click_get_default_method'>libinput_device_config_click_get_default_method</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_click_get_method.html"
+                                  title='fn input_sys::libinput_device_config_click_get_method'>libinput_device_config_click_get_method</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_click_get_methods.html"
+                                  title='fn input_sys::libinput_device_config_click_get_methods'>libinput_device_config_click_get_methods</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_click_set_method.html"
+                                  title='fn input_sys::libinput_device_config_click_set_method'>libinput_device_config_click_set_method</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_dwt_get_default_enabled.html"
+                                  title='fn input_sys::libinput_device_config_dwt_get_default_enabled'>libinput_device_config_dwt_get_default_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_dwt_get_enabled.html"
+                                  title='fn input_sys::libinput_device_config_dwt_get_enabled'>libinput_device_config_dwt_get_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_dwt_is_available.html"
+                                  title='fn input_sys::libinput_device_config_dwt_is_available'>libinput_device_config_dwt_is_available</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_dwt_set_enabled.html"
+                                  title='fn input_sys::libinput_device_config_dwt_set_enabled'>libinput_device_config_dwt_set_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_left_handed_get.html"
+                                  title='fn input_sys::libinput_device_config_left_handed_get'>libinput_device_config_left_handed_get</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_left_handed_get_default.html"
+                                  title='fn input_sys::libinput_device_config_left_handed_get_default'>libinput_device_config_left_handed_get_default</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_left_handed_is_available.html"
+                                  title='fn input_sys::libinput_device_config_left_handed_is_available'>libinput_device_config_left_handed_is_available</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_left_handed_set.html"
+                                  title='fn input_sys::libinput_device_config_left_handed_set'>libinput_device_config_left_handed_set</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_middle_emulation_get_default_enabled.html"
+                                  title='fn input_sys::libinput_device_config_middle_emulation_get_default_enabled'>libinput_device_config_middle_emulation_get_default_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_middle_emulation_get_enabled.html"
+                                  title='fn input_sys::libinput_device_config_middle_emulation_get_enabled'>libinput_device_config_middle_emulation_get_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_middle_emulation_is_available.html"
+                                  title='fn input_sys::libinput_device_config_middle_emulation_is_available'>libinput_device_config_middle_emulation_is_available</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_middle_emulation_set_enabled.html"
+                                  title='fn input_sys::libinput_device_config_middle_emulation_set_enabled'>libinput_device_config_middle_emulation_set_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_rotation_get_angle.html"
+                                  title='fn input_sys::libinput_device_config_rotation_get_angle'>libinput_device_config_rotation_get_angle</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_rotation_get_default_angle.html"
+                                  title='fn input_sys::libinput_device_config_rotation_get_default_angle'>libinput_device_config_rotation_get_default_angle</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_rotation_is_available.html"
+                                  title='fn input_sys::libinput_device_config_rotation_is_available'>libinput_device_config_rotation_is_available</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_rotation_set_angle.html"
+                                  title='fn input_sys::libinput_device_config_rotation_set_angle'>libinput_device_config_rotation_set_angle</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_scroll_get_button.html"
+                                  title='fn input_sys::libinput_device_config_scroll_get_button'>libinput_device_config_scroll_get_button</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_scroll_get_default_button.html"
+                                  title='fn input_sys::libinput_device_config_scroll_get_default_button'>libinput_device_config_scroll_get_default_button</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_scroll_get_default_method.html"
+                                  title='fn input_sys::libinput_device_config_scroll_get_default_method'>libinput_device_config_scroll_get_default_method</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_scroll_get_default_natural_scroll_enabled.html"
+                                  title='fn input_sys::libinput_device_config_scroll_get_default_natural_scroll_enabled'>libinput_device_config_scroll_get_default_natural_scroll_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_scroll_get_method.html"
+                                  title='fn input_sys::libinput_device_config_scroll_get_method'>libinput_device_config_scroll_get_method</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_scroll_get_methods.html"
+                                  title='fn input_sys::libinput_device_config_scroll_get_methods'>libinput_device_config_scroll_get_methods</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_scroll_get_natural_scroll_enabled.html"
+                                  title='fn input_sys::libinput_device_config_scroll_get_natural_scroll_enabled'>libinput_device_config_scroll_get_natural_scroll_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_scroll_has_natural_scroll.html"
+                                  title='fn input_sys::libinput_device_config_scroll_has_natural_scroll'>libinput_device_config_scroll_has_natural_scroll</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_scroll_set_button.html"
+                                  title='fn input_sys::libinput_device_config_scroll_set_button'>libinput_device_config_scroll_set_button</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_scroll_set_method.html"
+                                  title='fn input_sys::libinput_device_config_scroll_set_method'>libinput_device_config_scroll_set_method</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_scroll_set_natural_scroll_enabled.html"
+                                  title='fn input_sys::libinput_device_config_scroll_set_natural_scroll_enabled'>libinput_device_config_scroll_set_natural_scroll_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_send_events_get_default_mode.html"
+                                  title='fn input_sys::libinput_device_config_send_events_get_default_mode'>libinput_device_config_send_events_get_default_mode</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_send_events_get_mode.html"
+                                  title='fn input_sys::libinput_device_config_send_events_get_mode'>libinput_device_config_send_events_get_mode</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_send_events_get_modes.html"
+                                  title='fn input_sys::libinput_device_config_send_events_get_modes'>libinput_device_config_send_events_get_modes</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_send_events_set_mode.html"
+                                  title='fn input_sys::libinput_device_config_send_events_set_mode'>libinput_device_config_send_events_set_mode</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_get_button_map.html"
+                                  title='fn input_sys::libinput_device_config_tap_get_button_map'>libinput_device_config_tap_get_button_map</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_get_default_button_map.html"
+                                  title='fn input_sys::libinput_device_config_tap_get_default_button_map'>libinput_device_config_tap_get_default_button_map</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_get_default_drag_enabled.html"
+                                  title='fn input_sys::libinput_device_config_tap_get_default_drag_enabled'>libinput_device_config_tap_get_default_drag_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_get_default_drag_lock_enabled.html"
+                                  title='fn input_sys::libinput_device_config_tap_get_default_drag_lock_enabled'>libinput_device_config_tap_get_default_drag_lock_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_get_default_enabled.html"
+                                  title='fn input_sys::libinput_device_config_tap_get_default_enabled'>libinput_device_config_tap_get_default_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_get_drag_enabled.html"
+                                  title='fn input_sys::libinput_device_config_tap_get_drag_enabled'>libinput_device_config_tap_get_drag_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_get_drag_lock_enabled.html"
+                                  title='fn input_sys::libinput_device_config_tap_get_drag_lock_enabled'>libinput_device_config_tap_get_drag_lock_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_get_enabled.html"
+                                  title='fn input_sys::libinput_device_config_tap_get_enabled'>libinput_device_config_tap_get_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_get_finger_count.html"
+                                  title='fn input_sys::libinput_device_config_tap_get_finger_count'>libinput_device_config_tap_get_finger_count</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_set_button_map.html"
+                                  title='fn input_sys::libinput_device_config_tap_set_button_map'>libinput_device_config_tap_set_button_map</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_set_drag_enabled.html"
+                                  title='fn input_sys::libinput_device_config_tap_set_drag_enabled'>libinput_device_config_tap_set_drag_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_set_drag_lock_enabled.html"
+                                  title='fn input_sys::libinput_device_config_tap_set_drag_lock_enabled'>libinput_device_config_tap_set_drag_lock_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_config_tap_set_enabled.html"
+                                  title='fn input_sys::libinput_device_config_tap_set_enabled'>libinput_device_config_tap_set_enabled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_get_context.html"
+                                  title='fn input_sys::libinput_device_get_context'>libinput_device_get_context</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_get_device_group.html"
+                                  title='fn input_sys::libinput_device_get_device_group'>libinput_device_get_device_group</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_get_id_product.html"
+                                  title='fn input_sys::libinput_device_get_id_product'>libinput_device_get_id_product</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_get_id_vendor.html"
+                                  title='fn input_sys::libinput_device_get_id_vendor'>libinput_device_get_id_vendor</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_get_name.html"
+                                  title='fn input_sys::libinput_device_get_name'>libinput_device_get_name</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_get_output_name.html"
+                                  title='fn input_sys::libinput_device_get_output_name'>libinput_device_get_output_name</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_get_seat.html"
+                                  title='fn input_sys::libinput_device_get_seat'>libinput_device_get_seat</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_get_size.html"
+                                  title='fn input_sys::libinput_device_get_size'>libinput_device_get_size</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_get_sysname.html"
+                                  title='fn input_sys::libinput_device_get_sysname'>libinput_device_get_sysname</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_get_udev_device.html"
+                                  title='fn input_sys::libinput_device_get_udev_device'>libinput_device_get_udev_device</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_get_user_data.html"
+                                  title='fn input_sys::libinput_device_get_user_data'>libinput_device_get_user_data</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_group_get_user_data.html"
+                                  title='fn input_sys::libinput_device_group_get_user_data'>libinput_device_group_get_user_data</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_group_ref.html"
+                                  title='fn input_sys::libinput_device_group_ref'>libinput_device_group_ref</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_group_set_user_data.html"
+                                  title='fn input_sys::libinput_device_group_set_user_data'>libinput_device_group_set_user_data</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_group_unref.html"
+                                  title='fn input_sys::libinput_device_group_unref'>libinput_device_group_unref</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_has_capability.html"
+                                  title='fn input_sys::libinput_device_has_capability'>libinput_device_has_capability</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_keyboard_has_key.html"
+                                  title='fn input_sys::libinput_device_keyboard_has_key'>libinput_device_keyboard_has_key</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_led_update.html"
+                                  title='fn input_sys::libinput_device_led_update'>libinput_device_led_update</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_pointer_has_button.html"
+                                  title='fn input_sys::libinput_device_pointer_has_button'>libinput_device_pointer_has_button</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_ref.html"
+                                  title='fn input_sys::libinput_device_ref'>libinput_device_ref</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_set_seat_logical_name.html"
+                                  title='fn input_sys::libinput_device_set_seat_logical_name'>libinput_device_set_seat_logical_name</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_set_user_data.html"
+                                  title='fn input_sys::libinput_device_set_user_data'>libinput_device_set_user_data</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_tablet_pad_get_mode_group.html"
+                                  title='fn input_sys::libinput_device_tablet_pad_get_mode_group'>libinput_device_tablet_pad_get_mode_group</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_tablet_pad_get_num_buttons.html"
+                                  title='fn input_sys::libinput_device_tablet_pad_get_num_buttons'>libinput_device_tablet_pad_get_num_buttons</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_tablet_pad_get_num_mode_groups.html"
+                                  title='fn input_sys::libinput_device_tablet_pad_get_num_mode_groups'>libinput_device_tablet_pad_get_num_mode_groups</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_tablet_pad_get_num_rings.html"
+                                  title='fn input_sys::libinput_device_tablet_pad_get_num_rings'>libinput_device_tablet_pad_get_num_rings</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_tablet_pad_get_num_strips.html"
+                                  title='fn input_sys::libinput_device_tablet_pad_get_num_strips'>libinput_device_tablet_pad_get_num_strips</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_device_unref.html"
+                                  title='fn input_sys::libinput_device_unref'>libinput_device_unref</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_dispatch.html"
+                                  title='fn input_sys::libinput_dispatch'>libinput_dispatch</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_destroy.html"
+                                  title='fn input_sys::libinput_event_destroy'>libinput_event_destroy</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_device_notify_get_base_event.html"
+                                  title='fn input_sys::libinput_event_device_notify_get_base_event'>libinput_event_device_notify_get_base_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_gesture_get_angle_delta.html"
+                                  title='fn input_sys::libinput_event_gesture_get_angle_delta'>libinput_event_gesture_get_angle_delta</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_gesture</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_gesture_get_base_event.html"
+                                  title='fn input_sys::libinput_event_gesture_get_base_event'>libinput_event_gesture_get_base_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_gesture</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_gesture_get_cancelled.html"
+                                  title='fn input_sys::libinput_event_gesture_get_cancelled'>libinput_event_gesture_get_cancelled</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_gesture</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_gesture_get_dx.html"
+                                  title='fn input_sys::libinput_event_gesture_get_dx'>libinput_event_gesture_get_dx</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_gesture</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_gesture_get_dx_unaccelerated.html"
+                                  title='fn input_sys::libinput_event_gesture_get_dx_unaccelerated'>libinput_event_gesture_get_dx_unaccelerated</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_gesture</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_gesture_get_dy.html"
+                                  title='fn input_sys::libinput_event_gesture_get_dy'>libinput_event_gesture_get_dy</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_gesture</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_gesture_get_dy_unaccelerated.html"
+                                  title='fn input_sys::libinput_event_gesture_get_dy_unaccelerated'>libinput_event_gesture_get_dy_unaccelerated</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_gesture</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_gesture_get_finger_count.html"
+                                  title='fn input_sys::libinput_event_gesture_get_finger_count'>libinput_event_gesture_get_finger_count</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_gesture</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_gesture_get_scale.html"
+                                  title='fn input_sys::libinput_event_gesture_get_scale'>libinput_event_gesture_get_scale</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_gesture</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_gesture_get_time.html"
+                                  title='fn input_sys::libinput_event_gesture_get_time'>libinput_event_gesture_get_time</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_gesture</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_gesture_get_time_usec.html"
+                                  title='fn input_sys::libinput_event_gesture_get_time_usec'>libinput_event_gesture_get_time_usec</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_gesture</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_get_context.html"
+                                  title='fn input_sys::libinput_event_get_context'>libinput_event_get_context</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_get_device.html"
+                                  title='fn input_sys::libinput_event_get_device'>libinput_event_get_device</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_get_device_notify_event.html"
+                                  title='fn input_sys::libinput_event_get_device_notify_event'>libinput_event_get_device_notify_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_get_gesture_event.html"
+                                  title='fn input_sys::libinput_event_get_gesture_event'>libinput_event_get_gesture_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_get_keyboard_event.html"
+                                  title='fn input_sys::libinput_event_get_keyboard_event'>libinput_event_get_keyboard_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_get_pointer_event.html"
+                                  title='fn input_sys::libinput_event_get_pointer_event'>libinput_event_get_pointer_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_get_switch_event.html"
+                                  title='fn input_sys::libinput_event_get_switch_event'>libinput_event_get_switch_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_get_tablet_pad_event.html"
+                                  title='fn input_sys::libinput_event_get_tablet_pad_event'>libinput_event_get_tablet_pad_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_get_tablet_tool_event.html"
+                                  title='fn input_sys::libinput_event_get_tablet_tool_event'>libinput_event_get_tablet_tool_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_get_touch_event.html"
+                                  title='fn input_sys::libinput_event_get_touch_event'>libinput_event_get_touch_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_get_type.html"
+                                  title='fn input_sys::libinput_event_get_type'>libinput_event_get_type</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_keyboard_get_base_event.html"
+                                  title='fn input_sys::libinput_event_keyboard_get_base_event'>libinput_event_keyboard_get_base_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_keyboard</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_keyboard_get_key.html"
+                                  title='fn input_sys::libinput_event_keyboard_get_key'>libinput_event_keyboard_get_key</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_keyboard</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_keyboard_get_key_state.html"
+                                  title='fn input_sys::libinput_event_keyboard_get_key_state'>libinput_event_keyboard_get_key_state</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_keyboard</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_keyboard_get_seat_key_count.html"
+                                  title='fn input_sys::libinput_event_keyboard_get_seat_key_count'>libinput_event_keyboard_get_seat_key_count</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_keyboard</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_keyboard_get_time.html"
+                                  title='fn input_sys::libinput_event_keyboard_get_time'>libinput_event_keyboard_get_time</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_keyboard</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_keyboard_get_time_usec.html"
+                                  title='fn input_sys::libinput_event_keyboard_get_time_usec'>libinput_event_keyboard_get_time_usec</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_keyboard</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_absolute_x.html"
+                                  title='fn input_sys::libinput_event_pointer_get_absolute_x'>libinput_event_pointer_get_absolute_x</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_absolute_x_transformed.html"
+                                  title='fn input_sys::libinput_event_pointer_get_absolute_x_transformed'>libinput_event_pointer_get_absolute_x_transformed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_absolute_y.html"
+                                  title='fn input_sys::libinput_event_pointer_get_absolute_y'>libinput_event_pointer_get_absolute_y</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_absolute_y_transformed.html"
+                                  title='fn input_sys::libinput_event_pointer_get_absolute_y_transformed'>libinput_event_pointer_get_absolute_y_transformed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_axis_source.html"
+                                  title='fn input_sys::libinput_event_pointer_get_axis_source'>libinput_event_pointer_get_axis_source</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_axis_value.html"
+                                  title='fn input_sys::libinput_event_pointer_get_axis_value'>libinput_event_pointer_get_axis_value</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_axis_value_discrete.html"
+                                  title='fn input_sys::libinput_event_pointer_get_axis_value_discrete'>libinput_event_pointer_get_axis_value_discrete</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_base_event.html"
+                                  title='fn input_sys::libinput_event_pointer_get_base_event'>libinput_event_pointer_get_base_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_button.html"
+                                  title='fn input_sys::libinput_event_pointer_get_button'>libinput_event_pointer_get_button</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_button_state.html"
+                                  title='fn input_sys::libinput_event_pointer_get_button_state'>libinput_event_pointer_get_button_state</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_dx.html"
+                                  title='fn input_sys::libinput_event_pointer_get_dx'>libinput_event_pointer_get_dx</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_dx_unaccelerated.html"
+                                  title='fn input_sys::libinput_event_pointer_get_dx_unaccelerated'>libinput_event_pointer_get_dx_unaccelerated</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_dy.html"
+                                  title='fn input_sys::libinput_event_pointer_get_dy'>libinput_event_pointer_get_dy</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_dy_unaccelerated.html"
+                                  title='fn input_sys::libinput_event_pointer_get_dy_unaccelerated'>libinput_event_pointer_get_dy_unaccelerated</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_seat_button_count.html"
+                                  title='fn input_sys::libinput_event_pointer_get_seat_button_count'>libinput_event_pointer_get_seat_button_count</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_time.html"
+                                  title='fn input_sys::libinput_event_pointer_get_time'>libinput_event_pointer_get_time</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_get_time_usec.html"
+                                  title='fn input_sys::libinput_event_pointer_get_time_usec'>libinput_event_pointer_get_time_usec</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_pointer_has_axis.html"
+                                  title='fn input_sys::libinput_event_pointer_has_axis'>libinput_event_pointer_has_axis</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_pointer</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_switch_get_base_event.html"
+                                  title='fn input_sys::libinput_event_switch_get_base_event'>libinput_event_switch_get_base_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_switch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_switch_get_switch.html"
+                                  title='fn input_sys::libinput_event_switch_get_switch'>libinput_event_switch_get_switch</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_switch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_switch_get_switch_state.html"
+                                  title='fn input_sys::libinput_event_switch_get_switch_state'>libinput_event_switch_get_switch_state</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_switch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_switch_get_time.html"
+                                  title='fn input_sys::libinput_event_switch_get_time'>libinput_event_switch_get_time</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_switch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_switch_get_time_usec.html"
+                                  title='fn input_sys::libinput_event_switch_get_time_usec'>libinput_event_switch_get_time_usec</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_switch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_base_event.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_base_event'>libinput_event_tablet_pad_get_base_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_button_number.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_button_number'>libinput_event_tablet_pad_get_button_number</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_button_state.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_button_state'>libinput_event_tablet_pad_get_button_state</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_mode.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_mode'>libinput_event_tablet_pad_get_mode</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_mode_group.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_mode_group'>libinput_event_tablet_pad_get_mode_group</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_ring_number.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_ring_number'>libinput_event_tablet_pad_get_ring_number</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_ring_position.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_ring_position'>libinput_event_tablet_pad_get_ring_position</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_ring_source.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_ring_source'>libinput_event_tablet_pad_get_ring_source</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_strip_number.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_strip_number'>libinput_event_tablet_pad_get_strip_number</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_strip_position.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_strip_position'>libinput_event_tablet_pad_get_strip_position</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_strip_source.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_strip_source'>libinput_event_tablet_pad_get_strip_source</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_time.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_time'>libinput_event_tablet_pad_get_time</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_pad_get_time_usec.html"
+                                  title='fn input_sys::libinput_event_tablet_pad_get_time_usec'>libinput_event_tablet_pad_get_time_usec</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet_pad</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_distance_has_changed.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_distance_has_changed'>libinput_event_tablet_tool_distance_has_changed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_base_event.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_base_event'>libinput_event_tablet_tool_get_base_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_button.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_button'>libinput_event_tablet_tool_get_button</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_button_state.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_button_state'>libinput_event_tablet_tool_get_button_state</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_distance.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_distance'>libinput_event_tablet_tool_get_distance</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_dx.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_dx'>libinput_event_tablet_tool_get_dx</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_dy.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_dy'>libinput_event_tablet_tool_get_dy</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_pressure.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_pressure'>libinput_event_tablet_tool_get_pressure</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_proximity_state.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_proximity_state'>libinput_event_tablet_tool_get_proximity_state</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_rotation.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_rotation'>libinput_event_tablet_tool_get_rotation</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_seat_button_count.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_seat_button_count'>libinput_event_tablet_tool_get_seat_button_count</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <ul>
+<li>@ingroup event_tablet
+*</li>
+<li>For the button of a @ref LIBINPUT_EVENT_TABLET_TOOL_BUTTON event, return the total</li>
+<li>number of buttons pressed on all devices on the associated seat after the</li>
+<li>the event was triggered.
+*
+&quot; @note It is an application bug to call this function for events other than</li>
+<li>@ref LIBINPUT_EVENT_TABLET_TOOL_BUTTON. For other events, this function returns 0.
+*</li>
+<li>@param event The libinput tablet tool event</li>
+<li>@return the seat wide pressed button count for the key of this event</li>
+</ul>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_slider_position.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_slider_position'>libinput_event_tablet_tool_get_slider_position</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_tilt_x.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_tilt_x'>libinput_event_tablet_tool_get_tilt_x</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_tilt_y.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_tilt_y'>libinput_event_tablet_tool_get_tilt_y</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_time.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_time'>libinput_event_tablet_tool_get_time</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_time_usec.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_time_usec'>libinput_event_tablet_tool_get_time_usec</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_tip_state.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_tip_state'>libinput_event_tablet_tool_get_tip_state</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_tool.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_tool'>libinput_event_tablet_tool_get_tool</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <ul>
+<li>@ingroup event_tablet
+*</li>
+<li>Returns the tool that was in use during this event.
+*</li>
+<li>The returned tablet tool is not refcounted and may become invalid after</li>
+<li>the next call to libinput. Use libinput_tablet_tool_ref() and</li>
+<li>libinput_tablet_tool_unref() to continue using the handle outside of the</li>
+<li>immediate scope.
+*</li>
+<li>If the caller holds at least one reference, this struct is used</li>
+<li>whenever the tools enters proximity again.
+*</li>
+<li>@note Physical tool tracking requires hardware support. If unavailable,</li>
+<li>libinput creates one tool per type per tablet. See @ref</li>
+<li>tablet-serial-numbers for more details.
+*</li>
+<li>@param event The libinput tablet tool event</li>
+<li>@return The new tool triggering this event</li>
+</ul>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_wheel_delta.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_wheel_delta'>libinput_event_tablet_tool_get_wheel_delta</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_wheel_delta_discrete.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_wheel_delta_discrete'>libinput_event_tablet_tool_get_wheel_delta_discrete</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <ul>
+<li>@ingroup event_tablet
+*</li>
+<li><p>Return the delta for the wheel in discrete steps (e.g. wheel clicks).</p></li>
+<li><p>@param event The libinput tablet tool event</p></li>
+<li><p>@return The delta of the wheel, in discrete steps, compared to the last event
+*</p></li>
+<li><p>@see libinput_event_tablet_tool_get_wheel_delta_discrete</p></li>
+</ul>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_x.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_x'>libinput_event_tablet_tool_get_x</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_x_transformed.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_x_transformed'>libinput_event_tablet_tool_get_x_transformed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_y.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_y'>libinput_event_tablet_tool_get_y</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_get_y_transformed.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_get_y_transformed'>libinput_event_tablet_tool_get_y_transformed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_pressure_has_changed.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_pressure_has_changed'>libinput_event_tablet_tool_pressure_has_changed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_rotation_has_changed.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_rotation_has_changed'>libinput_event_tablet_tool_rotation_has_changed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_slider_has_changed.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_slider_has_changed'>libinput_event_tablet_tool_slider_has_changed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_tilt_x_has_changed.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_tilt_x_has_changed'>libinput_event_tablet_tool_tilt_x_has_changed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_tilt_y_has_changed.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_tilt_y_has_changed'>libinput_event_tablet_tool_tilt_y_has_changed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_wheel_has_changed.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_wheel_has_changed'>libinput_event_tablet_tool_wheel_has_changed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_x_has_changed.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_x_has_changed'>libinput_event_tablet_tool_x_has_changed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_tablet_tool_y_has_changed.html"
+                                  title='fn input_sys::libinput_event_tablet_tool_y_has_changed'>libinput_event_tablet_tool_y_has_changed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_touch_get_base_event.html"
+                                  title='fn input_sys::libinput_event_touch_get_base_event'>libinput_event_touch_get_base_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_touch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_touch_get_seat_slot.html"
+                                  title='fn input_sys::libinput_event_touch_get_seat_slot'>libinput_event_touch_get_seat_slot</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_touch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_touch_get_slot.html"
+                                  title='fn input_sys::libinput_event_touch_get_slot'>libinput_event_touch_get_slot</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_touch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_touch_get_time.html"
+                                  title='fn input_sys::libinput_event_touch_get_time'>libinput_event_touch_get_time</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_touch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_touch_get_time_usec.html"
+                                  title='fn input_sys::libinput_event_touch_get_time_usec'>libinput_event_touch_get_time_usec</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_touch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_touch_get_x.html"
+                                  title='fn input_sys::libinput_event_touch_get_x'>libinput_event_touch_get_x</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_touch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_touch_get_x_transformed.html"
+                                  title='fn input_sys::libinput_event_touch_get_x_transformed'>libinput_event_touch_get_x_transformed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_touch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_touch_get_y.html"
+                                  title='fn input_sys::libinput_event_touch_get_y'>libinput_event_touch_get_y</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_touch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_event_touch_get_y_transformed.html"
+                                  title='fn input_sys::libinput_event_touch_get_y_transformed'>libinput_event_touch_get_y_transformed</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_touch</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_get_event.html"
+                                  title='fn input_sys::libinput_get_event'>libinput_get_event</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_get_fd.html"
+                                  title='fn input_sys::libinput_get_fd'>libinput_get_fd</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_get_user_data.html"
+                                  title='fn input_sys::libinput_get_user_data'>libinput_get_user_data</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_log_get_priority.html"
+                                  title='fn input_sys::libinput_log_get_priority'>libinput_log_get_priority</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_log_set_handler.html"
+                                  title='fn input_sys::libinput_log_set_handler'>libinput_log_set_handler</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_log_set_priority.html"
+                                  title='fn input_sys::libinput_log_set_priority'>libinput_log_set_priority</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_next_event_type.html"
+                                  title='fn input_sys::libinput_next_event_type'>libinput_next_event_type</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_path_add_device.html"
+                                  title='fn input_sys::libinput_path_add_device'>libinput_path_add_device</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_path_create_context.html"
+                                  title='fn input_sys::libinput_path_create_context'>libinput_path_create_context</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_path_remove_device.html"
+                                  title='fn input_sys::libinput_path_remove_device'>libinput_path_remove_device</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_ref.html"
+                                  title='fn input_sys::libinput_ref'>libinput_ref</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_resume.html"
+                                  title='fn input_sys::libinput_resume'>libinput_resume</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_seat_get_context.html"
+                                  title='fn input_sys::libinput_seat_get_context'>libinput_seat_get_context</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup seat</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_seat_get_logical_name.html"
+                                  title='fn input_sys::libinput_seat_get_logical_name'>libinput_seat_get_logical_name</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup seat</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_seat_get_physical_name.html"
+                                  title='fn input_sys::libinput_seat_get_physical_name'>libinput_seat_get_physical_name</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup seat</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_seat_get_user_data.html"
+                                  title='fn input_sys::libinput_seat_get_user_data'>libinput_seat_get_user_data</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup seat</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_seat_ref.html"
+                                  title='fn input_sys::libinput_seat_ref'>libinput_seat_ref</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup seat</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_seat_set_user_data.html"
+                                  title='fn input_sys::libinput_seat_set_user_data'>libinput_seat_set_user_data</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup seat</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_seat_unref.html"
+                                  title='fn input_sys::libinput_seat_unref'>libinput_seat_unref</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup seat</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_set_user_data.html"
+                                  title='fn input_sys::libinput_set_user_data'>libinput_set_user_data</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_suspend.html"
+                                  title='fn input_sys::libinput_suspend'>libinput_suspend</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_pad_mode_group_button_is_toggle.html"
+                                  title='fn input_sys::libinput_tablet_pad_mode_group_button_is_toggle'>libinput_tablet_pad_mode_group_button_is_toggle</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_pad_mode_group_get_index.html"
+                                  title='fn input_sys::libinput_tablet_pad_mode_group_get_index'>libinput_tablet_pad_mode_group_get_index</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_pad_mode_group_get_mode.html"
+                                  title='fn input_sys::libinput_tablet_pad_mode_group_get_mode'>libinput_tablet_pad_mode_group_get_mode</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_pad_mode_group_get_num_modes.html"
+                                  title='fn input_sys::libinput_tablet_pad_mode_group_get_num_modes'>libinput_tablet_pad_mode_group_get_num_modes</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_pad_mode_group_get_user_data.html"
+                                  title='fn input_sys::libinput_tablet_pad_mode_group_get_user_data'>libinput_tablet_pad_mode_group_get_user_data</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_pad_mode_group_has_button.html"
+                                  title='fn input_sys::libinput_tablet_pad_mode_group_has_button'>libinput_tablet_pad_mode_group_has_button</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_pad_mode_group_has_ring.html"
+                                  title='fn input_sys::libinput_tablet_pad_mode_group_has_ring'>libinput_tablet_pad_mode_group_has_ring</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_pad_mode_group_has_strip.html"
+                                  title='fn input_sys::libinput_tablet_pad_mode_group_has_strip'>libinput_tablet_pad_mode_group_has_strip</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_pad_mode_group_ref.html"
+                                  title='fn input_sys::libinput_tablet_pad_mode_group_ref'>libinput_tablet_pad_mode_group_ref</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_pad_mode_group_set_user_data.html"
+                                  title='fn input_sys::libinput_tablet_pad_mode_group_set_user_data'>libinput_tablet_pad_mode_group_set_user_data</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_pad_mode_group_unref.html"
+                                  title='fn input_sys::libinput_tablet_pad_mode_group_unref'>libinput_tablet_pad_mode_group_unref</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup tablet_pad_modes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_get_serial.html"
+                                  title='fn input_sys::libinput_tablet_tool_get_serial'>libinput_tablet_tool_get_serial</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_get_tool_id.html"
+                                  title='fn input_sys::libinput_tablet_tool_get_tool_id'>libinput_tablet_tool_get_tool_id</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_get_type.html"
+                                  title='fn input_sys::libinput_tablet_tool_get_type'>libinput_tablet_tool_get_type</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_get_user_data.html"
+                                  title='fn input_sys::libinput_tablet_tool_get_user_data'>libinput_tablet_tool_get_user_data</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_has_button.html"
+                                  title='fn input_sys::libinput_tablet_tool_has_button'>libinput_tablet_tool_has_button</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_has_distance.html"
+                                  title='fn input_sys::libinput_tablet_tool_has_distance'>libinput_tablet_tool_has_distance</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_has_pressure.html"
+                                  title='fn input_sys::libinput_tablet_tool_has_pressure'>libinput_tablet_tool_has_pressure</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_has_rotation.html"
+                                  title='fn input_sys::libinput_tablet_tool_has_rotation'>libinput_tablet_tool_has_rotation</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_has_slider.html"
+                                  title='fn input_sys::libinput_tablet_tool_has_slider'>libinput_tablet_tool_has_slider</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_has_tilt.html"
+                                  title='fn input_sys::libinput_tablet_tool_has_tilt'>libinput_tablet_tool_has_tilt</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_has_wheel.html"
+                                  title='fn input_sys::libinput_tablet_tool_has_wheel'>libinput_tablet_tool_has_wheel</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_is_unique.html"
+                                  title='fn input_sys::libinput_tablet_tool_is_unique'>libinput_tablet_tool_is_unique</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_ref.html"
+                                  title='fn input_sys::libinput_tablet_tool_ref'>libinput_tablet_tool_ref</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_set_user_data.html"
+                                  title='fn input_sys::libinput_tablet_tool_set_user_data'>libinput_tablet_tool_set_user_data</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_tablet_tool_unref.html"
+                                  title='fn input_sys::libinput_tablet_tool_unref'>libinput_tablet_tool_unref</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup event_tablet</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_udev_assign_seat.html"
+                                  title='fn input_sys::libinput_udev_assign_seat'>libinput_udev_assign_seat</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_udev_create_context.html"
+                                  title='fn input_sys::libinput_udev_create_context'>libinput_udev_create_context</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.libinput_unref.html"
+                                  title='fn input_sys::libinput_unref'>libinput_unref</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.__builtin_va_list.html"
+                                  title='type input_sys::__builtin_va_list'>__builtin_va_list</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.libinput_config_send_events_mode.html"
+                                  title='type input_sys::libinput_config_send_events_mode'>libinput_config_send_events_mode</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup config</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.libinput_led.html"
+                                  title='type input_sys::libinput_led'>libinput_led</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup device</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.libinput_log_handler.html"
+                                  title='type input_sys::libinput_log_handler'>libinput_log_handler</a></td>
+                           <td class='docblock-short'>
+                                <p>@ingroup base</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.va_list.html"
+                                  title='type input_sys::va_list'>va_list</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "input_sys";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>
