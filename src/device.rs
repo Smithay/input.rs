@@ -339,16 +339,19 @@ impl Device {
     /// Check if the given device has the specified capability.
     pub fn has_capability(&self, cap: DeviceCapability) -> bool {
         unsafe {
-            ffi::libinput_device_has_capability(self.as_raw_mut(),
-                                                match cap {
-                                                    DeviceCapability::Keyboard => ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_KEYBOARD,
-                                                    DeviceCapability::Pointer => ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_POINTER,
-                                                    DeviceCapability::Touch => ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_TOUCH,
-                                                    DeviceCapability::TabletTool => ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_TABLET_TOOL,
-                                                    DeviceCapability::TabletPad => ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_TABLET_PAD,
-                                                    DeviceCapability::Gesture => ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_GESTURE,
-                                                    DeviceCapability::Switch => ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_SWITCH,
-                                                }) != 0
+            ffi::libinput_device_has_capability(self.as_raw_mut(), match cap {
+                DeviceCapability::Keyboard => ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_KEYBOARD,
+                DeviceCapability::Pointer => ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_POINTER,
+                DeviceCapability::Touch => ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_TOUCH,
+                DeviceCapability::TabletTool => {
+                    ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_TABLET_TOOL
+                }
+                DeviceCapability::TabletPad => {
+                    ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_TABLET_PAD
+                }
+                DeviceCapability::Gesture => ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_GESTURE,
+                DeviceCapability::Switch => ffi::libinput_device_capability::LIBINPUT_DEVICE_CAP_SWITCH,
+            }) != 0
         }
     }
 
@@ -486,11 +489,12 @@ impl Device {
     /// the given mode.
     pub fn config_accel_set_profile(&mut self, profile: AccelProfile) -> DeviceConfigResult {
         match unsafe {
-                  ffi::libinput_device_config_accel_set_profile(self.as_raw_mut(),
-                                                                match profile {
-                                                                    AccelProfile::Flat => ffi::libinput_config_accel_profile::LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT,
-                                                                    AccelProfile::Adaptive => ffi::libinput_config_accel_profile::LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE,
-                                                                })
+                  ffi::libinput_device_config_accel_set_profile(self.as_raw_mut(), match profile {
+                AccelProfile::Flat => ffi::libinput_config_accel_profile::LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT,
+                AccelProfile::Adaptive => {
+                    ffi::libinput_config_accel_profile::LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE
+                }
+            })
               } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
@@ -689,11 +693,14 @@ impl Device {
     /// activating the new method.
     pub fn config_click_set_method(&mut self, method: ClickMethod) -> DeviceConfigResult {
         match unsafe {
-                  ffi::libinput_device_config_click_set_method(self.as_raw_mut(),
-                                                               match method {
-                                                                   ClickMethod::ButtonAreas => ffi::libinput_config_click_method::LIBINPUT_CONFIG_CLICK_METHOD_BUTTON_AREAS,
-                                                                   ClickMethod::Clickfinger => ffi::libinput_config_click_method::LIBINPUT_CONFIG_CLICK_METHOD_CLICKFINGER,
-                                                               })
+                  ffi::libinput_device_config_click_set_method(self.as_raw_mut(), match method {
+                ClickMethod::ButtonAreas => {
+                    ffi::libinput_config_click_method::LIBINPUT_CONFIG_CLICK_METHOD_BUTTON_AREAS
+                }
+                ClickMethod::Clickfinger => {
+                    ffi::libinput_config_click_method::LIBINPUT_CONFIG_CLICK_METHOD_CLICKFINGER
+                }
+            })
               } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
@@ -750,10 +757,10 @@ impl Device {
         match unsafe {
                   ffi::libinput_device_config_dwt_set_enabled(self.as_raw_mut(),
                                                               if enabled {
-                                                                  ffi::libinput_config_dwt_state::LIBINPUT_CONFIG_DWT_ENABLED
-                                                              } else {
-                                                                  ffi::libinput_config_dwt_state::LIBINPUT_CONFIG_DWT_DISABLED
-                                                              })
+                ffi::libinput_config_dwt_state::LIBINPUT_CONFIG_DWT_ENABLED
+            } else {
+                ffi::libinput_config_dwt_state::LIBINPUT_CONFIG_DWT_DISABLED
+            })
               } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
@@ -864,10 +871,10 @@ impl Device {
         match unsafe {
                   ffi::libinput_device_config_middle_emulation_set_enabled(self.as_raw_mut(),
                                                                            if enabled {
-                                                                               ffi::libinput_config_middle_emulation_state::LIBINPUT_CONFIG_MIDDLE_EMULATION_ENABLED
-                                                                           } else {
-                                                                               ffi::libinput_config_middle_emulation_state::LIBINPUT_CONFIG_MIDDLE_EMULATION_DISABLED
-                                                                           })
+                ffi::libinput_config_middle_emulation_state::LIBINPUT_CONFIG_MIDDLE_EMULATION_ENABLED
+            } else {
+                ffi::libinput_config_middle_emulation_state::LIBINPUT_CONFIG_MIDDLE_EMULATION_DISABLED
+            })
               } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
@@ -1017,13 +1024,16 @@ impl Device {
     /// `config_scroll_button` returns 0, scrolling cannot activate.
     pub fn config_scroll_set_method(&mut self, method: ScrollMethod) -> DeviceConfigResult {
         match unsafe {
-                  ffi::libinput_device_config_scroll_set_method(self.as_raw_mut(),
-                                                                match method {
-                                                                    ScrollMethod::NoScroll => ffi::libinput_config_scroll_method::LIBINPUT_CONFIG_SCROLL_NO_SCROLL,
-                                                                    ScrollMethod::TwoFinger => ffi::libinput_config_scroll_method::LIBINPUT_CONFIG_SCROLL_2FG,
-                                                                    ScrollMethod::Edge => ffi::libinput_config_scroll_method::LIBINPUT_CONFIG_SCROLL_EDGE,
-                                                                    ScrollMethod::OnButtonDown => ffi::libinput_config_scroll_method::LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN,
-                                                                })
+                  ffi::libinput_device_config_scroll_set_method(self.as_raw_mut(), match method {
+                ScrollMethod::NoScroll => {
+                    ffi::libinput_config_scroll_method::LIBINPUT_CONFIG_SCROLL_NO_SCROLL
+                }
+                ScrollMethod::TwoFinger => ffi::libinput_config_scroll_method::LIBINPUT_CONFIG_SCROLL_2FG,
+                ScrollMethod::Edge => ffi::libinput_config_scroll_method::LIBINPUT_CONFIG_SCROLL_EDGE,
+                ScrollMethod::OnButtonDown => {
+                    ffi::libinput_config_scroll_method::LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN
+                }
+            })
               } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
@@ -1336,11 +1346,14 @@ impl Device {
     /// `config_tap_finger_count` returns 0.
     pub fn config_tap_set_button_map(&mut self, map: TapButtonMap) -> DeviceConfigResult {
         match unsafe {
-                  ffi::libinput_device_config_tap_set_button_map(self.as_raw_mut(),
-                                                                 match map {
-                                                                     TapButtonMap::LeftRightMiddle => ffi::libinput_config_tap_button_map::LIBINPUT_CONFIG_TAP_MAP_LRM,
-                                                                     TapButtonMap::LeftMiddleRight => ffi::libinput_config_tap_button_map::LIBINPUT_CONFIG_TAP_MAP_LMR,
-                                                                 })
+                  ffi::libinput_device_config_tap_set_button_map(self.as_raw_mut(), match map {
+                TapButtonMap::LeftRightMiddle => {
+                    ffi::libinput_config_tap_button_map::LIBINPUT_CONFIG_TAP_MAP_LRM
+                }
+                TapButtonMap::LeftMiddleRight => {
+                    ffi::libinput_config_tap_button_map::LIBINPUT_CONFIG_TAP_MAP_LMR
+                }
+            })
               } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
@@ -1362,10 +1375,10 @@ impl Device {
         match unsafe {
                   ffi::libinput_device_config_tap_set_drag_enabled(self.as_raw_mut(),
                                                                    if enabled {
-                                                                       ffi::libinput_config_drag_state::LIBINPUT_CONFIG_DRAG_ENABLED
-                                                                   } else {
-                                                                       ffi::libinput_config_drag_state::LIBINPUT_CONFIG_DRAG_DISABLED
-                                                                   })
+                ffi::libinput_config_drag_state::LIBINPUT_CONFIG_DRAG_ENABLED
+            } else {
+                ffi::libinput_config_drag_state::LIBINPUT_CONFIG_DRAG_DISABLED
+            })
               } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
@@ -1390,10 +1403,10 @@ impl Device {
         match unsafe {
                   ffi::libinput_device_config_tap_set_drag_lock_enabled(self.as_raw_mut(),
                                                                         if enabled {
-                                                                            ffi::libinput_config_drag_lock_state::LIBINPUT_CONFIG_DRAG_LOCK_ENABLED
-                                                                        } else {
-                                                                            ffi::libinput_config_drag_lock_state::LIBINPUT_CONFIG_DRAG_LOCK_DISABLED
-                                                                        })
+                ffi::libinput_config_drag_lock_state::LIBINPUT_CONFIG_DRAG_LOCK_ENABLED
+            } else {
+                ffi::libinput_config_drag_lock_state::LIBINPUT_CONFIG_DRAG_LOCK_DISABLED
+            })
               } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
@@ -1413,10 +1426,10 @@ impl Device {
         match unsafe {
                   ffi::libinput_device_config_tap_set_enabled(self.as_raw_mut(),
                                                               if enabled {
-                                                                  ffi::libinput_config_tap_state::LIBINPUT_CONFIG_TAP_ENABLED
-                                                              } else {
-                                                                  ffi::libinput_config_tap_state::LIBINPUT_CONFIG_TAP_DISABLED
-                                                              })
+                ffi::libinput_config_tap_state::LIBINPUT_CONFIG_TAP_ENABLED
+            } else {
+                ffi::libinput_config_tap_state::LIBINPUT_CONFIG_TAP_DISABLED
+            })
               } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {

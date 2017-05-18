@@ -245,11 +245,10 @@ impl PointerAxisEvent {
     /// value of 0, the event is a scroll stop event.
     pub fn has_axis(&self, axis: Axis) -> bool {
         unsafe {
-            ffi::libinput_event_pointer_has_axis(self.as_raw_mut(),
-                                                 match axis {
-                                                     Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
-                                                     Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
-                                                 }) != 0
+            ffi::libinput_event_pointer_has_axis(self.as_raw_mut(), match axis {
+                Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
+                Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
+            }) != 0
         }
     }
 
@@ -306,11 +305,10 @@ impl PointerAxisEvent {
     /// that axis.
     pub fn axis_value(&self, axis: Axis) -> f64 {
         unsafe {
-            ffi::libinput_event_pointer_get_axis_value(self.as_raw_mut(),
-                                                       match axis {
-                                                           Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
-                                                           Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
-                                                       })
+            ffi::libinput_event_pointer_get_axis_value(self.as_raw_mut(), match axis {
+                Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
+                Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
+            })
         }
     }
 
@@ -328,11 +326,12 @@ impl PointerAxisEvent {
             AxisSource::Continuous | AxisSource::Finger => None,
             _ => {
                 Some(unsafe {
-                         ffi::libinput_event_pointer_get_axis_value_discrete(self.as_raw_mut(),
-                                                                             match axis {
-                                                                                 Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
-                                                                                 Axis::Horizontal => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL,
-                                                                             })
+                         ffi::libinput_event_pointer_get_axis_value_discrete(self.as_raw_mut(), match axis {
+                        Axis::Vertical => ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL,
+                        Axis::Horizontal => {
+                            ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL
+                        }
+                    })
                      })
             }
         }
