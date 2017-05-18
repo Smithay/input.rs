@@ -8,7 +8,7 @@ containers:
             PATH: /bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/work/.vagga/nightly-home/.cargo/bin:/work/.vagga/nightly-home/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/
         setup:
             - !Tar
-              url: http://mirror.rackspace.com/archlinux/iso/2017.04.01/archlinux-bootstrap-2017.04.01-x86_64.tar.gz
+              url: http://mirror.rackspace.com/archlinux/iso/2017.05.01/archlinux-bootstrap-2017.05.01-x86_64.tar.gz
               subdir: root.x86_64
             - !CacheDirs { /var/cache/pacman: arch-packages }
             - !Download
@@ -26,7 +26,7 @@ containers:
                 pacman-key --populate archlinux
                 pacman -Syu --noconfirm
             - !Env HOME: /work/.vagga/nightly-home
-            - !Sh pacman -S --noconfirm base-devel wget clang rustup libinput git python
+            - !Sh pacman -S --noconfirm base-devel wget clang rustup libinput git python cmake
             - !Env PATH: /bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/work/.vagga/nightly-home/.cargo/bin
             - !Sh rustup install stable
             - !Sh rustup install beta
@@ -46,6 +46,8 @@ commands:
         description: Build project
         container: rust
         run: |
+                rm -rf $HOME/.cargo/registry
+                rustup run stable cargo clean
                 rustup run stable cargo build
                 rustup run beta cargo build
 
