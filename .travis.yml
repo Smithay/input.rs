@@ -1,32 +1,18 @@
-sudo: required
-dist: trusty
 language: rust
 addons:
-  apt:
-    packages:
-    - libcurl4-openssl-dev
-    - libelf-dev
-    - libdw-dev
-cache:
-  directories:
-  - ".vagga/nightly-home/.cargo"
-  - ".vagga/nightly-home/.rustup"
-  - ".vagga/.cache"
-before_script:
-- 'echo ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/ > ~/.vagga.yaml'
-- 'echo alpine-mirror: http://mirrors.gigenet.com/alpinelinux/ >> ~/.vagga.yaml'
-- 'echo cache-dir: $(pwd)/.vagga/.cache >> ~/.vagga.yaml'
-- |
-  echo "$(id -un):100000:65536" | sudo tee /etc/subuid | sudo tee /etc/subgid
-  sudo apt-get install uidmap -y
-  curl http://files.zerogw.com/vagga/vagga-install.sh | sh
+    apt:
+        sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.9' ]
+        packages: [ 'clang-3.9' ]
+
+rust:
+  - stable
+  - beta
+  - nightly
+matrix:
+  allow_failures:
+    - rust: nightly
+
 script:
-- vagga check-fmt
-- vagga build
-- vagga clippy
-after_success:
-- vagga doc
-- vagga --use-env=GH_TOKEN doc_upload
-env:
-  global:
-    secure: a/XwAYvO4LtAG/kBf+lY93TatHoR/nFLUwZS0jTrYAi0FWf7fcbPCsM1UDMkgKyuVqi2ZobMr1XxicBlIlsiECNqoRTT3S0mJroY69KLiOB5wl8YDFLOxgI6IZfvmvBgnw0+lFYbw2qKinvcffUG58azx+NLM5CJNasBsdIwA535GSoqAnsKTGd1NdGojeuhWiruL6O5O7WpP4oNn4XEL+/IOzqv0uToxq8u/VXB32qf1dJjYnHpEjEmiKNtwiiIKhp0C9QyMkrhkTjNLiFUUmfVYKwGDzvvXzJIO4u3PvCXD4evAXHGVTyTG99UyaqezDZV7OBB058f1K8SuxmbiucGtjuqphH5RKfdYwDmJ+qhv9a8X40siQV65Q2u0C1be2Mdj+FO+RRcNt+2x+IIxrFaqGMY1xCBM742NBpN8STQyPvR7YHTm2bN1wTuu733vbHQwy9i8RCX1Z4L+ZtI/BbJIa3sDArDhWlyUJQ+DiFiCzVHVPVTgFDHdkwr5Bx//xQbKtIMV0tv1iSPZJm02xUiec6Nk0Gli94DarPbPZbMWu8EK1cLV+InqKL9BRPES+tWNKpxOL2iu0UU2oGZcPkbOVnMtn5xJahsd8LJyVRpRWwHGhgOJceM704PSZcTI8r2KYXxGIHZQLW9+bjgIq28vEnCaG6U+h+PPP1xrB8=
+- cargo build
+- cargo build --features gen
+- diff -q input-sys/src/gen.rs $(find target -name gen.rs)

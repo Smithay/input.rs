@@ -15,7 +15,10 @@ exclude = [".travis.yml", ".rustfmt.toml"]
 path = "src/lib.rs"
 
 [build-dependencies]
-bindgen = "0.22"
+bindgen = { version = "0.22", optional = true }
 
 [dependencies]
 libc = "0.2"
+
+[features]
+gen = ["bindgen"]
