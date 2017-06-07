@@ -182,7 +182,9 @@ impl FromRaw<ffi::libinput_event_gesture> for GestureSwipeEvent {
             }
             ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_BEGIN |
             ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_UPDATE |
-            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_END => panic!("Tried to make GestureSwipeEvent from Pinch event"),
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_END => {
+                panic!("Tried to make GestureSwipeEvent from Pinch event")
+            }
             _ => unreachable!(),
         }
     }
@@ -254,7 +256,9 @@ impl FromRaw<ffi::libinput_event_gesture> for GesturePinchEvent {
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN |
             ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE |
-            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_END => panic!("Tried to make GesturePinchEvent from Swipe event"),
+            ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_SWIPE_END => {
+                panic!("Tried to make GesturePinchEvent from Swipe event")
+            }
             ffi::libinput_event_type::LIBINPUT_EVENT_GESTURE_PINCH_BEGIN => {
                 GesturePinchEvent::Begin(GesturePinchBeginEvent::from_raw(event))
             }

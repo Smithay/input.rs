@@ -12,3 +12,6 @@ authors = ["Drakulix (Victor Brekenfeld)"]
 [dependencies]
 input-sys = { version = "1.7.0", path = "./input-sys" }
 libc = "0.2"
+
+[features]
+gen = ["input-sys/gen"]
