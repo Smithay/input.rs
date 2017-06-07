@@ -10,7 +10,7 @@ categories = ["external-ffi-bindings"]
 authors = ["Drakulix (Victor Brekenfeld)"]
 
 [dependencies]
-input-sys = { version = "1.7.0", path = "./input-sys" }
+input-sys = { version = "1.7.1", path = "./input-sys" }
 libc = "0.2"
 
 [features]
