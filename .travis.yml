@@ -2,7 +2,7 @@ language: rust
 addons:
     apt:
         sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.9' ]
-        packages: [ 'clang-3.9' ]
+        packages: [ 'clang-3.9', 'libudev-dev' ]
 
 rust:
   - stable
