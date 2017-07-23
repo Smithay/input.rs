@@ -251,7 +251,7 @@ impl Device {
     pub fn id_product, ffi::libinput_device_get_id_product, u32);
     ffi_func!(
     /// Get the vendor ID for this device.
-    pub fn id_vendor, ffi::libinput_device_get_id_product, u32);
+    pub fn id_vendor, ffi::libinput_device_get_id_vendor, u32);
 
     /// Get the seat associated with this input device, see
     /// [Seats](https://wayland.freedesktop.org/libinput/doc/latest/seats.html)
@@ -474,12 +474,10 @@ impl Device {
     pub fn config_accel_profiles(&self) -> Vec<AccelProfile> {
         let mut profiles = Vec::new();
         let bitmask = unsafe { ffi::libinput_device_config_accel_get_profiles(self.as_raw_mut()) };
-        if bitmask & ffi::libinput_config_accel_profile::LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT as u32 ==
-           bitmask {
+        if bitmask & ffi::libinput_config_accel_profile::LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT as u32 != 0 {
             profiles.push(AccelProfile::Flat);
         }
-        if bitmask & ffi::libinput_config_accel_profile::LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE as u32 ==
-           bitmask {
+        if bitmask & ffi::libinput_config_accel_profile::LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE as u32 != 0 {
             profiles.push(AccelProfile::Adaptive);
         }
         profiles
