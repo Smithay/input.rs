@@ -39,6 +39,9 @@
 extern crate input_sys;
 extern crate libc;
 
+#[macro_use]
+extern crate bitflags;
+
 use std::{mem, ptr};
 
 /// Unsafe c-api.

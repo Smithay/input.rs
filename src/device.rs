@@ -83,31 +83,32 @@ pub enum DeviceConfigError {
     Invalid,
 }
 
-/// The send-event mode of a device defines when a device may generate
-/// events and pass those events to the caller.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum SendEventsMode {
-    /// Send events from this device normally.
-    ///
-    /// This is a placeholder mode only, any device detected by
-    /// libinput can be enabled. Do not test for this value as bitmask.
-    Enabled,
-    /// Do not send events through this device.
-    ///
-    /// Depending on the device, this may close all file descriptors
-    /// on the device or it may leave the file descriptors open and
-    /// route events through a different device.
-    ///
-    /// If this mode is set, other disable modes may be ignored.
-    /// For example, if both `Disabled` and `DisabledOnExternalMouse`
-    /// are set, the device remains disabled when all external pointer
-    /// devices are unplugged.
-    Disabled,
-    /// If an external pointer device is plugged in, do not send
-    /// events from this device.
-    ///
-    /// This option may be available on built-in touchpads.
-    DisabledOnExternalMouse,
+bitflags! {
+    /// The send-event mode of a device defines when a device may generate
+    /// events and pass those events to the caller.
+    pub struct SendEventsMode: u32 {
+        /// Send events from this device normally.
+        ///
+        /// This is a placeholder mode only, any device detected by
+        /// libinput can be enabled. Do not test for this value as bitmask.
+        const ENABLED = ffi::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_ENABLED;
+        /// Do not send events through this device.
+        ///
+        /// Depending on the device, this may close all file descriptors
+        /// on the device or it may leave the file descriptors open and
+        /// route events through a different device.
+        ///
+        /// If this mode is set, other disable modes may be ignored.
+        /// For example, if both `Disabled` and `DisabledOnExternalMouse`
+        /// are set, the device remains disabled when all external pointer
+        /// devices are unplugged.
+        const DISABLED = ffi::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED;
+        /// If an external pointer device is plugged in, do not send
+        /// events from this device.
+        ///
+        /// This option may be available on built-in touchpads.
+        const DISABLED_ON_EXTERNAL_MOUSE = ffi::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED_ON_EXTERNAL_MOUSE;
+    }
 }
 
 /// Map 1/2/3 finger tips to buttons
@@ -122,15 +123,16 @@ pub enum TapButtonMap {
 /// Result returned when applying configuration settings.
 pub type DeviceConfigResult = Result<(), DeviceConfigError>;
 
-/// Mask reflecting LEDs on a device.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum Led {
-    /// Num Lock Led
-    NumLock,
-    /// Caps Lock Led
-    CapsLock,
-    /// Scroll Lock Led
-    ScrollLock,
+bitflags! {
+    /// Mask reflecting LEDs on a device.
+    pub struct Led: u32 {
+        /// Num Lock Led
+        const NUMLOCK = ffi::libinput_led_LIBINPUT_LED_NUM_LOCK;
+        /// Caps Lock Led
+        const CAPSLOCK = ffi::libinput_led_LIBINPUT_LED_CAPS_LOCK;
+        /// Scroll Lock Led
+        const SCROLLLOCK = ffi::libinput_led_LIBINPUT_LED_SCROLL_LOCK;
+    }
 }
 
 ffi_ref_struct!(
@@ -324,16 +326,8 @@ impl Device {
     ///
     /// Missing `Led`s will be turned off.
     /// The slice is interpreted as a bitmap.
-    pub fn led_update(&mut self, leds: &[Led]) {
-        let mut bitmask = 0u32;
-        for led in leds {
-            match *led {
-                Led::NumLock => bitmask |= ffi::libinput_led_LIBINPUT_LED_NUM_LOCK,
-                Led::CapsLock => bitmask |= ffi::libinput_led_LIBINPUT_LED_CAPS_LOCK,
-                Led::ScrollLock => bitmask |= ffi::libinput_led_LIBINPUT_LED_SCROLL_LOCK,
-            }
-        }
-        unsafe { ffi::libinput_device_led_update(self.as_raw_mut(), bitmask) }
+    pub fn led_update(&mut self, leds: Led) {
+        unsafe { ffi::libinput_device_led_update(self.as_raw_mut(), leds.bits()) }
     }
 
     /// Check if the given device has the specified capability.
@@ -1118,45 +1112,15 @@ impl Device {
     /// that are subsets. In other words, don't expect
     /// `config_send_events_mode` to always return exactly the same
     /// as passed into `config_send_events_set_mode`.
-    pub fn config_send_events_mode(&self) -> Vec<SendEventsMode> {
-        let mut methods = Vec::new();
-        let bitmask = unsafe { ffi::libinput_device_config_send_events_get_mode(self.as_raw_mut()) };
-        if bitmask & ffi::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_ENABLED as u32 ==
-           bitmask {
-            methods.push(SendEventsMode::Enabled);
-        }
-        if bitmask & ffi::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED as u32 ==
-           bitmask {
-            methods.push(SendEventsMode::Disabled);
-        }
-        if bitmask &
-           ffi::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED_ON_EXTERNAL_MOUSE as
-           u32 == bitmask {
-            methods.push(SendEventsMode::DisabledOnExternalMouse);
-        }
-        methods
+    pub fn config_send_events_mode(&self) -> SendEventsMode {
+        SendEventsMode::from_bits_truncate(unsafe { ffi::libinput_device_config_send_events_get_mode(self.as_raw_mut()) })
     }
 
     /// Return the possible send-event modes for this device.
     ///
     /// These modes define when a device may process and send events.
-    pub fn config_send_events_modes(&self) -> Vec<SendEventsMode> {
-        let mut methods = Vec::new();
-        let bitmask = unsafe { ffi::libinput_device_config_send_events_get_modes(self.as_raw_mut()) };
-        if bitmask & ffi::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_ENABLED as u32 ==
-           bitmask {
-            methods.push(SendEventsMode::Enabled);
-        }
-        if bitmask & ffi::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED as u32 ==
-           bitmask {
-            methods.push(SendEventsMode::Disabled);
-        }
-        if bitmask &
-           ffi::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED_ON_EXTERNAL_MOUSE as
-           u32 == bitmask {
-            methods.push(SendEventsMode::DisabledOnExternalMouse);
-        }
-        methods
+    pub fn config_send_events_modes(&self) -> SendEventsMode {
+        SendEventsMode::from_bits_truncate(unsafe { ffi::libinput_device_config_send_events_get_modes(self.as_raw_mut()) })
     }
 
     /// Set the send-event mode for this device.
@@ -1177,22 +1141,8 @@ impl Device {
     /// If the device is already suspended, this function does
     /// nothing and returns success. Changing the send-event mode on
     /// a device that has been removed is permitted.
-    pub fn config_send_events_set_mode(&self, mode: &[SendEventsMode]) -> DeviceConfigResult {
-        let mut bitmask = 0u32;
-        for flag in mode {
-            match *flag {
-                SendEventsMode::Enabled => {
-                    bitmask |= ffi::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_ENABLED as
-                               u32
-                }
-                SendEventsMode::Disabled => {
-                    bitmask |= ffi::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED as
-                               u32
-                }
-                SendEventsMode::DisabledOnExternalMouse => bitmask |= ffi::libinput_config_send_events_mode_LIBINPUT_CONFIG_SEND_EVENTS_DISABLED_ON_EXTERNAL_MOUSE as u32,
-            }
-        }
-        match unsafe { ffi::libinput_device_config_send_events_set_mode(self.as_raw_mut(), bitmask) } {
+    pub fn config_send_events_set_mode(&self, mode: SendEventsMode) -> DeviceConfigResult {
+        match unsafe { ffi::libinput_device_config_send_events_set_mode(self.as_raw_mut(), mode.bits()) } {
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status::LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
