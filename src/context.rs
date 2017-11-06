@@ -54,7 +54,7 @@ unsafe extern "C" fn open_restricted<I: LibinputInterface + 'static>(path: *cons
         };
         match res {
             Ok(fd) => fd,
-            Err(errno) => errno,
+            Err(errno) => if errno > 0 { -errno } else { errno },
         }
     } else { -1 }
 }
