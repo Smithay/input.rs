@@ -4,6 +4,8 @@ use {AsRaw, FromRaw, Libinput, Seat, Userdata, ffi};
 use event::tablet_pad::TabletPadModeGroup;
 
 use libc;
+#[cfg(feature = "udev")]
+use udev::{Context as UdevContext, Device as UdevDevice, FromRawWithContext};
 use std::ffi::{CStr, CString};
 
 /// Capabilities on a device.
@@ -297,23 +299,29 @@ impl Device {
         }
     }
 
-    ffi_func!(
     /// Return a udev handle to the device that is this libinput
     /// device, if any.
     ///
-    /// The returned handle has a refcount of at least 1, the caller
-    /// must call `udev_device_unref()`` once to release the
-    /// associated resources. See the
-    /// [libudev documentation](http://www.freedesktop.org/software/systemd/libudev/)
-    /// for details.
-    ///
     /// Some devices may not have a udev device, or the udev device
-    /// may be unobtainable. This function returns NULL if no udev
+    /// may be unobtainable. This function returns `None` if no udev
     /// device was available.
     ///
     /// Calling this function multiple times for the same device may
     /// not return the same udev handle each time.
-    pub fn udev_device, ffi::libinput_device_get_udev_device, *mut libc::c_void);
+    ///
+    /// ## Unsafety
+    ///
+    /// The result of this function is not definied if the passed udev `Context`
+    /// is not the same as the one the libinput `Context` was created from.
+    #[cfg(feature = "udev")]
+    pub unsafe fn udev_device(&self, context: &UdevContext) -> Option<UdevDevice> {
+        let ptr = ffi::libinput_device_get_udev_device(self.ffi) as *mut _;
+        if ptr.is_null() {
+            None
+        } else {
+            Some(UdevDevice::from_raw(&context, ptr))
+        }
+    }
 
     /// Update the LEDs on the device, if any.
     ///

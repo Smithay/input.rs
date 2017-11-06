@@ -33,14 +33,15 @@
 //!
 
 #![deny(missing_docs)]
-#![cfg_attr(feature="cargo-clippy", deny(clippy))]
-#![cfg_attr(feature="cargo-clippy", allow(doc_markdown))]
 
 extern crate input_sys;
 extern crate libc;
 
 #[macro_use]
 extern crate bitflags;
+
+#[cfg(feature = "udev")]
+extern crate udev;
 
 use std::{mem, ptr};
 
