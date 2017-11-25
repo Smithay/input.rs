@@ -198,7 +198,7 @@ macro_rules! ffi_ref_struct {
             fn drop(&mut self) {
                 unsafe {
                     let userdata_ref = $get_userdata_fn(self.as_raw_mut());
-                    if $unref_fn(self.ffi).is_null() {
+                    if $unref_fn(self.ffi).is_null() && !userdata_ref.is_null() {
                         let _ = Box::from_raw(userdata_ref);
                     }
                 }
