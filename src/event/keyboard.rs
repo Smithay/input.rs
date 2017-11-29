@@ -1,7 +1,7 @@
 //! Keyboard event types
 
 use super::EventTrait;
-use {AsRaw, FromRaw};
+use {AsRaw, FromRaw, Context};
 use ffi;
 
 /// State of a Key
@@ -14,7 +14,7 @@ pub enum KeyState {
 }
 
 /// Common functions for all Keyboard-Events implement.
-pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> {
+pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> + Context {
     ffi_func!(
     /// The event time for this event
     fn time, ffi::libinput_event_keyboard_get_time, u32);
@@ -37,11 +37,11 @@ pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> {
     fn into_keyboard_event(self) -> KeyboardEvent
         where Self: Sized
     {
-        unsafe { KeyboardEvent::from_raw(self.as_raw_mut()) }
+        unsafe { KeyboardEvent::from_raw(self.as_raw_mut(), self.context()) }
     }
 }
 
-impl<T: AsRaw<ffi::libinput_event_keyboard>> KeyboardEventTrait for T {}
+impl<T: AsRaw<ffi::libinput_event_keyboard> + Context> KeyboardEventTrait for T {}
 
 /// A keyboard related `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -60,11 +60,11 @@ impl EventTrait for KeyboardEvent {
 }
 
 impl FromRaw<ffi::libinput_event_keyboard> for KeyboardEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_keyboard) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_keyboard, context: &::context::Libinput) -> Self {
         let base = ffi::libinput_event_keyboard_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type::LIBINPUT_EVENT_KEYBOARD_KEY => {
-                KeyboardEvent::Key(KeyboardKeyEvent::from_raw(event))
+                KeyboardEvent::Key(KeyboardKeyEvent::from_raw(event, context))
             }
             _ => unreachable!(),
         }
@@ -75,6 +75,14 @@ impl AsRaw<ffi::libinput_event_keyboard> for KeyboardEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_keyboard {
         match *self {
             KeyboardEvent::Key(ref event) => event.as_raw(),
+        }
+    }
+}
+
+impl Context for KeyboardEvent {
+    fn context(&self) -> &::Libinput {
+        match *self {
+            KeyboardEvent::Key(ref event) => event.context(),
         }
     }
 }

@@ -1,7 +1,4 @@
-
-
-use {AsRaw, FromRaw, Userdata, ffi};
-use libc;
+use {AsRaw, FromRaw, ffi};
 
 /// Available tool types for a device with the `DeviceCapability::TabletTool` capability.
 ///
@@ -47,7 +44,7 @@ ffi_ref_struct!(
 /// coming from the device directly. Depending on the hardware it is possible to track
 /// the same physical tool across multiple `Device`s, see
 /// [Tracking unique tools](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-serial-numbers).
-struct TabletTool, ffi::libinput_tablet_tool, ffi::libinput_tablet_tool_ref, ffi::libinput_tablet_tool_unref, ffi::libinput_tablet_tool_get_user_data, ffi::libinput_tablet_tool_set_user_data);
+struct TabletTool, ffi::libinput_tablet_tool, ffi::libinput_tablet_tool_ref, ffi::libinput_tablet_tool_unref);
 
 impl TabletTool {
     ffi_func!(

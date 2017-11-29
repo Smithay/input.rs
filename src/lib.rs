@@ -43,8 +43,6 @@ extern crate bitflags;
 #[cfg(feature = "udev")]
 extern crate udev;
 
-use std::{mem, ptr};
-
 /// Unsafe c-api.
 pub mod ffi {
     pub use input_sys::*;
@@ -54,15 +52,22 @@ pub mod ffi {
 pub trait AsRaw<T> {
     /// Receive a raw pointer representing this type.
     fn as_raw(&self) -> *const T;
+
     #[doc(hidden)]
     fn as_raw_mut(&self) -> *mut T {
         self.as_raw() as *mut _
     }
 }
 
+/// Trait to receive the underlying context
+pub trait Context {
+    /// Returns the underlying libinput context
+    fn context(&self) -> &Libinput;
+}
+
 /// Trait for types that allow to be initialized from a raw pointer
 pub trait FromRaw<T> {
-    /// Create a new instance of this type from a raw pointer.
+    /// Create a new instance of this type from a raw pointer and it's context.
     ///
     /// ## Warning
     ///
@@ -76,85 +81,17 @@ pub trait FromRaw<T> {
     ///
     /// If the pointer is pointing to a different struct, invalid memory or `NULL` the returned
     /// struct may panic on use or cause other undefined behavior.
-    ///
-    unsafe fn from_raw(*mut T) -> Self;
-}
-
-/// Trait to deal with userdata attached to this struct.
-pub trait Userdata {
-    /// Receive a reference to the attached userdata, if one exists.
-    ///
-    /// ## Unsafety
-    ///
-    /// Receiving userdata is unsafe as multiple references to the same underlying libinput struct
-    /// may exist. As such any reference may become invalid if changed using `set_userdata`.
-    ///
-    unsafe fn userdata<T: 'static>(&self) -> Option<&T> {
-        self.userdata_raw().as_ref()
-    }
-
-    /// Receive a mutable reference to the attached userdata, if one exists.
-    ///
-    /// ## Unsafety
-    ///
-    /// Receiving userdata is unsafe as multiple references to the same underlying libinput struct
-    /// may exist. As such any reference may become invalid if changed using `set_userdata`.
-    ///
-    /// Additionally multiple mutable references may be created through the existance of multiple
-    /// structs using the same libinput reference. If you have control over the userdata make sure
-    /// to store `Mutex` to be on the safe side.
-    ///
-    unsafe fn userdata_mut<T: 'static>(&mut self) -> Option<&mut T> {
-        self.userdata_raw().as_mut()
-    }
-
-    /// Set userdata and receive the currently set userdata
-    ///
-    /// Sets new userdata or nothing in place of any existing one and returns the currently set
-    /// userdata if one exists.
-    ///
-    /// ## Unsafety
-    ///
-    /// Multiple references to the same underlying libinput struct may exist. As such this function
-    /// allows for shared mutable access, which is unsafe. Also this means this function
-    /// might invalidate references to the currently set userdata, once dropped.
-    ///
-    /// Use a `Mutex` when storing new userdata to mitiage some of these problems.
-    ///
-    /// ## Note
-    ///
-    /// Stored userdata is dropped correctly, if the last reference is hold by rust and goes out of scope normally.
-    unsafe fn set_userdata<T: 'static, U: 'static>(&mut self, new: Option<T>) -> Option<U> {
-        let old = {
-            let ptr = self.userdata_raw();
-            if !ptr.is_null() {
-                Some(Box::from_raw(ptr as *mut U))
-            } else {
-                None
-            }
-        };
-        let mut boxed = Box::new(new);
-        self.set_userdata_raw(match (*boxed).as_mut() {
-                                  Some(value) => value as *mut T,
-                                  None => ptr::null_mut(),
-                              });
-        mem::forget(boxed);
-        old.map(|x| *x)
-    }
-
-    #[doc(hidden)]
-    unsafe fn userdata_raw<T: 'static>(&self) -> *mut T;
-    #[doc(hidden)]
-    unsafe fn set_userdata_raw<T: 'static>(&self, ptr: *mut T);
+    unsafe fn from_raw(*mut T, context: &context::Libinput) -> Self;
 }
 
 macro_rules! ffi_ref_struct {
-    ($(#[$attr:meta])* struct $struct_name:ident, $ffi_name:path, $ref_fn:path, $unref_fn:path, $get_userdata_fn:path, $set_userdata_fn:path) => (
+    ($(#[$attr:meta])* struct $struct_name:ident, $ffi_name:path, $ref_fn:path, $unref_fn:path) => (
         #[derive(Eq)]
         $(#[$attr])*
         pub struct $struct_name
         {
             ffi: *mut $ffi_name,
+            context: $crate::context::Libinput,
         }
 
         impl ::std::fmt::Debug for $struct_name {
@@ -163,34 +100,33 @@ macro_rules! ffi_ref_struct {
             }
         }
 
-        impl FromRaw<$ffi_name> for $struct_name
+        impl $crate::FromRaw<$ffi_name> for $struct_name
         {
-            unsafe fn from_raw(ffi: *mut $ffi_name) -> Self {
+            unsafe fn from_raw(ffi: *mut $ffi_name, context: &$crate::Libinput) -> Self {
                 $struct_name {
                     ffi: $ref_fn(ffi),
+                    context: context.clone(),
                 }
             }
         }
 
-        impl AsRaw<$ffi_name> for $struct_name
+        impl $crate::AsRaw<$ffi_name> for $struct_name
         {
             fn as_raw(&self) -> *const $ffi_name {
                 self.ffi as *const _
             }
         }
 
-        impl Userdata for $struct_name {
-            unsafe fn userdata_raw<T: 'static>(&self) -> *mut T {
-                $get_userdata_fn(self.as_raw_mut()) as *mut T
+        impl $crate::Context for $struct_name
+        {
+            fn context(&self) -> &$crate::Libinput {
+                &self.context
             }
-            unsafe fn set_userdata_raw<T: 'static>(&self, ptr: *mut T) {
-                $set_userdata_fn(self.as_raw_mut(), ptr as *mut libc::c_void);
-            }
-        }
+         }
 
         impl Clone for $struct_name {
             fn clone(&self) -> Self {
-                unsafe { $struct_name::from_raw(self.as_raw_mut()) }
+                unsafe { $struct_name::from_raw(self.as_raw_mut(), &self.context) }
             }
         }
 
@@ -198,10 +134,7 @@ macro_rules! ffi_ref_struct {
         {
             fn drop(&mut self) {
                 unsafe {
-                    let userdata_ref = $get_userdata_fn(self.as_raw_mut());
-                    if $unref_fn(self.ffi).is_null() && !userdata_ref.is_null() {
-                        let _ = Box::from_raw(userdata_ref);
-                    }
+                    $unref_fn(self.ffi);
                 }
             }
         }

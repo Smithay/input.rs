@@ -2,14 +2,13 @@
 
 use super::EventTrait;
 pub use super::pointer::ButtonState;
-use {AsRaw, FromRaw};
-use ffi;
+use {AsRaw, FromRaw, Context, ffi};
 
 mod mode_group;
 pub use self::mode_group::*;
 
 /// Common functions all TabletPad-Events implement.
-pub trait TabletPadEventTrait: AsRaw<ffi::libinput_event_tablet_pad> {
+pub trait TabletPadEventTrait: AsRaw<ffi::libinput_event_tablet_pad> + Context {
     ffi_func!(
     /// The event time for this event
     fn time, ffi::libinput_event_tablet_pad_get_time, u32);
@@ -42,7 +41,7 @@ pub trait TabletPadEventTrait: AsRaw<ffi::libinput_event_tablet_pad> {
     /// visual feedback like LEDs on the pad. See [Tablet pad modes](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-pad-modes) for details.
     fn mode_group(&self) -> TabletPadModeGroup {
         unsafe {
-            TabletPadModeGroup::from_raw(ffi::libinput_event_tablet_pad_get_mode_group(self.as_raw_mut()))
+            TabletPadModeGroup::from_raw(ffi::libinput_event_tablet_pad_get_mode_group(self.as_raw_mut()), self.context())
         }
     }
 
@@ -50,11 +49,11 @@ pub trait TabletPadEventTrait: AsRaw<ffi::libinput_event_tablet_pad> {
     fn into_tablet_pad_event(self) -> TabletPadEvent
         where Self: Sized
     {
-        unsafe { TabletPadEvent::from_raw(self.as_raw_mut()) }
+        unsafe { TabletPadEvent::from_raw(self.as_raw_mut(), self.context()) }
     }
 }
 
-impl<T: AsRaw<ffi::libinput_event_tablet_pad>> TabletPadEventTrait for T {}
+impl<T: AsRaw<ffi::libinput_event_tablet_pad> + Context> TabletPadEventTrait for T {}
 
 /// A tablet-pad related `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -85,17 +84,17 @@ impl EventTrait for TabletPadEvent {
 }
 
 impl FromRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_pad) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_pad, context: &::Libinput) -> Self {
         let base = ffi::libinput_event_tablet_pad_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_PAD_BUTTON => {
-                TabletPadEvent::Button(TabletPadButtonEvent::from_raw(event))
+                TabletPadEvent::Button(TabletPadButtonEvent::from_raw(event, context))
             }
             ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_PAD_RING => {
-                TabletPadEvent::Ring(TabletPadRingEvent::from_raw(event))
+                TabletPadEvent::Ring(TabletPadRingEvent::from_raw(event, context))
             }
             ffi::libinput_event_type::LIBINPUT_EVENT_TABLET_PAD_STRIP => {
-                TabletPadEvent::Strip(TabletPadStripEvent::from_raw(event))
+                TabletPadEvent::Strip(TabletPadStripEvent::from_raw(event, context))
             }
             _ => unreachable!(),
         }
@@ -108,6 +107,16 @@ impl AsRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
             TabletPadEvent::Button(ref event) => event.as_raw(),
             TabletPadEvent::Ring(ref event) => event.as_raw(),
             TabletPadEvent::Strip(ref event) => event.as_raw(),
+        }
+    }
+}
+
+impl Context for TabletPadEvent {
+    fn context(&self) -> &::Libinput {
+        match *self {
+            TabletPadEvent::Button(ref event)   => event.context(),
+            TabletPadEvent::Ring(ref event)     => event.context(),
+            TabletPadEvent::Strip(ref event)    => event.context(),
         }
     }
 }

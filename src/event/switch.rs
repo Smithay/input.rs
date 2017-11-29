@@ -1,11 +1,11 @@
 //! Switch event types
 
 use super::EventTrait;
-use {AsRaw, FromRaw};
+use {AsRaw, FromRaw, Context};
 use ffi;
 
 /// Common functions all Switch-Events implement.
-pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> {
+pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> + Context {
     ffi_func!(
     /// The event time for this event
     fn time, ffi::libinput_event_switch_get_time, u32);
@@ -17,11 +17,11 @@ pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> {
     fn into_switch_event(self) -> SwitchEvent
         where Self: Sized
     {
-        unsafe { SwitchEvent::from_raw(self.as_raw_mut()) }
+        unsafe { SwitchEvent::from_raw(self.as_raw_mut(), self.context()) }
     }
 }
 
-impl<T: AsRaw<ffi::libinput_event_switch>> SwitchEventTrait for T {}
+impl<T: AsRaw<ffi::libinput_event_switch> + Context> SwitchEventTrait for T {}
 
 /// A switch related `Event`
 #[derive(Debug,  PartialEq, Eq, Hash)]
@@ -40,11 +40,11 @@ impl EventTrait for SwitchEvent {
 }
 
 impl FromRaw<ffi::libinput_event_switch> for SwitchEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_switch) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_switch, context: &::context::Libinput) -> Self {
         let base = ffi::libinput_event_switch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type::LIBINPUT_EVENT_SWITCH_TOGGLE => {
-                SwitchEvent::Toggle(SwitchToggleEvent::from_raw(event))
+                SwitchEvent::Toggle(SwitchToggleEvent::from_raw(event, context))
             }
             _ => unreachable!(),
         }
@@ -55,6 +55,14 @@ impl AsRaw<ffi::libinput_event_switch> for SwitchEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_switch {
         match *self {
             SwitchEvent::Toggle(ref event) => event.as_raw(),
+        }
+    }
+}
+
+impl Context for SwitchEvent {
+    fn context(&self) -> &::Libinput {
+        match *self {
+            SwitchEvent::Toggle(ref event) => event.context(),
         }
     }
 }

@@ -1,11 +1,11 @@
 //! Pointer event types
 
 use super::EventTrait;
-use {AsRaw, FromRaw};
+use {AsRaw, FromRaw, Context};
 use ffi;
 
 /// Common functions for all Pointer-Events implement.
-pub trait PointerEventTrait: AsRaw<ffi::libinput_event_pointer> {
+pub trait PointerEventTrait: AsRaw<ffi::libinput_event_pointer> + Context {
     ffi_func!(
     /// The event time for this event
     fn time, ffi::libinput_event_pointer_get_time, u32);
@@ -17,11 +17,11 @@ pub trait PointerEventTrait: AsRaw<ffi::libinput_event_pointer> {
     fn into_pointer_event(self) -> PointerEvent
         where Self: Sized
     {
-        unsafe { PointerEvent::from_raw(self.as_raw_mut()) }
+        unsafe { PointerEvent::from_raw(self.as_raw_mut(), self.context()) }
     }
 }
 
-impl<T: AsRaw<ffi::libinput_event_pointer>> PointerEventTrait for T {}
+impl<T: AsRaw<ffi::libinput_event_pointer> + Context> PointerEventTrait for T {}
 
 /// A pointer related `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -49,20 +49,20 @@ impl EventTrait for PointerEvent {
 }
 
 impl FromRaw<ffi::libinput_event_pointer> for PointerEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_pointer) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_pointer, context: &::context::Libinput) -> Self {
         let base = ffi::libinput_event_pointer_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type::LIBINPUT_EVENT_POINTER_MOTION => {
-                PointerEvent::Motion(PointerMotionEvent::from_raw(event))
+                PointerEvent::Motion(PointerMotionEvent::from_raw(event, context))
             }
             ffi::libinput_event_type::LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE => {
-                PointerEvent::MotionAbsolute(PointerMotionAbsoluteEvent::from_raw(event))
+                PointerEvent::MotionAbsolute(PointerMotionAbsoluteEvent::from_raw(event, context))
             }
             ffi::libinput_event_type::LIBINPUT_EVENT_POINTER_BUTTON => {
-                PointerEvent::Button(PointerButtonEvent::from_raw(event))
+                PointerEvent::Button(PointerButtonEvent::from_raw(event, context))
             }
             ffi::libinput_event_type::LIBINPUT_EVENT_POINTER_AXIS => {
-                PointerEvent::Axis(PointerAxisEvent::from_raw(event))
+                PointerEvent::Axis(PointerAxisEvent::from_raw(event, context))
             }
             _ => unreachable!(),
         }
@@ -76,6 +76,17 @@ impl AsRaw<ffi::libinput_event_pointer> for PointerEvent {
             PointerEvent::MotionAbsolute(ref event) => event.as_raw(),
             PointerEvent::Button(ref event) => event.as_raw(),
             PointerEvent::Axis(ref event) => event.as_raw(),
+        }
+    }
+}
+
+impl Context for PointerEvent {
+    fn context(&self) -> &::Libinput {
+        match *self {
+            PointerEvent::Motion(ref event) => event.context(),
+            PointerEvent::MotionAbsolute(ref event) => event.context(),
+            PointerEvent::Button(ref event) => event.context(),
+            PointerEvent::Axis(ref event) => event.context(),
         }
     }
 }
@@ -332,7 +343,7 @@ impl PointerAxisEvent {
                             ffi::libinput_pointer_axis::LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL
                         }
                     })
-                     })
+                })
             }
         }
     }

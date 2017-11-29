@@ -1,9 +1,6 @@
-
-
-use {AsRaw, FromRaw, Libinput, Seat, Userdata, ffi};
+use {AsRaw, FromRaw, Libinput, Seat, ffi};
 use event::tablet_pad::TabletPadModeGroup;
 
-use libc;
 #[cfg(feature = "udev")]
 use udev::{Context as UdevContext, Device as UdevDevice, FromRawWithContext};
 use std::ffi::{CStr, CString};
@@ -162,7 +159,7 @@ ffi_ref_struct!(
 ///
 /// Device groups are assigned based on the LIBINPUT_DEVICE_GROUP udev
 /// property, see [Static device configuration](https://wayland.freedesktop.org/libinput/doc/latest/udev_config.html) via udev.
-struct DeviceGroup, ffi::libinput_device_group, ffi::libinput_device_group_ref, ffi::libinput_device_group_unref, ffi::libinput_device_group_get_user_data, ffi::libinput_device_group_set_user_data);
+struct DeviceGroup, ffi::libinput_device_group, ffi::libinput_device_group_ref, ffi::libinput_device_group_unref);
 
 ffi_ref_struct!(
 /// Representation of a single input device as seen by the kernel.
@@ -170,12 +167,12 @@ ffi_ref_struct!(
 /// A single physical device might consist out of multiple input
 /// devices like a keyboard-touchpad combination. See `DeviceGroup`
 /// if you want to track such combined physical devices.
-struct Device, ffi::libinput_device, ffi::libinput_device_ref, ffi::libinput_device_unref, ffi::libinput_device_get_user_data, ffi::libinput_device_set_user_data);
+struct Device, ffi::libinput_device, ffi::libinput_device_ref, ffi::libinput_device_unref);
 
 impl Device {
     /// Get the libinput context from the device.
     pub fn context(&self) -> Libinput {
-        unsafe { Libinput::from_raw(ffi::libinput_device_get_context(self.as_raw_mut())) }
+        self.context.clone()
     }
 
     /// Get the device group this device is assigned to.
@@ -204,7 +201,7 @@ impl Device {
     /// Device groups are assigned based on the `LIBINPUT_DEVICE_GROUP`
     /// udev property, see [Static device configuration](https://wayland.freedesktop.org/libinput/doc/latest/udev_config.html) via udev.
     pub fn device_group(&self) -> DeviceGroup {
-        unsafe { DeviceGroup::from_raw(ffi::libinput_device_get_device_group(self.as_raw_mut())) }
+        unsafe { DeviceGroup::from_raw(ffi::libinput_device_get_device_group(self.as_raw_mut()), &self.context) }
     }
 
     /// Get the system name of the device.
@@ -267,7 +264,7 @@ impl Device {
     /// but if no external reference is kept, it may be destroyed if
     /// no device belonging to it is left.
     pub fn seat(&self) -> Seat {
-        unsafe { Seat::from_raw(ffi::libinput_device_get_seat(self.as_raw_mut())) }
+        unsafe { Seat::from_raw(ffi::libinput_device_get_seat(self.as_raw_mut()), &self.context) }
     }
 
     /// Change the logical seat associated with this device by removing the device and adding it to the new seat.
@@ -439,7 +436,7 @@ impl Device {
         if ptr.is_null() {
             None
         } else {
-            Some(unsafe { TabletPadModeGroup::from_raw(ptr) })
+            Some(unsafe { TabletPadModeGroup::from_raw(ptr, &self.context) })
         }
     }
 

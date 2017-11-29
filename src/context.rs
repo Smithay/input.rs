@@ -1,4 +1,4 @@
-use {AsRaw, Device, Event, FromRaw, ffi};
+use {AsRaw, FromRaw, Device, Event, ffi};
 
 use libc;
 use std::mem;
@@ -6,6 +6,7 @@ use std::ffi::{CStr, CString};
 use std::io::{Error as IoError, Result as IoResult};
 use std::iter::Iterator;
 use std::path::Path;
+use std::rc::Rc;
 use std::os::unix::io::RawFd;
 
 #[cfg(feature = "udev")]
@@ -74,24 +75,15 @@ unsafe extern "C" fn close_restricted<I: LibinputInterface + 'static>(fd: libc::
 ///
 /// Either way you then have to use `dispatch()` and `next()` (provided by the `Iterator` trait) to
 /// receive events.
-#[derive(Eq)]
 pub struct Libinput
 {
     ffi: *mut ffi::libinput,
+    _interface: Option<Rc<Box<LibinputInterface + 'static>>>,
 }
 
 impl ::std::fmt::Debug for Libinput {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "Libinput @{:p}", self.as_raw())
-    }
-}
-
-impl FromRaw<ffi::libinput> for Libinput
-{
-    unsafe fn from_raw(ffi: *mut ffi::libinput) -> Self {
-        Libinput {
-            ffi: ffi::libinput_ref(ffi),
-        }
     }
 }
 
@@ -104,19 +96,17 @@ impl AsRaw<ffi::libinput> for Libinput
 
 impl Clone for Libinput {
     fn clone(&self) -> Self {
-        unsafe { Libinput::from_raw(self.as_raw_mut()) }
+        Libinput {
+            ffi: unsafe { ffi::libinput_ref(self.as_raw_mut()) },
+            _interface: self._interface.clone(),
+        }
     }
 }
 
 impl Drop for Libinput
 {
     fn drop(&mut self) {
-        unsafe {
-            let userdata_ref = ffi::libinput_get_user_data(self.as_raw_mut());
-            if ffi::libinput_unref(self.ffi).is_null() {
-                let _ = Box::from_raw(userdata_ref);
-            }
-        }
+        unsafe { ffi::libinput_unref(self.ffi); }
     }
 }
 
@@ -125,6 +115,8 @@ impl PartialEq for Libinput {
         self.as_raw() == other.as_raw()
     }
 }
+
+impl Eq for Libinput {}
 
 impl ::std::hash::Hash for Libinput {
     fn hash<H: ::std::hash::Hasher>(&self, state: &mut H) {
@@ -139,7 +131,7 @@ impl Iterator for Libinput {
         if ptr.is_null() {
             None
         } else {
-            unsafe { Some(Event::from_raw(ptr)) }
+            unsafe { Some(Event::from_raw(ptr, self)) }
         }
     }
 }
@@ -175,10 +167,10 @@ impl Libinput {
                                                   &mut *boxed_userdata as *mut I as *mut libc::c_void,
                                                   udev_context.as_raw() as *mut _)
             },
+            _interface: Some(Rc::new(boxed_userdata as Box<LibinputInterface + 'static>)),
         };
 
         mem::forget(boxed_interface);
-        mem::forget(boxed_userdata);
 
         context
     }
@@ -207,10 +199,10 @@ impl Libinput {
                 ffi::libinput_path_create_context(&*boxed_interface as *const _,
                                                   &mut *boxed_userdata as *mut I as *mut libc::c_void)
             },
+            _interface: Some(Rc::new(boxed_userdata as Box<LibinputInterface + 'static>))
         };
 
         mem::forget(boxed_interface);
-        mem::forget(boxed_userdata);
 
         context
     }
@@ -235,7 +227,7 @@ impl Libinput {
             if ptr.is_null() {
                 None
             } else {
-                Some(Device::from_raw(ptr))
+                Some(Device::from_raw(ptr, self))
             }
         }
     }
@@ -353,4 +345,24 @@ impl Libinput {
     pub unsafe fn fd(&self) -> RawFd {
         ffi::libinput_get_fd(self.as_raw_mut())
     }
-}
+
+    /// Create a new instance of this type from a raw pointer.
+    ///
+    /// ## Warning
+    ///
+    /// If you make use of [`Userdata`](./trait.Userdata.html) make sure you use the correct types
+    /// to allow receiving the set userdata. When dealing with raw pointers initialized by other
+    /// libraries this must be done extra carefully to select a correct representation.
+    ///
+    /// If unsure using `()` is always a safe option..
+    ///
+    /// ## Unsafety
+    ///
+    /// If the pointer is pointing to a different struct, invalid memory or `NULL` the returned
+    /// struct may panic on use or cause other undefined behavior.
+    pub unsafe fn from_raw(ffi: *mut ffi::libinput) -> Self {
+        Libinput {
+            ffi: ffi::libinput_ref(ffi),
+            _interface: None,
+        }
+    }}
