@@ -1,4 +1,4 @@
-use {AsRaw, FromRaw, ffi};
+use {ffi, AsRaw, FromRaw};
 
 ffi_ref_struct!(
 /// A mode on a tablet pad is a virtual grouping of functionality, usually based on

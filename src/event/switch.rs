@@ -1,7 +1,7 @@
 //! Switch event types
 
 use super::EventTrait;
-use {AsRaw, FromRaw, Context};
+use {AsRaw, Context, FromRaw};
 use ffi;
 
 /// Common functions all Switch-Events implement.
@@ -15,7 +15,8 @@ pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> + Context {
 
     /// Convert into a general `SwitchEvent` again
     fn into_switch_event(self) -> SwitchEvent
-        where Self: Sized
+    where
+        Self: Sized,
     {
         unsafe { SwitchEvent::from_raw(self.as_raw_mut(), self.context()) }
     }
@@ -24,7 +25,7 @@ pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> + Context {
 impl<T: AsRaw<ffi::libinput_event_switch> + Context> SwitchEventTrait for T {}
 
 /// A switch related `Event`
-#[derive(Debug,  PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum SwitchEvent {
     /// An event related a switch, that was toggled
     Toggle(SwitchToggleEvent),
@@ -43,7 +44,7 @@ impl FromRaw<ffi::libinput_event_switch> for SwitchEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_switch, context: &::context::Libinput) -> Self {
         let base = ffi::libinput_event_switch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_SWITCH_TOGGLE => {
+            ffi::libinput_event_type_LIBINPUT_EVENT_SWITCH_TOGGLE => {
                 SwitchEvent::Toggle(SwitchToggleEvent::from_raw(event, context))
             }
             _ => unreachable!(),
@@ -69,9 +70,24 @@ impl Context for SwitchEvent {
 
 /// Types of Switches
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[repr(u32)]
 pub enum Switch {
-    /// Lid closing switch
-    Lid,
+    /// The laptop lid was closed when the `SwitchState` is
+    /// `On`, or was opened when it is `Off`
+    Lid = ffi::libinput_switch_LIBINPUT_SWITCH_LID,
+    /// This switch indicates whether the device is in normal laptop mode
+    /// or behaves like a tablet-like device where the primary
+    /// interaction is usually a touch screen. When in tablet mode, the
+    /// keyboard and touchpad are usually inaccessible.
+    ///
+    /// If the switch is in state `SwitchState::Off`, the
+    /// device is in laptop mode. If the switch is in state
+    /// `SwitchState::On`, the device is in tablet mode and the
+    /// keyboard or touchpad may not be  accessible.
+    ///
+    /// It is up to the caller to identify which devices are inaccessible
+    /// `in tablet mode.
+    TabletMode = ffi::libinput_switch_LIBINPUT_SWITCH_TABLET_MODE,
 }
 
 /// State of a Switch
@@ -91,15 +107,18 @@ impl SwitchToggleEvent {
     /// Return the switch that triggered this event.
     pub fn switch(&self) -> Switch {
         match unsafe { ffi::libinput_event_switch_get_switch(self.as_raw_mut()) } {
-            ffi::libinput_switch::LIBINPUT_SWITCH_LID => Switch::Lid,
+            ffi::libinput_switch_LIBINPUT_SWITCH_LID => Switch::Lid,
+            ffi::libinput_switch_LIBINPUT_SWITCH_TABLET_MODE => Switch::TabletMode,
+            _ => panic!("libinput returned invalid 'libinput_switch'"),
         }
     }
 
     /// Return the switch state that triggered this event.
     pub fn switch_state(&self) -> SwitchState {
         match unsafe { ffi::libinput_event_switch_get_switch_state(self.as_raw_mut()) } {
-            ffi::libinput_switch_state::LIBINPUT_SWITCH_STATE_OFF => SwitchState::Off,
-            ffi::libinput_switch_state::LIBINPUT_SWITCH_STATE_ON => SwitchState::On,
+            ffi::libinput_switch_state_LIBINPUT_SWITCH_STATE_OFF => SwitchState::Off,
+            ffi::libinput_switch_state_LIBINPUT_SWITCH_STATE_ON => SwitchState::On,
+            _ => panic!("libinput returned invalid 'libinput_switch_state'"),
         }
     }
 }

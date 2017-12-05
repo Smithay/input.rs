@@ -1,5 +1,4 @@
-use {AsRaw, FromRaw, Libinput, ffi};
-
+use {ffi, AsRaw, FromRaw, Libinput};
 use std::ffi::CStr;
 
 ffi_ref_struct!(

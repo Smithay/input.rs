@@ -1,7 +1,7 @@
 //! Keyboard event types
 
 use super::EventTrait;
-use {AsRaw, FromRaw, Context};
+use {AsRaw, Context, FromRaw};
 use ffi;
 
 /// State of a Key
@@ -28,14 +28,16 @@ pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> + Context {
     /// The state change of the key
     fn key_state(&self) -> KeyState {
         match unsafe { ffi::libinput_event_keyboard_get_key_state(self.as_raw() as *mut _) } {
-            ffi::libinput_key_state::LIBINPUT_KEY_STATE_PRESSED => KeyState::Pressed,
-            ffi::libinput_key_state::LIBINPUT_KEY_STATE_RELEASED => KeyState::Released,
+            ffi::libinput_key_state_LIBINPUT_KEY_STATE_PRESSED => KeyState::Pressed,
+            ffi::libinput_key_state_LIBINPUT_KEY_STATE_RELEASED => KeyState::Released,
+            _ => panic!("libinput returned invalid 'libinput_key_state'"),
         }
     }
 
     /// Convert into a general `KeyboardEvent` again
     fn into_keyboard_event(self) -> KeyboardEvent
-        where Self: Sized
+    where
+        Self: Sized,
     {
         unsafe { KeyboardEvent::from_raw(self.as_raw_mut(), self.context()) }
     }
@@ -63,7 +65,7 @@ impl FromRaw<ffi::libinput_event_keyboard> for KeyboardEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_keyboard, context: &::context::Libinput) -> Self {
         let base = ffi::libinput_event_keyboard_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_KEYBOARD_KEY => {
+            ffi::libinput_event_type_LIBINPUT_EVENT_KEYBOARD_KEY => {
                 KeyboardEvent::Key(KeyboardKeyEvent::from_raw(event, context))
             }
             _ => unreachable!(),

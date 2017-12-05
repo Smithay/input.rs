@@ -1,14 +1,15 @@
 //! Device event types
 
 use super::EventTrait;
-use {AsRaw, FromRaw, Context};
+use {AsRaw, Context, FromRaw};
 use ffi;
 
 /// Common functions all Device-Events implement.
 pub trait DeviceEventTrait: AsRaw<ffi::libinput_event_device_notify> + Context {
     /// Convert into a general `DeviceEvent` again
     fn into_device_event(self) -> DeviceEvent
-        where Self: Sized
+    where
+        Self: Sized,
     {
         unsafe { DeviceEvent::from_raw(self.as_raw_mut(), self.context()) }
     }
@@ -39,10 +40,10 @@ impl FromRaw<ffi::libinput_event_device_notify> for DeviceEvent {
     unsafe fn from_raw(event: *mut ffi::libinput_event_device_notify, context: &::context::Libinput) -> Self {
         let base = ffi::libinput_event_device_notify_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_DEVICE_ADDED => {
+            ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_ADDED => {
                 DeviceEvent::Added(DeviceAddedEvent::from_raw(event, context))
             }
-            ffi::libinput_event_type::LIBINPUT_EVENT_DEVICE_REMOVED => {
+            ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_REMOVED => {
                 DeviceEvent::Removed(DeviceRemovedEvent::from_raw(event, context))
             }
             _ => unreachable!(),

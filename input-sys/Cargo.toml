@@ -1,6 +1,6 @@
 [package]
 name = "input-sys"
-version = "1.7.1"
+version = "1.9.0"
 authors = ["Victor Brekenfeld (Drakulix) <github@drakulix.de>"]
 build = "build.rs"
 description = "Bindgen generated unsafe libinput wrapper"
@@ -15,7 +15,7 @@ exclude = [".travis.yml", ".rustfmt.toml"]
 path = "src/lib.rs"
 
 [build-dependencies]
-bindgen = { version = "0.22", optional = true }
+bindgen = { version = "0.31", optional = true }
 
 [dependencies]
 libc = "0.2"
