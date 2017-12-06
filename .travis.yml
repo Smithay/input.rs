@@ -18,10 +18,10 @@ cache:
     - $HOME/.cargo
 
 before_install:
-- wget http://llvm.org/releases/3.9.0/clang+llvm-3.9.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz
-- tar xf clang+llvm-3.9.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz
+- wget http://llvm.org/releases/4.0.0/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz
+- tar xf clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz
 
 script:
 - cargo build
-- env LIBCLANG_PATH=`pwd`/clang+llvm-3.9.0-x86_64-linux-gnu-ubuntu-14.04/lib CLANG_PATH=`pwd`/clang+llvm-3.9.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang cargo build --features gen
-- diff -q input-sys/src/gen.rs $(find target -name gen.rs)
+- env LIBCLANG_PATH=`pwd`/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04/lib CLANG_PATH=`pwd`/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang cargo build --features "gen"
+- diff -t -w input-sys/src/gen.rs $(find target -name gen.rs)

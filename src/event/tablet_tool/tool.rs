@@ -1,7 +1,4 @@
-
-
-use {AsRaw, FromRaw, Userdata, ffi};
-use libc;
+use {ffi, AsRaw, FromRaw};
 
 /// Available tool types for a device with the `DeviceCapability::TabletTool` capability.
 ///
@@ -47,7 +44,7 @@ ffi_ref_struct!(
 /// coming from the device directly. Depending on the hardware it is possible to track
 /// the same physical tool across multiple `Device`s, see
 /// [Tracking unique tools](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-serial-numbers).
-struct TabletTool, ffi::libinput_tablet_tool, ffi::libinput_tablet_tool_ref, ffi::libinput_tablet_tool_unref, ffi::libinput_tablet_tool_get_user_data, ffi::libinput_tablet_tool_set_user_data);
+struct TabletTool, ffi::libinput_tablet_tool, ffi::libinput_tablet_tool_ref, ffi::libinput_tablet_tool_unref);
 
 impl TabletTool {
     ffi_func!(
@@ -73,13 +70,14 @@ impl TabletTool {
     /// for details.
     pub fn tool_type(&self) -> TabletToolType {
         match unsafe { ffi::libinput_tablet_tool_get_type(self.as_raw_mut()) } {
-            ffi::libinput_tablet_tool_type::LIBINPUT_TABLET_TOOL_TYPE_PEN => TabletToolType::Pen,
-            ffi::libinput_tablet_tool_type::LIBINPUT_TABLET_TOOL_TYPE_ERASER => TabletToolType::Eraser,
-            ffi::libinput_tablet_tool_type::LIBINPUT_TABLET_TOOL_TYPE_BRUSH => TabletToolType::Brush,
-            ffi::libinput_tablet_tool_type::LIBINPUT_TABLET_TOOL_TYPE_PENCIL => TabletToolType::Pencil,
-            ffi::libinput_tablet_tool_type::LIBINPUT_TABLET_TOOL_TYPE_AIRBRUSH => TabletToolType::Airbrush,
-            ffi::libinput_tablet_tool_type::LIBINPUT_TABLET_TOOL_TYPE_MOUSE => TabletToolType::Mouse,
-            ffi::libinput_tablet_tool_type::LIBINPUT_TABLET_TOOL_TYPE_LENS => TabletToolType::Lens,
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_PEN => TabletToolType::Pen,
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_ERASER => TabletToolType::Eraser,
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_BRUSH => TabletToolType::Brush,
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_PENCIL => TabletToolType::Pencil,
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_AIRBRUSH => TabletToolType::Airbrush,
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_MOUSE => TabletToolType::Mouse,
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_LENS => TabletToolType::Lens,
+            _ => panic!("libinput returned invalid 'libinput_tablet_tool_type'"),
         }
     }
 

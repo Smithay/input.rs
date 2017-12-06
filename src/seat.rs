@@ -1,8 +1,4 @@
-
-
-use {AsRaw, FromRaw, Libinput, Userdata, ffi};
-
-use libc;
+use {ffi, AsRaw, FromRaw, Libinput};
 use std::ffi::CStr;
 
 ffi_ref_struct!(
@@ -12,12 +8,12 @@ ffi_ref_struct!(
 /// different logical seat but it cannot change physical seats. See
 /// [Seats](https://wayland.freedesktop.org/libinput/doc/latest/seats.html)
 /// for details.
-struct Seat, ffi::libinput_seat, ffi::libinput_seat_ref, ffi::libinput_seat_unref, ffi::libinput_seat_get_user_data, ffi::libinput_seat_set_user_data);
+struct Seat, ffi::libinput_seat, ffi::libinput_seat_ref, ffi::libinput_seat_unref);
 
 impl Seat {
     /// Get the libinput context from the seat.
     pub fn context(&self) -> Libinput {
-        unsafe { Libinput::from_raw(ffi::libinput_seat_get_context(self.as_raw_mut())) }
+        self.context.clone()
     }
 
     /// Return the physical name of the seat.

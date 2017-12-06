@@ -13,17 +13,15 @@ fn main() {}
 fn main() {
     // Setup bindings builder
     let generated = bindgen::builder()
-        .header("include/libinput.1.7.0.h")
-        .no_unstable_rust()
-        .ctypes_prefix("libc")
-        .whitelisted_type(r"^libinput_.*$")
-        .whitelisted_function(r"^libinput_.*$")
-        .constified_enum("libinput_led")
-        .constified_enum("libinput_config_send_events_mode")
+        .header("include/libinput.1.9.0.h")
+        .ctypes_prefix("::libc")
+        .whitelist_type(r"^libinput_.*$")
+        .whitelist_function(r"^libinput_.*$")
+        .rustfmt_bindings(false)
         .generate()
         .unwrap();
 
-    println!("cargo:rerun-if-changed=include/libinput.1.7.0.h");
+    println!("cargo:rerun-if-changed=include/libinput.1.9.0.h");
 
     // Generate the bindings
     let out_dir = env::var("OUT_DIR").unwrap();

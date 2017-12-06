@@ -1,7 +1,7 @@
 //! Keyboard event types
 
 use super::EventTrait;
-use {AsRaw, FromRaw};
+use {AsRaw, Context, FromRaw};
 use ffi;
 
 /// State of a Key
@@ -14,7 +14,7 @@ pub enum KeyState {
 }
 
 /// Common functions for all Keyboard-Events implement.
-pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> {
+pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> + Context {
     ffi_func!(
     /// The event time for this event
     fn time, ffi::libinput_event_keyboard_get_time, u32);
@@ -28,20 +28,22 @@ pub trait KeyboardEventTrait: AsRaw<ffi::libinput_event_keyboard> {
     /// The state change of the key
     fn key_state(&self) -> KeyState {
         match unsafe { ffi::libinput_event_keyboard_get_key_state(self.as_raw() as *mut _) } {
-            ffi::libinput_key_state::LIBINPUT_KEY_STATE_PRESSED => KeyState::Pressed,
-            ffi::libinput_key_state::LIBINPUT_KEY_STATE_RELEASED => KeyState::Released,
+            ffi::libinput_key_state_LIBINPUT_KEY_STATE_PRESSED => KeyState::Pressed,
+            ffi::libinput_key_state_LIBINPUT_KEY_STATE_RELEASED => KeyState::Released,
+            _ => panic!("libinput returned invalid 'libinput_key_state'"),
         }
     }
 
     /// Convert into a general `KeyboardEvent` again
     fn into_keyboard_event(self) -> KeyboardEvent
-        where Self: Sized
+    where
+        Self: Sized,
     {
-        unsafe { KeyboardEvent::from_raw(self.as_raw_mut()) }
+        unsafe { KeyboardEvent::from_raw(self.as_raw_mut(), self.context()) }
     }
 }
 
-impl<T: AsRaw<ffi::libinput_event_keyboard>> KeyboardEventTrait for T {}
+impl<T: AsRaw<ffi::libinput_event_keyboard> + Context> KeyboardEventTrait for T {}
 
 /// A keyboard related `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -60,11 +62,11 @@ impl EventTrait for KeyboardEvent {
 }
 
 impl FromRaw<ffi::libinput_event_keyboard> for KeyboardEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_keyboard) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_keyboard, context: &::context::Libinput) -> Self {
         let base = ffi::libinput_event_keyboard_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_KEYBOARD_KEY => {
-                KeyboardEvent::Key(KeyboardKeyEvent::from_raw(event))
+            ffi::libinput_event_type_LIBINPUT_EVENT_KEYBOARD_KEY => {
+                KeyboardEvent::Key(KeyboardKeyEvent::from_raw(event, context))
             }
             _ => unreachable!(),
         }
@@ -75,6 +77,14 @@ impl AsRaw<ffi::libinput_event_keyboard> for KeyboardEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_keyboard {
         match *self {
             KeyboardEvent::Key(ref event) => event.as_raw(),
+        }
+    }
+}
+
+impl Context for KeyboardEvent {
+    fn context(&self) -> &::Libinput {
+        match *self {
+            KeyboardEvent::Key(ref event) => event.context(),
         }
     }
 }

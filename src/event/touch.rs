@@ -1,11 +1,11 @@
 //! Touch event types
 
 use super::EventTrait;
-use {AsRaw, FromRaw};
+use {AsRaw, Context, FromRaw};
 use ffi;
 
 /// Common functions all Touch-Events implement.
-pub trait TouchEventTrait: AsRaw<ffi::libinput_event_touch> {
+pub trait TouchEventTrait: AsRaw<ffi::libinput_event_touch> + Context {
     ffi_func!(
     /// The event time for this event
     fn time, ffi::libinput_event_touch_get_time, u32);
@@ -15,13 +15,14 @@ pub trait TouchEventTrait: AsRaw<ffi::libinput_event_touch> {
 
     /// Convert into a general `TouchEvent` again
     fn into_touch_event(self) -> TouchEvent
-        where Self: Sized
+    where
+        Self: Sized,
     {
-        unsafe { TouchEvent::from_raw(self.as_raw_mut()) }
+        unsafe { TouchEvent::from_raw(self.as_raw_mut(), self.context()) }
     }
 }
 
-impl<T: AsRaw<ffi::libinput_event_touch>> TouchEventTrait for T {}
+impl<T: AsRaw<ffi::libinput_event_touch> + Context> TouchEventTrait for T {}
 
 /// Touch slot related functions all TouchEvents implement, that can be mapped to slots.
 ///
@@ -118,23 +119,23 @@ impl EventTrait for TouchEvent {
 }
 
 impl FromRaw<ffi::libinput_event_touch> for TouchEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_touch) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_touch, context: &::context::Libinput) -> Self {
         let base = ffi::libinput_event_touch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_DOWN => {
-                TouchEvent::Down(TouchDownEvent::from_raw(event))
+            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_DOWN => {
+                TouchEvent::Down(TouchDownEvent::from_raw(event, context))
             }
-            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_UP => {
-                TouchEvent::Up(TouchUpEvent::from_raw(event))
+            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_UP => {
+                TouchEvent::Up(TouchUpEvent::from_raw(event, context))
             }
-            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_MOTION => {
-                TouchEvent::Motion(TouchMotionEvent::from_raw(event))
+            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_MOTION => {
+                TouchEvent::Motion(TouchMotionEvent::from_raw(event, context))
             }
-            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_CANCEL => {
-                TouchEvent::Cancel(TouchCancelEvent::from_raw(event))
+            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_CANCEL => {
+                TouchEvent::Cancel(TouchCancelEvent::from_raw(event, context))
             }
-            ffi::libinput_event_type::LIBINPUT_EVENT_TOUCH_FRAME => {
-                TouchEvent::Frame(TouchFrameEvent::from_raw(event))
+            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_FRAME => {
+                TouchEvent::Frame(TouchFrameEvent::from_raw(event, context))
             }
             _ => unreachable!(),
         }
@@ -149,6 +150,18 @@ impl AsRaw<ffi::libinput_event_touch> for TouchEvent {
             TouchEvent::Motion(ref event) => event.as_raw(),
             TouchEvent::Cancel(ref event) => event.as_raw(),
             TouchEvent::Frame(ref event) => event.as_raw(),
+        }
+    }
+}
+
+impl Context for TouchEvent {
+    fn context(&self) -> &::Libinput {
+        match *self {
+            TouchEvent::Down(ref event) => event.context(),
+            TouchEvent::Up(ref event) => event.context(),
+            TouchEvent::Motion(ref event) => event.context(),
+            TouchEvent::Cancel(ref event) => event.context(),
+            TouchEvent::Frame(ref event) => event.context(),
         }
     }
 }

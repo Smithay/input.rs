@@ -1,3 +1,9 @@
+## 0.4.0
+
+- Upgrade input-sys to libinput 1.9.0
+- Optionally integrate with `udev` crate
+- Replace `libinput_interface` with `LibinputInterface` trait
+- Remove broken `Userdata` api
 
 ## 0.3.0
 

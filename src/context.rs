@@ -1,13 +1,14 @@
-
-
-use {AsRaw, Device, Event, FromRaw, Userdata, ffi};
-
+use {ffi, AsRaw, Device, Event, FromRaw};
 use libc;
-use std::{mem, ptr};
-use std::ffi::CString;
+use std::ffi::{CStr, CString};
 use std::io::{Error as IoError, Result as IoResult};
 use std::iter::Iterator;
+use std::mem;
 use std::os::unix::io::RawFd;
+use std::path::Path;
+use std::rc::Rc;
+#[cfg(feature = "udev")]
+use udev::{AsRaw as UdevAsRaw, Context as UdevContext};
 
 /// libinput does not open file descriptors to devices directly,
 /// instead `open_restricted` and `close_restricted` are called for
@@ -18,9 +19,60 @@ use std::os::unix::io::RawFd;
 /// to open devices. This interface provides an api agnostic way to
 /// use ConsoleKit or similar endpoints to open devices without
 /// direct priviledge escalation.
-pub type LibinputInterface = ffi::libinput_interface;
+pub trait LibinputInterface {
+    /// Open the device at the given path with the flags provided and
+    /// return the fd.
+    ///
+    /// ## Paramater
+    /// - `path` - The device path to open
+    /// - `flags` Flags as defined by open(2)
+    ///
+    /// ## Returns
+    /// The file descriptor, or a negative errno on failure.
+    fn open_restricted(&mut self, path: &Path, flags: i32) -> Result<RawFd, i32>;
 
-ffi_ref_struct!(
+    /// Close the file descriptor.
+    ///
+    /// ## Parameter
+    /// `fd` - The file descriptor to close
+    fn close_restricted(&mut self, fd: RawFd);
+}
+
+unsafe extern "C" fn open_restricted<I: LibinputInterface + 'static>(
+    path: *const libc::c_char,
+    flags: libc::c_int,
+    user_data: *mut libc::c_void,
+) -> libc::c_int {
+    use std::borrow::Cow;
+
+    if let Some(ref mut interface) = (user_data as *mut I).as_mut() {
+        let path_str = CStr::from_ptr(path).to_string_lossy();
+        let res = match path_str {
+            Cow::Borrowed(string) => interface.open_restricted(Path::new(string), flags),
+            Cow::Owned(string) => interface.open_restricted(Path::new(&string), flags),
+        };
+        match res {
+            Ok(fd) => fd,
+            Err(errno) => if errno > 0 {
+                -errno
+            } else {
+                errno
+            },
+        }
+    } else {
+        -1
+    }
+}
+
+unsafe extern "C" fn close_restricted<I: LibinputInterface + 'static>(
+    fd: libc::c_int,
+    user_data: *mut libc::c_void,
+) {
+    if let Some(ref mut interface) = (user_data as *mut I).as_mut() {
+        interface.close_restricted(fd)
+    }
+}
+
 /// Libinput context
 ///
 /// Contexts can be used to track input devices and receive events from them.
@@ -29,7 +81,53 @@ ffi_ref_struct!(
 ///
 /// Either way you then have to use `dispatch()` and `next()` (provided by the `Iterator` trait) to
 /// receive events.
-struct Libinput, ffi::libinput, ffi::libinput_ref, ffi::libinput_unref, ffi::libinput_get_user_data, ffi::libinput_set_user_data);
+pub struct Libinput {
+    ffi: *mut ffi::libinput,
+    _interface: Option<Rc<Box<LibinputInterface + 'static>>>,
+}
+
+impl ::std::fmt::Debug for Libinput {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(f, "Libinput @{:p}", self.as_raw())
+    }
+}
+
+impl AsRaw<ffi::libinput> for Libinput {
+    fn as_raw(&self) -> *const ffi::libinput {
+        self.ffi as *const _
+    }
+}
+
+impl Clone for Libinput {
+    fn clone(&self) -> Self {
+        Libinput {
+            ffi: unsafe { ffi::libinput_ref(self.as_raw_mut()) },
+            _interface: self._interface.clone(),
+        }
+    }
+}
+
+impl Drop for Libinput {
+    fn drop(&mut self) {
+        unsafe {
+            ffi::libinput_unref(self.ffi);
+        }
+    }
+}
+
+impl PartialEq for Libinput {
+    fn eq(&self, other: &Self) -> bool {
+        self.as_raw() == other.as_raw()
+    }
+}
+
+impl Eq for Libinput {}
+
+impl ::std::hash::Hash for Libinput {
+    fn hash<H: ::std::hash::Hasher>(&self, state: &mut H) {
+        self.as_raw().hash(state);
+    }
+}
 
 impl Iterator for Libinput {
     type Item = Event;
@@ -38,7 +136,7 @@ impl Iterator for Libinput {
         if ptr.is_null() {
             None
         } else {
-            unsafe { Some(Event::from_raw(ptr)) }
+            unsafe { Some(Event::from_raw(ptr, self)) }
         }
     }
 }
@@ -57,26 +155,29 @@ impl Libinput {
     /// ## Unsafety
     ///
     /// This function is unsafe, because there is no way to verify that `udev_context` is indeed a valid udev context or even points to valid memory.
-    pub unsafe fn new_from_udev<T: 'static>(interface: LibinputInterface,
-                                            userdata: Option<T>,
-                                            udev_context: *mut libc::c_void)
-                                            -> Libinput {
-        let boxed_interface = Box::new(interface);
-        let mut boxed_userdata = Box::new(userdata);
+    #[cfg(feature = "udev")]
+    pub fn new_from_udev<I: LibinputInterface + 'static>(
+        interface: I,
+        udev_context: &UdevContext,
+    ) -> Libinput {
+        let mut boxed_userdata = Box::new(interface);
+        let boxed_interface = Box::new(ffi::libinput_interface {
+            open_restricted: Some(open_restricted::<I>),
+            close_restricted: Some(close_restricted::<I>),
+        });
 
         let context = Libinput {
-            ffi: {
-                ffi::libinput_udev_create_context(&*boxed_interface as *const _,
-                                                  match (*boxed_userdata).as_mut() {
-                                                      Some(value) => value as *mut T as *mut libc::c_void,
-                                                      None => ptr::null_mut(),
-                                                  },
-                                                  udev_context as *mut _)
+            ffi: unsafe {
+                ffi::libinput_udev_create_context(
+                    &*boxed_interface as *const _,
+                    &mut *boxed_userdata as *mut I as *mut libc::c_void,
+                    udev_context.as_raw() as *mut _,
+                )
             },
+            _interface: Some(Rc::new(boxed_userdata as Box<LibinputInterface + 'static>)),
         };
 
         mem::forget(boxed_interface);
-        mem::forget(boxed_userdata);
 
         context
     }
@@ -93,22 +194,24 @@ impl Libinput {
     /// - interface - A `LibinputInterface` providing functions to open and close devices.
     /// - userdata - Optionally some userdata attached to the newly created context (see [`Userdata`](./trait.Userdata.html))
     ///
-    pub fn new_from_path<T: 'static>(interface: LibinputInterface, userdata: Option<T>) -> Libinput {
-        let boxed_interface = Box::new(interface);
-        let mut boxed_userdata = Box::new(userdata);
+    pub fn new_from_path<I: 'static + LibinputInterface>(interface: I) -> Libinput {
+        let mut boxed_userdata = Box::new(interface);
+        let boxed_interface = Box::new(ffi::libinput_interface {
+            open_restricted: Some(open_restricted::<I>),
+            close_restricted: Some(close_restricted::<I>),
+        });
 
         let context = Libinput {
             ffi: unsafe {
-                ffi::libinput_path_create_context(&*boxed_interface as *const _,
-                                                  match (*boxed_userdata).as_mut() {
-                                                      Some(value) => value as *mut T as *mut libc::c_void,
-                                                      None => ptr::null_mut(),
-                                                  })
+                ffi::libinput_path_create_context(
+                    &*boxed_interface as *const _,
+                    &mut *boxed_userdata as *mut I as *mut libc::c_void,
+                )
             },
+            _interface: Some(Rc::new(boxed_userdata as Box<LibinputInterface + 'static>)),
         };
 
         mem::forget(boxed_interface);
-        mem::forget(boxed_userdata);
 
         context
     }
@@ -133,7 +236,7 @@ impl Libinput {
             if ptr.is_null() {
                 None
             } else {
-                Some(Device::from_raw(ptr))
+                Some(Device::from_raw(ptr, self))
             }
         }
     }
@@ -170,6 +273,7 @@ impl Libinput {
     /// ## Warning
     ///
     /// This function may only be called once per context.
+    #[cfg(feature = "udev")]
     pub fn udev_assign_seat(&mut self, seat_id: &str) -> Result<(), ()> {
         let id = CString::new(seat_id).expect("Seat Id contained a null-byte");
         unsafe {
@@ -249,5 +353,26 @@ impl Libinput {
     /// descriptor.
     pub unsafe fn fd(&self) -> RawFd {
         ffi::libinput_get_fd(self.as_raw_mut())
+    }
+
+    /// Create a new instance of this type from a raw pointer.
+    ///
+    /// ## Warning
+    ///
+    /// If you make use of [`Userdata`](./trait.Userdata.html) make sure you use the correct types
+    /// to allow receiving the set userdata. When dealing with raw pointers initialized by other
+    /// libraries this must be done extra carefully to select a correct representation.
+    ///
+    /// If unsure using `()` is always a safe option..
+    ///
+    /// ## Unsafety
+    ///
+    /// If the pointer is pointing to a different struct, invalid memory or `NULL` the returned
+    /// struct may panic on use or cause other undefined behavior.
+    pub unsafe fn from_raw(ffi: *mut ffi::libinput) -> Self {
+        Libinput {
+            ffi: ffi::libinput_ref(ffi),
+            _interface: None,
+        }
     }
 }
