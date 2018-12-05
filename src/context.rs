@@ -4,7 +4,7 @@ use std::ffi::{CStr, CString};
 use std::io::{Error as IoError, Result as IoResult};
 use std::iter::Iterator;
 use std::mem;
-use std::os::unix::io::RawFd;
+use std::os::unix::io::{AsRawFd, RawFd};
 use std::path::Path;
 use std::rc::Rc;
 #[cfg(feature = "udev")]
@@ -351,6 +351,7 @@ impl Libinput {
     /// as event loops e.g. in the `wayland-server` or the `tokio`
     /// crates to wait for data to become available on this file
     /// descriptor.
+    #[deprecated(since="0.4.1", note="Use the provided AsRawFd implementation")]
     pub unsafe fn fd(&self) -> RawFd {
         ffi::libinput_get_fd(self.as_raw_mut())
     }
@@ -374,5 +375,11 @@ impl Libinput {
             ffi: ffi::libinput_ref(ffi),
             _interface: None,
         }
+    }
+}
+
+impl AsRawFd for Libinput {
+    fn as_raw_fd(&self) -> RawFd {
+        unsafe { ffi::libinput_get_fd(self.as_raw_mut()) }
     }
 }
