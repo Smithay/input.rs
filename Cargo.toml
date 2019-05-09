@@ -15,6 +15,9 @@ libc = "0.2"
 bitflags = "1.0.0"
 udev = { version = "0.2", optional = true }
 
+[dev-dependencies]
+nix = "0.13"
+
 [features]
 default = ["udev"]
 gen = ["input-sys/gen"]

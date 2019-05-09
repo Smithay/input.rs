@@ -334,18 +334,19 @@ impl Libinput {
     /// Call into `dispatch` if any events become available on this fd.
     ///
     /// The most simple variant to check for available bytes is to use
-    /// the `libc`:
+    /// `nix::poll`:
     ///
-    ///     loop {
-    ///         let mut count = 0i32;
-    ///         libc::ioctl(context.fd(), libc::FIONREAD, &mut count);
-    ///         if (count > 0) {
-    ///             context.dispatch().unwrap();
-    ///             for event in context {
-    ///                 // do some processing...
-    ///             }
-    ///         }
+    /// ```norun
+    /// use nix::poll;
+    ///
+    /// let pollfd = poll::PollFd::new(context.as_raw_fd(), poll:POLLIN);
+    /// while poll::poll(&mut [pollfd], -1).is_ok() {
+    ///     context.dispatch().unwrap();
+    ///     for event in context {
+    ///         // do some processing...
     ///     }
+    /// }
+    /// ```
     ///
     /// For more complex operations you may wish to use other approches
     /// as event loops e.g. in the `wayland-server` or the `tokio`
