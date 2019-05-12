@@ -613,39 +613,39 @@ impl Device {
     ///
     /// Given a 6-element array [a, b, c, d, e, f], the matrix is
     /// applied as
-    ///
-    ///     [ a  b  c ]   [ x ]
-    ///     [ d  e  f ] * [ y ]
-    ///     [ 0  0  1 ]   [ 1 ]
-    ///     # *
-    ///
+    /// ```text
+    /// [ a  b  c ]   [ x ]
+    /// [ d  e  f ] * [ y ]
+    /// [ 0  0  1 ]   [ 1 ]
+    /// # *
+    /// ```
     /// The translation component (c, f) is expected to be normalized
     /// to the device coordinate range. For example, the matrix
-    ///
-    ///     [ 1 0  1 ]
-    ///     [ 0 1 -1 ]
-    ///     [ 0 0  1 ]
-    ///
+    /// ```text
+    /// [ 1 0  1 ]
+    /// [ 0 1 -1 ]
+    /// [ 0 0  1 ]
+    /// ```
     /// moves all coordinates by 1 device-width to the right and 1
     /// device-height up.
     ///
     /// The rotation matrix for rotation around the origin is defined
     /// as
-    ///
-    ///     [ cos(a) -sin(a) 0 ]
-    ///     [ sin(a)  cos(a) 0 ]
-    ///     [   0      0     1 ]
-    ///
+    /// ```text
+    /// [ cos(a) -sin(a) 0 ]
+    /// [ sin(a)  cos(a) 0 ]
+    /// [   0      0     1 ]
+    /// ```
     /// Note that any rotation requires an additional translation
     /// component to translate the rotated coordinates back into the
     /// original device space. The rotation matrixes for 90, 180 and
     /// 270 degrees clockwise are:
-    ///
-    ///     90 deg cw:              180 deg cw:             270 deg cw:
-    ///     [ 0 -1 1]               [ -1  0 1]              [  0 1 0 ]
-    ///     [ 1  0 0]               [  0 -1 1]              [ -1 0 1 ]
-    ///     [ 0  0 1]               [  0  0 1]              [  0 0 1 ]
-    ///
+    /// ```text
+    /// 90 deg cw:              180 deg cw:             270 deg cw:
+    /// [ 0 -1 1]               [ -1  0 1]              [  0 1 0 ]
+    /// [ 1  0 0]               [  0 -1 1]              [ -1 0 1 ]
+    /// [ 0  0 1]               [  0  0 1]              [  0 0 1 ]
+    /// ```
     pub fn config_calibration_set_matrix(&mut self, matrix: [f32; 6]) -> DeviceConfigResult {
         match unsafe {
             ffi::libinput_device_config_calibration_set_matrix(self.as_raw_mut(), matrix.as_ptr())
