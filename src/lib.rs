@@ -67,7 +67,7 @@
 //! 	input.udev_assign_seat("seat0").unwrap();
 //! 	loop {
 //! 		input.dispatch().unwrap();
-//! 		while let Some(event) = input.next() {
+//! 		for event in &mut input {
 //! 			println!("Got event: {:?}", event);
 //! 		}
 //! 	}
