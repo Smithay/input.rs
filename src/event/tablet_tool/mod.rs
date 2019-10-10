@@ -195,7 +195,7 @@ pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool> + Context
     /// device. See [Out-of-bounds motion events](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-bounds)
     /// for more details.
     fn y_transformed(&self, height: u32) -> f64 {
-        unsafe { ffi::libinput_event_tablet_tool_get_x_transformed(self.as_raw_mut(), height) }
+        unsafe { ffi::libinput_event_tablet_tool_get_y_transformed(self.as_raw_mut(), height) }
     }
 
     /// Returns the tool that was in use during this event.
