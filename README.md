@@ -2,11 +2,9 @@
 
 [libinput](https://wayland.freedesktop.org/libinput/doc/latest/) bindings for [Rust](https://www.rust-lang.org)
 
-**Warning**: This is and will remain largely untested until this is being used in [vberger/smithay](https://github.com/vberger/smithay).
-
 ## Usage
 
 Add to your Cargo.toml
 ```
-input = "0.3"
+input = "0.4"
 ```
