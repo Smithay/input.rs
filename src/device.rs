@@ -3,7 +3,7 @@ use event::tablet_pad::TabletPadModeGroup;
 use event::switch::Switch;
 use std::ffi::{CStr, CString};
 #[cfg(feature = "udev")]
-use udev::{Device as UdevDevice, FromRaw as UdevFromRaw};
+use udev::{Device as UdevDevice, FromRaw as UdevFromRaw, ffi::udev_device};
 
 /// Capabilities on a device.
 ///
@@ -324,7 +324,7 @@ impl Device {
     /// is not the same as the one the libinput `Context` was created from.
     #[cfg(feature = "udev")]
     pub unsafe fn udev_device(&self) -> Option<UdevDevice> {
-        let ptr = ffi::libinput_device_get_udev_device(self.ffi) as *mut _;
+        let ptr: *mut udev_device = ffi::libinput_device_get_udev_device(self.ffi) as *mut _;
         if ptr.is_null() {
             None
         } else {
