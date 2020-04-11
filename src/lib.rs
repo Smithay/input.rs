@@ -122,7 +122,7 @@ pub trait FromRaw<T> {
     ///
     /// If the pointer is pointing to a different struct, invalid memory or `NULL` the returned
     /// struct may panic on use or cause other undefined behavior.
-    unsafe fn from_raw(*mut T, context: &context::Libinput) -> Self;
+    unsafe fn from_raw(ffi: *mut T, context: &context::Libinput) -> Self;
 }
 
 macro_rules! ffi_ref_struct {
