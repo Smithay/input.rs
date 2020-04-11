@@ -8,6 +8,7 @@ use std::os::unix::io::{AsRawFd, RawFd};
 use std::path::Path;
 use std::rc::Rc;
 #[cfg(feature = "udev")]
+use udev::ffi as udev;
 
 /// libinput does not open file descriptors to devices directly,
 /// instead `open_restricted` and `close_restricted` are called for
@@ -155,7 +156,7 @@ impl Libinput {
     ///
     /// This function is unsafe, because there is no way to verify that `udev_context` is indeed a valid udev context or even points to valid memory.
     #[cfg(feature = "udev")]
-    pub fn new_from_udev<I: LibinputInterface + 'static>(
+    pub fn new_with_udev<I: LibinputInterface + 'static>(
         interface: I,
     ) -> Libinput {
         let mut boxed_userdata = Box::new(interface);
@@ -164,15 +165,19 @@ impl Libinput {
             close_restricted: Some(close_restricted::<I>),
         });
 
-        let context = Libinput {
-            ffi: unsafe {
+        let context = unsafe {
+            let udev = udev::udev_new();
+            let libinput =
                 ffi::libinput_udev_create_context(
                     &*boxed_interface as *const _,
                     &mut *boxed_userdata as *mut I as *mut libc::c_void,
-                    std::ptr::null_mut::<input_sys::udev>()
-                )
-            },
-            _interface: Some(Rc::new(boxed_userdata as Box<dyn LibinputInterface + 'static>)),
+                    udev as *mut input_sys::udev,
+                );
+            udev::udev_unref(udev);
+            Libinput {
+                ffi: libinput,
+                _interface: Some(Rc::new(boxed_userdata as Box<dyn LibinputInterface + 'static>)),
+            }
         };
 
         mem::forget(boxed_interface);
