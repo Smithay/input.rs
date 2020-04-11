@@ -1,3 +1,11 @@
+## 0.5.0
+
+- Upgrade udev dependency to 0.4.0
+- Update input-sys to 1.15, allowing usage of newer libinput versions
+  - The exposed libinput functions are controlled via features!
+  - **Breaking:** To remain compatible with the oldest available libinput version disable the default feature set
+  - The new default is to always expose all functions
+
 ## 0.4.0
 
 - Upgrade input-sys to libinput 1.9.0
