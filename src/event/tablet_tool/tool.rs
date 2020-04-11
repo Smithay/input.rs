@@ -34,6 +34,9 @@ pub enum TabletToolType {
     Mouse,
     /// A mouse tool with a lens.
     Lens,
+    /// A rotary device with positional and rotation data
+    #[cfg(feature="libinput_1_14")]
+    Totem,
 }
 
 ffi_ref_struct!(
@@ -77,6 +80,8 @@ impl TabletTool {
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_AIRBRUSH => TabletToolType::Airbrush,
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_MOUSE => TabletToolType::Mouse,
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_LENS => TabletToolType::Lens,
+            #[cfg(feature="libinput_1_14")]
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_TOTEM => TabletToolType::Totem,
             _ => panic!("libinput returned invalid 'libinput_tablet_tool_type'"),
         }
     }
@@ -113,4 +118,12 @@ impl TabletTool {
     /// See [Tracking unique tools](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-serial-numbers)
     /// for more details.
     pub fn is_unique, ffi::libinput_tablet_tool_is_unique, bool);
+    #[cfg(feature="libinput_1_14")]
+    ffi_func!(
+    /// Returns whether the tablet tool has a ellipsis major and minor.
+    /// 
+    /// Where the underlying hardware only supports one of either major or minor,
+    /// libinput emulated the other axis as a cicular contact, i.e. major == minor
+    /// for all values of major.
+    pub fn tablet_tool_has_size, ffi::libinput_tablet_tool_has_size, bool);
 }

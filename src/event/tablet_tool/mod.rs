@@ -120,6 +120,40 @@ pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool> + Context
     ///
     /// If this axis does not exist on the current tool, this function returns 0.
     fn tilt_y, ffi::libinput_event_tablet_tool_get_tilt_y, f64);
+    #[cfg(feature="libinput_1_14")]
+    ffi_func!(
+    /// Check if the size major axis was updated in this event.
+    /// 
+    /// For `TabletToolButtonEvent`s this function always returns false
+    fn size_major_has_changed, ffi::libinput_event_tablet_tool_size_major_has_changed, bool);
+    #[cfg(feature="libinput_1_14")]
+    ffi_func!(
+    /// Check if the size minor axis was updated in this event.
+    /// 
+    /// For `TabletToolButtonEvent`s this function always returns false
+    fn size_minor_has_changed, ffi::libinput_event_tablet_tool_size_minor_has_changed, bool);
+    #[cfg(feature="libinput_1_14")]
+    ffi_func!(
+    /// Returns the current size in mm along the major axis of the touching ellipse.
+    /// This axis is not necessarily aligned with either x or y, the rotation must
+    /// be taken into account.
+    /// 
+    /// Where no rotation is available on a tool, or where rotation is zero, the major
+    /// axis aligns with the y axis and the minor axis with the x axis.
+    /// 
+    /// If the axis does not exist on the current tool, this function returns 0.
+    fn size_major, ffi::libinput_event_tablet_tool_get_size_major, f64);
+    #[cfg(feature="libinput_1_14")]
+    ffi_func!(
+    /// Returns the current size in mm along the minor axis of the touching ellipse.
+    /// This axis is not necessarily aligned with either x or y, the rotation must
+    /// be taken into account.
+    /// 
+    /// Where no rotation is available on a tool, or where rotation is zero, the minor
+    /// axis aligns with the y axis and the major axis with the x axis.
+    /// 
+    /// If the axis does not exist on the current tool, this function returns 0.
+    fn size_minor, ffi::libinput_event_tablet_tool_get_size_minor, f64);
     ffi_func!(
     /// Check if the wheel axis was updated in this event.
     ///

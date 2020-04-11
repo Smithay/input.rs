@@ -2,6 +2,7 @@
 
 use super::EventTrait;
 pub use super::pointer::ButtonState;
+pub use super::keyboard::KeyState;
 use {ffi, AsRaw, Context, FromRaw};
 
 mod mode_group;
@@ -65,6 +66,11 @@ pub enum TabletPadEvent {
     /// A button pressed on a device with the `DeviceCapability::TabletPad`
     /// capability.
     ///
+    /// A Button-Event differs from a `Key`-Event (available with `feature="libinput_1_15"`)
+    /// in that buttons are sequentially indexed from 0 and do not carry any other information.
+    /// Keys have a specific functionality assigned to them. The key code thus carries a
+    /// semantic meaning, a button number does not.
+    /// 
     /// This event is not to be confused with the button events emitted by tools
     /// on a tablet. See `TabletToolButtonEvent`.
     Button(TabletPadButtonEvent),
@@ -74,6 +80,13 @@ pub enum TabletPadEvent {
     /// A status change on a strip on a device with the
     /// `DeviceCapability::TabletPad` capability.
     Strip(TabletPadStripEvent),
+    /// A key pressed on a device with the `DeviceCapability::TabletPad` capability.
+    /// 
+    /// A `Key`-Event differs from a `Button`-Event in that keys have a specific
+    /// functionality assigned to them (buttons are sequencially ordered). A key code
+    /// thus carries a semantic meaning, a button number does not.
+    #[cfg(feature="libinput_1_15")]
+    Key(TabletPadKeyEvent),
 }
 
 impl EventTrait for TabletPadEvent {
@@ -83,6 +96,8 @@ impl EventTrait for TabletPadEvent {
             TabletPadEvent::Button(ref event) => event.as_raw_event(),
             TabletPadEvent::Ring(ref event) => event.as_raw_event(),
             TabletPadEvent::Strip(ref event) => event.as_raw_event(),
+            #[cfg(feature="libinput_1_15")]
+            TabletPadEvent::Key(ref event) => event.as_raw_event(),
         }
     }
 }
@@ -100,6 +115,10 @@ impl FromRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP => {
                 TabletPadEvent::Strip(TabletPadStripEvent::from_raw(event, context))
             }
+            #[cfg(feature="libinput_1_15")]
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_KEY => {
+                TabletPadEvent::Key(TabletPadKeyEvent::from_raw(event, context))
+            }
             _ => unreachable!(),
         }
     }
@@ -111,6 +130,8 @@ impl AsRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
             TabletPadEvent::Button(ref event) => event.as_raw(),
             TabletPadEvent::Ring(ref event) => event.as_raw(),
             TabletPadEvent::Strip(ref event) => event.as_raw(),
+            #[cfg(feature="libinput_1_15")]
+            TabletPadEvent::Key(ref event) => event.as_raw(),
         }
     }
 }
@@ -121,6 +142,8 @@ impl Context for TabletPadEvent {
             TabletPadEvent::Button(ref event) => event.context(),
             TabletPadEvent::Ring(ref event) => event.context(),
             TabletPadEvent::Strip(ref event) => event.context(),
+            #[cfg(feature="libinput_1_15")]
+            TabletPadEvent::Key(ref event) => event.context(),
         }
     }
 }
@@ -247,6 +270,28 @@ impl TabletPadStripEvent {
                 StripAxisSource::Finger
             }
             _ => panic!("libinput returned invalid 'libinput_tablet_pad_strip_axis_source'"),
+        }
+    }
+}
+
+#[cfg(feature="libinput_1_15")]
+ffi_event_struct!(
+/// A key pressed on a device with the `DeviceCapability::TabletPad` capability.
+struct TabletPadKeyEvent, ffi::libinput_event_tablet_pad, ffi::libinput_event_tablet_pad_get_base_event);
+
+#[cfg(feature="libinput_1_15")]
+impl TabletPadKeyEvent {
+    ffi_func!(
+    /// Return the key code that triggered this event, e.g. KEY_CONTROLPANEL.
+    /// The list of key codes is defined in linux/input-event-codes.h
+    pub fn key, ffi::libinput_event_tablet_pad_get_key, u32);
+    
+    /// Return the key state of the event
+    pub fn key_state(&self) -> KeyState {
+        match unsafe { ffi::libinput_event_tablet_pad_get_key_state(self.as_raw() as *mut _) } {
+            ffi::libinput_key_state_LIBINPUT_KEY_STATE_PRESSED => KeyState::Pressed,
+            ffi::libinput_key_state_LIBINPUT_KEY_STATE_RELEASED => KeyState::Released,
+            _ => panic!("libinput returned invalid 'libinput_key_state'"),
         }
     }
 }

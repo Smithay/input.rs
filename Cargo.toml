@@ -10,7 +10,7 @@ categories = ["external-ffi-bindings"]
 authors = ["Drakulix (Victor Brekenfeld)"]
 
 [dependencies]
-input-sys = { version = "1.9.0", path = "./input-sys" }
+input-sys = { version = "1.15.0", path = "./input-sys", default-features = false }
 libc = "0.2"
 bitflags = "1.0.0"
 udev = { version = "0.4", optional = true }
@@ -19,5 +19,8 @@ udev = { version = "0.4", optional = true }
 nix = "0.13"
 
 [features]
-default = ["udev"]
+default = ["udev", "libinput_1_15"]
 gen = ["input-sys/gen"]
+libinput_1_11 = ["input-sys/libinput_1_11"]
+libinput_1_14 = ["input-sys/libinput_1_14", "libinput_1_11"]
+libinput_1_15 = ["input-sys/libinput_1_15", "libinput_1_14"]

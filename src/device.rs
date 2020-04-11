@@ -119,6 +119,15 @@ pub enum TapButtonMap {
     LeftMiddleRight,
 }
 
+/// Whenever scroll button lock is enabled or not
+#[cfg(feature="libinput_1_15")]
+#[allow(missing_docs)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum ScrollButtonLockState {
+    Disabled,
+    Enabled,
+}
+
 /// Result returned when applying configuration settings.
 pub type DeviceConfigResult = Result<(), DeviceConfigError>;
 
@@ -467,6 +476,40 @@ impl Device {
             None
         } else {
             Some(unsafe { TabletPadModeGroup::from_raw(ptr, &self.context) })
+        }
+    }
+
+    /// Check if a `DeviceCapability::TabletPad`-device has a key with the given code (see linux/input-event-codes.h).
+    /// 
+    /// ## Returns
+    /// - `Some(true)` if it has the requested key
+    /// - `Some(false)` if it has not
+    /// - `None` on error (no TabletPad device)
+    #[cfg(feature="libinput_1_15")]
+    pub fn tablet_pad_has_key(&self, code: u32) -> Option<bool> {
+        match unsafe { ffi::libinput_device_tablet_pad_has_key(self.as_raw_mut(), code) } {
+            -1 => None,
+            0 => Some(false),
+            1 => Some(true),
+            _ => panic!("libinput returned invalid return code for libinput_device_tablet_pad_has_key"),
+        }
+    }
+
+    /// Check how many touches a `DeviceCapability::Touch`-exposing Device supports simultaneously.
+    /// 
+    /// ## Returns
+    /// - `Some(n)` amount of touches
+    /// - `Some(0)` if unknown
+    /// - `None` on error (no touch device)
+    #[cfg(feature="libinput_1_11")]
+    pub fn touch_count(&mut self) -> Option<u32> {
+        match unsafe {
+            ffi::libinput_device_touch_get_touch_count(
+                self.as_raw_mut()
+            )
+        } {
+            -1 => None,
+            n => Some(n as u32)
         }
     }
 
@@ -1163,6 +1206,61 @@ impl Device {
     /// If the button is 0, button scrolling is effectively disabled.
     pub fn config_scroll_set_button(&mut self, button: u32) -> DeviceConfigResult {
         match unsafe { ffi::libinput_device_config_scroll_set_button(self.as_raw_mut(), button) } {
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
+                Err(DeviceConfigError::Unsupported)
+            }
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            _ => panic!("libinput returned invalid 'libinput_config_status'"),
+        }
+    }
+
+    /// Get the current scroll button lock state
+    /// 
+    /// If `ScrollMethod::OnButtonDown` is not supported, or no button is set,
+    /// this functions returns `Disabled`.
+    /// 
+    /// ## Note
+    /// 
+    /// The return value is independent of the currently selected scroll-method.
+    /// For the scroll button lock to activate, a device must have the
+    /// `ScrollMethod::OnButtonDown` enabled, and a non-zero button set as scroll button.
+    #[cfg(feature="libinput_1_15")]
+    pub fn config_scroll_button_lock(&self) -> ScrollButtonLockState {
+        match unsafe { ffi::libinput_device_config_scroll_get_button_lock(self.as_raw() as *mut _) } {
+            ffi::libinput_config_scroll_button_lock_state_LIBINPUT_CONFIG_SCROLL_BUTTON_LOCK_DISABLED => ScrollButtonLockState::Disabled,
+            ffi::libinput_config_scroll_button_lock_state_LIBINPUT_CONFIG_SCROLL_BUTTON_LOCK_ENABLED => ScrollButtonLockState::Enabled,
+            _ => panic!("libinput returned invalid libinput_config_scroll_button_lock_state"),
+        }
+    }
+    
+    /// Get the default scroll button lock state
+    /// 
+    /// If `ScrollMethod::OnButtonDown` is not supported, or no button is set,
+    /// this functions returns `Disabled`.
+    #[cfg(feature="libinput_1_15")]
+    pub fn config_scroll_default_button_lock(&self) -> ScrollButtonLockState {
+        match unsafe { ffi::libinput_device_config_scroll_get_default_button_lock(self.as_raw() as *mut _) } {
+            ffi::libinput_config_scroll_button_lock_state_LIBINPUT_CONFIG_SCROLL_BUTTON_LOCK_DISABLED => ScrollButtonLockState::Disabled,
+            ffi::libinput_config_scroll_button_lock_state_LIBINPUT_CONFIG_SCROLL_BUTTON_LOCK_ENABLED => ScrollButtonLockState::Enabled,
+            _ => panic!("libinput returned invalid libinput_config_scroll_button_lock_state"),
+        }
+    }
+
+    /// Set the scroll button lock.
+    /// 
+    /// If the state is `Disabled` the button must physically be held down for
+    /// button scrolling to work. If the state is `Enabled`, the button is considered
+    /// logically down after the first press and release sequence, and logically
+    /// up after the second press and release sequence.
+    #[cfg(feature="libinput_1_15")]
+    pub fn config_scroll_set_button_lock(&mut self, state: ScrollButtonLockState) -> DeviceConfigResult {
+        match unsafe { ffi::libinput_device_config_scroll_set_button_lock(self.as_raw_mut(),
+            match state {
+                ScrollButtonLockState::Enabled => ffi::libinput_config_scroll_button_lock_state_LIBINPUT_CONFIG_SCROLL_BUTTON_LOCK_ENABLED,
+                ScrollButtonLockState::Disabled => ffi::libinput_config_scroll_button_lock_state_LIBINPUT_CONFIG_SCROLL_BUTTON_LOCK_DISABLED,
+            }
+        )} {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
