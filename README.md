@@ -6,5 +6,5 @@
 
 Add to your Cargo.toml
 ```
-input = "0.4"
+input = "0.5"
 ```

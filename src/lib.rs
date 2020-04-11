@@ -38,7 +38,6 @@
 //! use std::os::unix::fs::OpenOptionsExt;
 //! use std::os::unix::io::{RawFd, FromRawFd, IntoRawFd};
 //! use std::path::Path;
-//! use udev::Context;
 //! 
 //! extern crate libc;
 //! use libc::{O_RDONLY, O_RDWR, O_WRONLY};
@@ -63,7 +62,7 @@
 //! }
 //! 
 //! fn main() {
-//! 	let mut input = Libinput::new_from_udev(Interface {}, &Context::new().unwrap());
+//! 	let mut input = Libinput::new_with_udev(Interfacep());
 //! 	input.udev_assign_seat("seat0").unwrap();
 //! 	loop {
 //! 		input.dispatch().unwrap();
