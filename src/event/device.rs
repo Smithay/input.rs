@@ -78,11 +78,7 @@ ffi_event_struct!(
 /// This allows setting up initial device configuration before any events are created.
 struct DeviceAddedEvent, ffi::libinput_event_device_notify, ffi::libinput_event_device_notify_get_base_event);
 ffi_event_struct!(
-/// Signals that a device has been added to the context.
+/// Signals that a device has been removed.
 ///
-/// The device will not be read until the next time the user calls
-/// `Libinput::dispatch` and data is available.
-///
-/// This allows setting up initial device configuration before any events are
-/// created.
+/// No more events from the associated device will be in the queue or be queued after this event.
 struct DeviceRemovedEvent, ffi::libinput_event_device_notify, ffi::libinput_event_device_notify_get_base_event);
