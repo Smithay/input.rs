@@ -62,7 +62,7 @@
 //! }
 //! 
 //! fn main() {
-//! 	let mut input = Libinput::new_with_udev(Interfacep());
+//! 	let mut input = Libinput::new_with_udev(Interface{});
 //! 	input.udev_assign_seat("seat0").unwrap();
 //! 	loop {
 //! 		input.dispatch().unwrap();
