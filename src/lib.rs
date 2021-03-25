@@ -31,12 +31,12 @@
 //! To get started check out the [`Libinput` struct](./struct.Libinput.html).
 //!
 //! Here's a small example that prints all events:
+//!
 //! ```
 //! extern crate input;
 //! use input::{Libinput, LibinputInterface};
 //! use std::fs::{File, OpenOptions};
-//! use std::os::unix::fs::OpenOptionsExt;
-//! use std::os::unix::io::{RawFd, FromRawFd, IntoRawFd};
+//! use std::os::unix::{fs::OpenOptionsExt, io::{RawFd, FromRawFd, IntoRawFd}};
 //! use std::path::Path;
 //!
 //! extern crate libc;
@@ -62,7 +62,13 @@
 //! }
 //!
 //! fn main() {
-//!     let mut input = Libinput::new_with_udev(Interface{});
+//! #   // Preventing infinite execution (in particular on CI)
+//! #   std::thread::spawn(|| {
+//! #       std::thread::sleep(std::time::Duration::from_secs(5));
+//! #       std::process::exit(0);
+//! #   });
+//! #
+//!     let mut input = Libinput::new_with_udev(Interface);
 //!     input.udev_assign_seat("seat0").unwrap();
 //!     loop {
 //!         input.dispatch().unwrap();

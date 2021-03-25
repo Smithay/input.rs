@@ -342,13 +342,50 @@ impl Libinput {
     /// The most simple variant to check for available bytes is to use
     /// `nix::poll`:
     ///
-    /// ```no_run
-    /// use nix::poll;
+    /// ```
+    /// # extern crate libc;
+    /// # extern crate nix;
+    /// #
+    /// # use std::fs::{File, OpenOptions};
+    /// # use std::os::unix::{fs::OpenOptionsExt, io::{RawFd, FromRawFd, IntoRawFd, AsRawFd}};
+    /// # use std::path::Path;
+    /// # use libc::{O_RDONLY, O_RDWR, O_WRONLY};
+    /// #
+    /// use input::{Libinput, LibinputInterface};
+    /// use nix::poll::{poll, PollFlags, PollFd};
     ///
-    /// let pollfd = poll::PollFd::new(context.as_raw_fd(), poll:POLLIN);
-    /// while poll::poll(&mut [pollfd], -1).is_ok() {
-    ///     context.dispatch().unwrap();
-    ///     for event in context {
+    /// # struct Interface;
+    /// #
+    /// # impl LibinputInterface for Interface {
+    /// #     fn open_restricted(&mut self, path: &Path, flags: i32) -> Result<RawFd, i32> {
+    /// #         OpenOptions::new()
+    /// #             .custom_flags(flags)
+    /// #             .read((flags & O_RDONLY != 0) | (flags & O_RDWR != 0))
+    /// #             .write((flags & O_WRONLY != 0) | (flags & O_RDWR != 0))
+    /// #             .open(path)
+    /// #             .map(|file| file.into_raw_fd())
+    /// #             .map_err(|err| err.raw_os_error().unwrap())
+    /// #     }
+    /// #     fn close_restricted(&mut self, fd: RawFd) {
+    /// #         unsafe {
+    /// #             File::from_raw_fd(fd);
+    /// #         }
+    /// #     }
+    /// # }
+    /// #
+    /// # // Preventing infinite execution (in particular on CI)
+    /// # std::thread::spawn(|| {
+    /// #     std::thread::sleep(std::time::Duration::from_secs(5));
+    /// #     std::process::exit(0);
+    /// # });
+    /// #
+    /// let mut input = Libinput::new_with_udev(Interface);
+    /// input.udev_assign_seat("seat0").unwrap();
+    ///
+    /// let pollfd = PollFd::new(input.as_raw_fd(), PollFlags::POLLIN);
+    /// while poll(&mut [pollfd], -1).is_ok() {
+    ///     input.dispatch().unwrap();
+    ///     for event in &mut input {
     ///         // do some processing...
     ///     }
     /// }
