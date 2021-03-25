@@ -75,4 +75,28 @@ fn main() {
     let dest_path = Path::new(&out_dir).join(bind_name);
 
     generated.write_to_file(dest_path).unwrap();
+
+    #[cfg(feature = "update_bindings")]
+    {
+        use std::{fs, io::Write};
+
+        let bind_file = Path::new(&out_dir).join(bind_name);
+        let dest_dir = Path::new("src")
+            .join("platforms")
+            .join(env::var("CARGO_CFG_TARGET_OS").unwrap())
+            .join(env::var("CARGO_CFG_TARGET_ARCH").unwrap());
+        let dest_file = dest_dir.join(format!("gen_{}_{}.rs", version.0, version.1));
+
+        fs::create_dir_all(&dest_dir).unwrap();
+        fs::copy(&bind_file, &dest_file).unwrap();
+
+        if let Ok(github_env) = env::var("GITHUB_ENV") {
+            let mut env_file = fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(github_env)
+                .unwrap();
+            writeln!(env_file, "INPUT_SYS_BINDINGS_FILE={}", dest_file.display()).unwrap();
+        }
+    }
 }
