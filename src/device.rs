@@ -327,7 +327,7 @@ impl Device {
     /// Calling this function multiple times for the same device may
     /// not return the same udev handle each time.
     ///
-    /// ## Unsafety
+    /// # Safety
     ///
     /// The result of this function is not definied if the passed udev `Context`
     /// is not the same as the one the libinput `Context` was created from.

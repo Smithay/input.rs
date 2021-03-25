@@ -154,7 +154,7 @@ impl Libinput {
     /// - userdata - Optionally some userdata attached to the newly created context (see [`Userdata`](./trait.Userdata.html))
     /// - udev_context - Raw pointer to a valid udev context.
     ///
-    /// ## Unsafety
+    /// # Safety
     ///
     /// This function is unsafe, because there is no way to verify that `udev_context` is indeed a valid udev context or even points to valid memory.
     #[cfg(feature = "udev")]
@@ -342,7 +342,7 @@ impl Libinput {
     /// The most simple variant to check for available bytes is to use
     /// `nix::poll`:
     ///
-    /// ```norun
+    /// ```no_run
     /// use nix::poll;
     ///
     /// let pollfd = poll::PollFd::new(context.as_raw_fd(), poll:POLLIN);
@@ -358,6 +358,10 @@ impl Libinput {
     /// as event loops e.g. in the `wayland-server` or the `tokio`
     /// crates to wait for data to become available on this file
     /// descriptor.
+    ///
+    /// # Safety
+    ///
+    /// See [`AsRawFd`]
     #[deprecated(since = "0.4.1", note = "Use the provided AsRawFd implementation")]
     pub unsafe fn fd(&self) -> RawFd {
         ffi::libinput_get_fd(self.as_raw_mut())
@@ -373,7 +377,7 @@ impl Libinput {
     ///
     /// If unsure using `()` is always a safe option..
     ///
-    /// ## Unsafety
+    /// # Safety
     ///
     /// If the pointer is pointing to a different struct, invalid memory or `NULL` the returned
     /// struct may panic on use or cause other undefined behavior.
