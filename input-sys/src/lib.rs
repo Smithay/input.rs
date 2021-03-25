@@ -5,29 +5,16 @@ extern crate libc;
 #[cfg(feature = "gen")]
 include!(concat!(env!("OUT_DIR"), "/gen.rs"));
 
-#[cfg(all(not(feature = "gen"), feature = "libinput_1_15"))]
-include!("gen_1_15.rs");
-#[cfg(all(
-    not(feature = "gen"),
-    feature = "libinput_1_14",
-    not(feature = "libinput_1_15")
-))]
-include!("gen_1_14.rs");
-#[cfg(all(
-    not(feature = "gen"),
-    feature = "libinput_1_11",
-    not(any(feature = "libinput_1_14", feature = "libinput_1_15"))
-))]
-include!("gen_1_11.rs");
-#[cfg(all(
-    not(feature = "gen"),
-    not(any(
-        feature = "libinput_1_11",
-        feature = "libinput_1_14",
-        feature = "libinput_1_15"
-    ))
-))]
-include!("gen_1_9.rs");
+#[cfg(not(feature = "gen"))]
+include!(concat!(
+    "platforms/",
+    env!("LIBINPUT_TARGET_OS"),
+    "/",
+    env!("LIBINPUT_TARGET_ARCH"),
+    "/gen_",
+    env!("LIBINPUT_VERSION_STR"),
+    ".rs"
+));
 
 #[link(name = "input")]
 extern "C" {}
