@@ -3,7 +3,12 @@
 extern crate libc;
 
 #[cfg(feature = "gen")]
-include!(concat!(env!("OUT_DIR"), "/gen.rs"));
+include!(concat!(
+    env!("OUT_DIR"),
+    "/gen_",
+    env!("LIBINPUT_VERSION_STR"),
+    ".rs"
+));
 
 #[cfg(not(feature = "gen"))]
 include!(concat!(
