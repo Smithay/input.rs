@@ -8,7 +8,7 @@ version = "0.5.0"
 keywords = ["wayland", "input", "bindings"]
 categories = ["external-ffi-bindings"]
 authors = ["Drakulix (Victor Brekenfeld)"]
-exclude = [".gitignore", ".travis.yml", ".rustfmt.toml", ".github"]
+exclude = [".gitignore", ".rustfmt.toml", ".github"]
 
 [dependencies]
 libc = "0.2"
