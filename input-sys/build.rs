@@ -57,6 +57,7 @@ fn main() {
         version.0, version.1
     );
 
+    #[cfg(feature = "update_bindings")]
     let dest_dir = Path::new("src")
         .join("platforms")
         .join(env::var("CARGO_CFG_TARGET_OS").unwrap())
