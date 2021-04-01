@@ -1,4 +1,3 @@
-use {ffi, AsRaw, Device, Event, FromRaw};
 use libc;
 use std::ffi::{CStr, CString};
 use std::io::{Error as IoError, Result as IoResult};
@@ -9,6 +8,7 @@ use std::path::Path;
 use std::rc::Rc;
 #[cfg(feature = "udev")]
 use udev::ffi as udev;
+use {ffi, AsRaw, Device, Event, FromRaw};
 
 /// libinput does not open file descriptors to devices directly,
 /// instead `open_restricted` and `close_restricted` are called for
@@ -53,11 +53,13 @@ unsafe extern "C" fn open_restricted<I: LibinputInterface + 'static>(
         };
         match res {
             Ok(fd) => fd,
-            Err(errno) => if errno > 0 {
-                -errno
-            } else {
-                errno
-            },
+            Err(errno) => {
+                if errno > 0 {
+                    -errno
+                } else {
+                    errno
+                }
+            }
         }
     } else {
         -1
@@ -156,9 +158,7 @@ impl Libinput {
     ///
     /// This function is unsafe, because there is no way to verify that `udev_context` is indeed a valid udev context or even points to valid memory.
     #[cfg(feature = "udev")]
-    pub fn new_with_udev<I: LibinputInterface + 'static>(
-        interface: I,
-    ) -> Libinput {
+    pub fn new_with_udev<I: LibinputInterface + 'static>(interface: I) -> Libinput {
         let mut boxed_userdata = Box::new(interface);
         let boxed_interface = Box::new(ffi::libinput_interface {
             open_restricted: Some(open_restricted::<I>),
@@ -167,16 +167,17 @@ impl Libinput {
 
         let context = unsafe {
             let udev = udev::udev_new();
-            let libinput =
-                ffi::libinput_udev_create_context(
-                    &*boxed_interface as *const _,
-                    &mut *boxed_userdata as *mut I as *mut libc::c_void,
-                    udev as *mut input_sys::udev,
-                );
+            let libinput = ffi::libinput_udev_create_context(
+                &*boxed_interface as *const _,
+                &mut *boxed_userdata as *mut I as *mut libc::c_void,
+                udev as *mut input_sys::udev,
+            );
             udev::udev_unref(udev);
             Libinput {
                 ffi: libinput,
-                _interface: Some(Rc::new(boxed_userdata as Box<dyn LibinputInterface + 'static>)),
+                _interface: Some(Rc::new(
+                    boxed_userdata as Box<dyn LibinputInterface + 'static>,
+                )),
             }
         };
 
@@ -211,7 +212,9 @@ impl Libinput {
                     &mut *boxed_userdata as *mut I as *mut libc::c_void,
                 )
             },
-            _interface: Some(Rc::new(boxed_userdata as Box<dyn LibinputInterface + 'static>)),
+            _interface: Some(Rc::new(
+                boxed_userdata as Box<dyn LibinputInterface + 'static>,
+            )),
         };
 
         mem::forget(boxed_interface);
@@ -355,7 +358,7 @@ impl Libinput {
     /// as event loops e.g. in the `wayland-server` or the `tokio`
     /// crates to wait for data to become available on this file
     /// descriptor.
-    #[deprecated(since="0.4.1", note="Use the provided AsRawFd implementation")]
+    #[deprecated(since = "0.4.1", note = "Use the provided AsRawFd implementation")]
     pub unsafe fn fd(&self) -> RawFd {
         ffi::libinput_get_fd(self.as_raw_mut())
     }

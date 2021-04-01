@@ -1,8 +1,8 @@
 //! Device event types
 
 use super::EventTrait;
-use {AsRaw, Context, FromRaw};
 use ffi;
+use {AsRaw, Context, FromRaw};
 
 /// Common functions all Device-Events implement.
 pub trait DeviceEventTrait: AsRaw<ffi::libinput_event_device_notify> + Context {
@@ -37,7 +37,10 @@ impl EventTrait for DeviceEvent {
 }
 
 impl FromRaw<ffi::libinput_event_device_notify> for DeviceEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_device_notify, context: &::context::Libinput) -> Self {
+    unsafe fn from_raw(
+        event: *mut ffi::libinput_event_device_notify,
+        context: &::context::Libinput,
+    ) -> Self {
         let base = ffi::libinput_event_device_notify_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_ADDED => {

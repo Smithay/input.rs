@@ -1,8 +1,8 @@
 //! Touch event types
 
 use super::EventTrait;
-use {AsRaw, Context, FromRaw};
 use ffi;
+use {AsRaw, Context, FromRaw};
 
 /// Common functions all Touch-Events implement.
 pub trait TouchEventTrait: AsRaw<ffi::libinput_event_touch> + Context {
@@ -119,7 +119,10 @@ impl EventTrait for TouchEvent {
 }
 
 impl FromRaw<ffi::libinput_event_touch> for TouchEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_touch, context: &::context::Libinput) -> Self {
+    unsafe fn from_raw(
+        event: *mut ffi::libinput_event_touch,
+        context: &::context::Libinput,
+    ) -> Self {
         let base = ffi::libinput_event_touch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_DOWN => {

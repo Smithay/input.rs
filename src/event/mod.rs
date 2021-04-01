@@ -77,16 +77,18 @@ impl FromRaw<ffi::libinput_event> for Event {
             | ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_UP
             | ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_MOTION
             | ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_CANCEL
-            | ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_FRAME => Event::Touch(TouchEvent::from_raw(
-                ffi::libinput_event_get_touch_event(event),
-                context,
-            )),
+            | ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_FRAME => Event::Touch(
+                TouchEvent::from_raw(ffi::libinput_event_get_touch_event(event), context),
+            ),
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_AXIS
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_TIP
-            | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_BUTTON => Event::Tablet(
-                TabletToolEvent::from_raw(ffi::libinput_event_get_tablet_tool_event(event), context),
-            ),
+            | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_BUTTON => {
+                Event::Tablet(TabletToolEvent::from_raw(
+                    ffi::libinput_event_get_tablet_tool_event(event),
+                    context,
+                ))
+            }
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_BUTTON
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_RING
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP => Event::TabletPad(
@@ -100,10 +102,9 @@ impl FromRaw<ffi::libinput_event> for Event {
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END => Event::Gesture(
                 GestureEvent::from_raw(ffi::libinput_event_get_gesture_event(event), context),
             ),
-            ffi::libinput_event_type_LIBINPUT_EVENT_SWITCH_TOGGLE => Event::Switch(SwitchEvent::from_raw(
-                ffi::libinput_event_get_switch_event(event),
-                context,
-            )),
+            ffi::libinput_event_type_LIBINPUT_EVENT_SWITCH_TOGGLE => Event::Switch(
+                SwitchEvent::from_raw(ffi::libinput_event_get_switch_event(event), context),
+            ),
             _ => panic!("libinput returned invalid 'libinput_event_type'"),
         }
     }
@@ -210,8 +211,8 @@ pub mod gesture;
 pub mod keyboard;
 pub mod pointer;
 pub mod switch;
-pub mod tablet_tool;
 pub mod tablet_pad;
+pub mod tablet_tool;
 pub mod touch;
 
 pub use self::device::DeviceEvent;

@@ -35,7 +35,7 @@ pub enum TabletToolType {
     /// A mouse tool with a lens.
     Lens,
     /// A rotary device with positional and rotation data
-    #[cfg(feature="libinput_1_14")]
+    #[cfg(feature = "libinput_1_14")]
     Totem,
 }
 
@@ -74,13 +74,19 @@ impl TabletTool {
     pub fn tool_type(&self) -> TabletToolType {
         match unsafe { ffi::libinput_tablet_tool_get_type(self.as_raw_mut()) } {
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_PEN => TabletToolType::Pen,
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_ERASER => TabletToolType::Eraser,
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_ERASER => {
+                TabletToolType::Eraser
+            }
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_BRUSH => TabletToolType::Brush,
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_PENCIL => TabletToolType::Pencil,
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_AIRBRUSH => TabletToolType::Airbrush,
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_PENCIL => {
+                TabletToolType::Pencil
+            }
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_AIRBRUSH => {
+                TabletToolType::Airbrush
+            }
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_MOUSE => TabletToolType::Mouse,
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_LENS => TabletToolType::Lens,
-            #[cfg(feature="libinput_1_14")]
+            #[cfg(feature = "libinput_1_14")]
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_TOTEM => TabletToolType::Totem,
             _ => panic!("libinput returned invalid 'libinput_tablet_tool_type'"),
         }
@@ -118,7 +124,7 @@ impl TabletTool {
     /// See [Tracking unique tools](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-serial-numbers)
     /// for more details.
     pub fn is_unique, ffi::libinput_tablet_tool_is_unique, bool);
-    #[cfg(feature="libinput_1_14")]
+    #[cfg(feature = "libinput_1_14")]
     ffi_func!(
     /// Returns whether the tablet tool has a ellipsis major and minor.
     /// 

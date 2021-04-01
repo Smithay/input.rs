@@ -1,8 +1,8 @@
 //! Keyboard event types
 
 use super::EventTrait;
-use {AsRaw, Context, FromRaw};
 use ffi;
+use {AsRaw, Context, FromRaw};
 
 /// State of a Key
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -62,7 +62,10 @@ impl EventTrait for KeyboardEvent {
 }
 
 impl FromRaw<ffi::libinput_event_keyboard> for KeyboardEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_keyboard, context: &::context::Libinput) -> Self {
+    unsafe fn from_raw(
+        event: *mut ffi::libinput_event_keyboard,
+        context: &::context::Libinput,
+    ) -> Self {
         let base = ffi::libinput_event_keyboard_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_KEYBOARD_KEY => {

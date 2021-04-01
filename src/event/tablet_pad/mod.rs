@@ -1,8 +1,8 @@
 //! Tablet pad event types
 
-use super::EventTrait;
-pub use super::pointer::ButtonState;
 pub use super::keyboard::KeyState;
+pub use super::pointer::ButtonState;
+use super::EventTrait;
 use {ffi, AsRaw, Context, FromRaw};
 
 mod mode_group;
@@ -70,7 +70,7 @@ pub enum TabletPadEvent {
     /// in that buttons are sequentially indexed from 0 and do not carry any other information.
     /// Keys have a specific functionality assigned to them. The key code thus carries a
     /// semantic meaning, a button number does not.
-    /// 
+    ///
     /// This event is not to be confused with the button events emitted by tools
     /// on a tablet. See `TabletToolButtonEvent`.
     Button(TabletPadButtonEvent),
@@ -81,11 +81,11 @@ pub enum TabletPadEvent {
     /// `DeviceCapability::TabletPad` capability.
     Strip(TabletPadStripEvent),
     /// A key pressed on a device with the `DeviceCapability::TabletPad` capability.
-    /// 
+    ///
     /// A `Key`-Event differs from a `Button`-Event in that keys have a specific
     /// functionality assigned to them (buttons are sequencially ordered). A key code
     /// thus carries a semantic meaning, a button number does not.
-    #[cfg(feature="libinput_1_15")]
+    #[cfg(feature = "libinput_1_15")]
     Key(TabletPadKeyEvent),
 }
 
@@ -96,7 +96,7 @@ impl EventTrait for TabletPadEvent {
             TabletPadEvent::Button(ref event) => event.as_raw_event(),
             TabletPadEvent::Ring(ref event) => event.as_raw_event(),
             TabletPadEvent::Strip(ref event) => event.as_raw_event(),
-            #[cfg(feature="libinput_1_15")]
+            #[cfg(feature = "libinput_1_15")]
             TabletPadEvent::Key(ref event) => event.as_raw_event(),
         }
     }
@@ -115,7 +115,7 @@ impl FromRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP => {
                 TabletPadEvent::Strip(TabletPadStripEvent::from_raw(event, context))
             }
-            #[cfg(feature="libinput_1_15")]
+            #[cfg(feature = "libinput_1_15")]
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_KEY => {
                 TabletPadEvent::Key(TabletPadKeyEvent::from_raw(event, context))
             }
@@ -130,7 +130,7 @@ impl AsRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
             TabletPadEvent::Button(ref event) => event.as_raw(),
             TabletPadEvent::Ring(ref event) => event.as_raw(),
             TabletPadEvent::Strip(ref event) => event.as_raw(),
-            #[cfg(feature="libinput_1_15")]
+            #[cfg(feature = "libinput_1_15")]
             TabletPadEvent::Key(ref event) => event.as_raw(),
         }
     }
@@ -142,7 +142,7 @@ impl Context for TabletPadEvent {
             TabletPadEvent::Button(ref event) => event.context(),
             TabletPadEvent::Ring(ref event) => event.context(),
             TabletPadEvent::Strip(ref event) => event.context(),
-            #[cfg(feature="libinput_1_15")]
+            #[cfg(feature = "libinput_1_15")]
             TabletPadEvent::Key(ref event) => event.context(),
         }
     }
@@ -274,18 +274,18 @@ impl TabletPadStripEvent {
     }
 }
 
-#[cfg(feature="libinput_1_15")]
+#[cfg(feature = "libinput_1_15")]
 ffi_event_struct!(
 /// A key pressed on a device with the `DeviceCapability::TabletPad` capability.
 struct TabletPadKeyEvent, ffi::libinput_event_tablet_pad, ffi::libinput_event_tablet_pad_get_base_event);
 
-#[cfg(feature="libinput_1_15")]
+#[cfg(feature = "libinput_1_15")]
 impl TabletPadKeyEvent {
     ffi_func!(
     /// Return the key code that triggered this event, e.g. KEY_CONTROLPANEL.
     /// The list of key codes is defined in linux/input-event-codes.h
     pub fn key, ffi::libinput_event_tablet_pad_get_key, u32);
-    
+
     /// Return the key state of the event
     pub fn key_state(&self) -> KeyState {
         match unsafe { ffi::libinput_event_tablet_pad_get_key_state(self.as_raw() as *mut _) } {

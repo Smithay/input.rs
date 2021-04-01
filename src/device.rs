@@ -1,9 +1,9 @@
-use {ffi, AsRaw, FromRaw, Libinput, Seat};
-use event::tablet_pad::TabletPadModeGroup;
 use event::switch::Switch;
+use event::tablet_pad::TabletPadModeGroup;
 use std::ffi::{CStr, CString};
 #[cfg(feature = "udev")]
-use udev::{Device as UdevDevice, FromRaw as UdevFromRaw, ffi::udev_device};
+use udev::{ffi::udev_device, Device as UdevDevice, FromRaw as UdevFromRaw};
+use {ffi, AsRaw, FromRaw, Libinput, Seat};
 
 /// Capabilities on a device.
 ///
@@ -120,7 +120,7 @@ pub enum TapButtonMap {
 }
 
 /// Whenever scroll button lock is enabled or not
-#[cfg(feature="libinput_1_15")]
+#[cfg(feature = "libinput_1_15")]
 #[allow(missing_docs)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum ScrollButtonLockState {
@@ -365,16 +365,24 @@ impl Device {
                     DeviceCapability::Keyboard => {
                         ffi::libinput_device_capability_LIBINPUT_DEVICE_CAP_KEYBOARD
                     }
-                    DeviceCapability::Pointer => ffi::libinput_device_capability_LIBINPUT_DEVICE_CAP_POINTER,
-                    DeviceCapability::Touch => ffi::libinput_device_capability_LIBINPUT_DEVICE_CAP_TOUCH,
+                    DeviceCapability::Pointer => {
+                        ffi::libinput_device_capability_LIBINPUT_DEVICE_CAP_POINTER
+                    }
+                    DeviceCapability::Touch => {
+                        ffi::libinput_device_capability_LIBINPUT_DEVICE_CAP_TOUCH
+                    }
                     DeviceCapability::TabletTool => {
                         ffi::libinput_device_capability_LIBINPUT_DEVICE_CAP_TABLET_TOOL
                     }
                     DeviceCapability::TabletPad => {
                         ffi::libinput_device_capability_LIBINPUT_DEVICE_CAP_TABLET_PAD
                     }
-                    DeviceCapability::Gesture => ffi::libinput_device_capability_LIBINPUT_DEVICE_CAP_GESTURE,
-                    DeviceCapability::Switch => ffi::libinput_device_capability_LIBINPUT_DEVICE_CAP_SWITCH,
+                    DeviceCapability::Gesture => {
+                        ffi::libinput_device_capability_LIBINPUT_DEVICE_CAP_GESTURE
+                    }
+                    DeviceCapability::Switch => {
+                        ffi::libinput_device_capability_LIBINPUT_DEVICE_CAP_SWITCH
+                    }
                 },
             ) != 0
         }
@@ -471,7 +479,8 @@ impl Device {
     /// the events in the event queue will return the modes 1, 2 and
     /// 3, respectively.
     pub fn tablet_pad_mode_group(&self, index: u32) -> Option<TabletPadModeGroup> {
-        let ptr = unsafe { ffi::libinput_device_tablet_pad_get_mode_group(self.as_raw_mut(), index) };
+        let ptr =
+            unsafe { ffi::libinput_device_tablet_pad_get_mode_group(self.as_raw_mut(), index) };
         if ptr.is_null() {
             None
         } else {
@@ -480,36 +489,34 @@ impl Device {
     }
 
     /// Check if a `DeviceCapability::TabletPad`-device has a key with the given code (see linux/input-event-codes.h).
-    /// 
+    ///
     /// ## Returns
     /// - `Some(true)` if it has the requested key
     /// - `Some(false)` if it has not
     /// - `None` on error (no TabletPad device)
-    #[cfg(feature="libinput_1_15")]
+    #[cfg(feature = "libinput_1_15")]
     pub fn tablet_pad_has_key(&self, code: u32) -> Option<bool> {
         match unsafe { ffi::libinput_device_tablet_pad_has_key(self.as_raw_mut(), code) } {
             -1 => None,
             0 => Some(false),
             1 => Some(true),
-            _ => panic!("libinput returned invalid return code for libinput_device_tablet_pad_has_key"),
+            _ => panic!(
+                "libinput returned invalid return code for libinput_device_tablet_pad_has_key"
+            ),
         }
     }
 
     /// Check how many touches a `DeviceCapability::Touch`-exposing Device supports simultaneously.
-    /// 
+    ///
     /// ## Returns
     /// - `Some(n)` amount of touches
     /// - `Some(0)` if unknown
     /// - `None` on error (no touch device)
-    #[cfg(feature="libinput_1_11")]
+    #[cfg(feature = "libinput_1_11")]
     pub fn touch_count(&mut self) -> Option<u32> {
-        match unsafe {
-            ffi::libinput_device_touch_get_touch_count(
-                self.as_raw_mut()
-            )
-        } {
+        match unsafe { ffi::libinput_device_touch_get_touch_count(self.as_raw_mut()) } {
             -1 => None,
-            n => Some(n as u32)
+            n => Some(n as u32),
         }
     }
 
@@ -518,7 +525,9 @@ impl Device {
     pub fn config_accel_default_profile(&self) -> Option<AccelProfile> {
         match unsafe { ffi::libinput_device_config_accel_get_default_profile(self.as_raw_mut()) } {
             ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_NONE => None,
-            ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT => Some(AccelProfile::Flat),
+            ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT => {
+                Some(AccelProfile::Flat)
+            }
             ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE => {
                 Some(AccelProfile::Adaptive)
             }
@@ -531,7 +540,9 @@ impl Device {
     pub fn config_accel_profile(&self) -> Option<AccelProfile> {
         match unsafe { ffi::libinput_device_config_accel_get_profile(self.as_raw_mut()) } {
             ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_NONE => None,
-            ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT => Some(AccelProfile::Flat),
+            ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT => {
+                Some(AccelProfile::Flat)
+            }
             ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE => {
                 Some(AccelProfile::Adaptive)
             }
@@ -544,10 +555,15 @@ impl Device {
     pub fn config_accel_profiles(&self) -> Vec<AccelProfile> {
         let mut profiles = Vec::new();
         let bitmask = unsafe { ffi::libinput_device_config_accel_get_profiles(self.as_raw_mut()) };
-        if bitmask & ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT as u32 != 0 {
+        if bitmask & ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT as u32
+            != 0
+        {
             profiles.push(AccelProfile::Flat);
         }
-        if bitmask & ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE as u32 != 0 {
+        if bitmask
+            & ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE as u32
+            != 0
+        {
             profiles.push(AccelProfile::Adaptive);
         }
         profiles
@@ -573,7 +589,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -606,7 +624,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -624,8 +644,10 @@ impl Device {
     pub fn config_calibration_default_matrix(&self) -> Option<[f32; 6]> {
         let mut matrix = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
         if unsafe {
-            ffi::libinput_device_config_calibration_get_default_matrix(self.as_raw_mut(), matrix.as_mut_ptr())
-                != 0
+            ffi::libinput_device_config_calibration_get_default_matrix(
+                self.as_raw_mut(),
+                matrix.as_mut_ptr(),
+            ) != 0
         } {
             Some(matrix)
         } else {
@@ -637,7 +659,10 @@ impl Device {
     pub fn config_calibration_matrix(&self) -> Option<[f32; 6]> {
         let mut matrix = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
         if unsafe {
-            ffi::libinput_device_config_calibration_get_matrix(self.as_raw_mut(), matrix.as_mut_ptr()) != 0
+            ffi::libinput_device_config_calibration_get_matrix(
+                self.as_raw_mut(),
+                matrix.as_mut_ptr(),
+            ) != 0
         } {
             Some(matrix)
         } else {
@@ -697,7 +722,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -746,12 +773,14 @@ impl Device {
     pub fn config_click_methods(&self) -> Vec<ClickMethod> {
         let mut methods = Vec::new();
         let bitmask = unsafe { ffi::libinput_device_config_click_get_methods(self.as_raw_mut()) };
-        if bitmask & ffi::libinput_config_click_method_LIBINPUT_CONFIG_CLICK_METHOD_CLICKFINGER as u32
+        if bitmask
+            & ffi::libinput_config_click_method_LIBINPUT_CONFIG_CLICK_METHOD_CLICKFINGER as u32
             == bitmask
         {
             methods.push(ClickMethod::Clickfinger);
         }
-        if bitmask & ffi::libinput_config_click_method_LIBINPUT_CONFIG_CLICK_METHOD_BUTTON_AREAS as u32
+        if bitmask
+            & ffi::libinput_config_click_method_LIBINPUT_CONFIG_CLICK_METHOD_BUTTON_AREAS as u32
             == bitmask
         {
             methods.push(ClickMethod::ButtonAreas);
@@ -788,7 +817,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -853,7 +884,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -882,12 +915,16 @@ impl Device {
     /// Changing the left-handed configuration of a device may not
     /// take effect until all buttons have been logically released.
     pub fn config_left_handed_set(&self, enabled: bool) -> DeviceConfigResult {
-        match unsafe { ffi::libinput_device_config_left_handed_set(self.as_raw_mut(), enabled as i32) } {
+        match unsafe {
+            ffi::libinput_device_config_left_handed_set(self.as_raw_mut(), enabled as i32)
+        } {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -975,7 +1012,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -1027,7 +1066,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -1061,8 +1102,12 @@ impl Device {
     /// instead of pointer motion events.
     pub fn config_scroll_default_method(&self) -> ScrollMethod {
         match unsafe { ffi::libinput_device_config_scroll_get_default_method(self.as_raw_mut()) } {
-            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL => ScrollMethod::NoScroll,
-            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG => ScrollMethod::TwoFinger,
+            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL => {
+                ScrollMethod::NoScroll
+            }
+            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG => {
+                ScrollMethod::TwoFinger
+            }
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE => ScrollMethod::Edge,
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN => {
                 ScrollMethod::OnButtonDown
@@ -1077,8 +1122,12 @@ impl Device {
     /// instead of pointer motion events.
     pub fn config_scroll_method(&self) -> ScrollMethod {
         match unsafe { ffi::libinput_device_config_scroll_get_method(self.as_raw_mut()) } {
-            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL => ScrollMethod::NoScroll,
-            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG => ScrollMethod::TwoFinger,
+            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL => {
+                ScrollMethod::NoScroll
+            }
+            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG => {
+                ScrollMethod::TwoFinger
+            }
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE => ScrollMethod::Edge,
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN => {
                 ScrollMethod::OnButtonDown
@@ -1094,13 +1143,18 @@ impl Device {
     pub fn config_scroll_methods(&self) -> Vec<ScrollMethod> {
         let mut methods = Vec::new();
         let bitmask = unsafe { ffi::libinput_device_config_scroll_get_methods(self.as_raw_mut()) };
-        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL as u32 == bitmask {
+        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL as u32
+            == bitmask
+        {
             methods.push(ScrollMethod::NoScroll);
         }
-        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG as u32 == bitmask {
+        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG as u32 == bitmask
+        {
             methods.push(ScrollMethod::TwoFinger);
         }
-        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE as u32 == bitmask {
+        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE as u32
+            == bitmask
+        {
             methods.push(ScrollMethod::Edge);
         }
         if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN as u32
@@ -1130,8 +1184,12 @@ impl Device {
                     ScrollMethod::NoScroll => {
                         ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL
                     }
-                    ScrollMethod::TwoFinger => ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG,
-                    ScrollMethod::Edge => ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE,
+                    ScrollMethod::TwoFinger => {
+                        ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG
+                    }
+                    ScrollMethod::Edge => {
+                        ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE
+                    }
                     ScrollMethod::OnButtonDown => {
                         ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN
                     }
@@ -1142,7 +1200,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -1175,15 +1235,23 @@ impl Device {
     pub fn config_scroll_has_natural_scroll, ffi::libinput_device_config_scroll_has_natural_scroll, bool);
 
     /// Enable or disable natural scrolling on the device.
-    pub fn config_scroll_set_natural_scroll_enabled(&mut self, enabled: bool) -> DeviceConfigResult {
+    pub fn config_scroll_set_natural_scroll_enabled(
+        &mut self,
+        enabled: bool,
+    ) -> DeviceConfigResult {
         match unsafe {
-            ffi::libinput_device_config_scroll_set_natural_scroll_enabled(self.as_raw_mut(), enabled as i32)
+            ffi::libinput_device_config_scroll_set_natural_scroll_enabled(
+                self.as_raw_mut(),
+                enabled as i32,
+            )
         } {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -1210,22 +1278,24 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
 
     /// Get the current scroll button lock state
-    /// 
+    ///
     /// If `ScrollMethod::OnButtonDown` is not supported, or no button is set,
     /// this functions returns `Disabled`.
-    /// 
+    ///
     /// ## Note
-    /// 
+    ///
     /// The return value is independent of the currently selected scroll-method.
     /// For the scroll button lock to activate, a device must have the
     /// `ScrollMethod::OnButtonDown` enabled, and a non-zero button set as scroll button.
-    #[cfg(feature="libinput_1_15")]
+    #[cfg(feature = "libinput_1_15")]
     pub fn config_scroll_button_lock(&self) -> ScrollButtonLockState {
         match unsafe { ffi::libinput_device_config_scroll_get_button_lock(self.as_raw() as *mut _) } {
             ffi::libinput_config_scroll_button_lock_state_LIBINPUT_CONFIG_SCROLL_BUTTON_LOCK_DISABLED => ScrollButtonLockState::Disabled,
@@ -1233,12 +1303,12 @@ impl Device {
             _ => panic!("libinput returned invalid libinput_config_scroll_button_lock_state"),
         }
     }
-    
+
     /// Get the default scroll button lock state
-    /// 
+    ///
     /// If `ScrollMethod::OnButtonDown` is not supported, or no button is set,
     /// this functions returns `Disabled`.
-    #[cfg(feature="libinput_1_15")]
+    #[cfg(feature = "libinput_1_15")]
     pub fn config_scroll_default_button_lock(&self) -> ScrollButtonLockState {
         match unsafe { ffi::libinput_device_config_scroll_get_default_button_lock(self.as_raw() as *mut _) } {
             ffi::libinput_config_scroll_button_lock_state_LIBINPUT_CONFIG_SCROLL_BUTTON_LOCK_DISABLED => ScrollButtonLockState::Disabled,
@@ -1248,24 +1318,31 @@ impl Device {
     }
 
     /// Set the scroll button lock.
-    /// 
+    ///
     /// If the state is `Disabled` the button must physically be held down for
     /// button scrolling to work. If the state is `Enabled`, the button is considered
     /// logically down after the first press and release sequence, and logically
     /// up after the second press and release sequence.
-    #[cfg(feature="libinput_1_15")]
-    pub fn config_scroll_set_button_lock(&mut self, state: ScrollButtonLockState) -> DeviceConfigResult {
-        match unsafe { ffi::libinput_device_config_scroll_set_button_lock(self.as_raw_mut(),
+    #[cfg(feature = "libinput_1_15")]
+    pub fn config_scroll_set_button_lock(
+        &mut self,
+        state: ScrollButtonLockState,
+    ) -> DeviceConfigResult {
+        match unsafe {
+            ffi::libinput_device_config_scroll_set_button_lock(self.as_raw_mut(),
             match state {
                 ScrollButtonLockState::Enabled => ffi::libinput_config_scroll_button_lock_state_LIBINPUT_CONFIG_SCROLL_BUTTON_LOCK_ENABLED,
                 ScrollButtonLockState::Disabled => ffi::libinput_config_scroll_button_lock_state_LIBINPUT_CONFIG_SCROLL_BUTTON_LOCK_DISABLED,
             }
-        )} {
+        )
+        } {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -1321,7 +1398,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -1362,7 +1441,9 @@ impl Device {
         if self.config_tap_finger_count() == 0 {
             None
         } else {
-            match unsafe { ffi::libinput_device_config_tap_get_default_button_map(self.as_raw_mut()) } {
+            match unsafe {
+                ffi::libinput_device_config_tap_get_default_button_map(self.as_raw_mut())
+            } {
                 ffi::libinput_config_tap_button_map_LIBINPUT_CONFIG_TAP_MAP_LRM => {
                     Some(TapButtonMap::LeftRightMiddle)
                 }
@@ -1377,7 +1458,8 @@ impl Device {
     /// Return whether tap-and-drag is enabled or disabled by default
     /// on this device.
     pub fn config_tap_default_drag_enabled(&self) -> bool {
-        match unsafe { ffi::libinput_device_config_tap_get_default_drag_enabled(self.as_raw_mut()) } {
+        match unsafe { ffi::libinput_device_config_tap_get_default_drag_enabled(self.as_raw_mut()) }
+        {
             ffi::libinput_config_drag_state_LIBINPUT_CONFIG_DRAG_ENABLED => true,
             ffi::libinput_config_drag_state_LIBINPUT_CONFIG_DRAG_DISABLED => false,
             _ => panic!("libinput returned invalid 'libinput_config_drag_state'"),
@@ -1495,7 +1577,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -1523,7 +1607,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -1554,7 +1640,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
@@ -1580,7 +1668,9 @@ impl Device {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
             }
-            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => Err(DeviceConfigError::Invalid),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
     }
