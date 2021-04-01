@@ -1,8 +1,8 @@
 //! Gesture event types
 
 use super::EventTrait;
-use {AsRaw, Context, FromRaw};
 use ffi;
+use {AsRaw, Context, FromRaw};
 
 /// Common functions all Gesture-Events implement.
 pub trait GestureEventTrait: AsRaw<ffi::libinput_event_gesture> + Context {
@@ -52,7 +52,10 @@ impl EventTrait for GestureEvent {
 }
 
 impl FromRaw<ffi::libinput_event_gesture> for GestureEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &::context::Libinput) -> Self {
+    unsafe fn from_raw(
+        event: *mut ffi::libinput_event_gesture,
+        context: &::context::Libinput,
+    ) -> Self {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN
@@ -179,7 +182,10 @@ impl EventTrait for GestureSwipeEvent {
 }
 
 impl FromRaw<ffi::libinput_event_gesture> for GestureSwipeEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &::context::Libinput) -> Self {
+    unsafe fn from_raw(
+        event: *mut ffi::libinput_event_gesture,
+        context: &::context::Libinput,
+    ) -> Self {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN => {
@@ -273,7 +279,10 @@ pub trait GesturePinchEventTrait: AsRaw<ffi::libinput_event_gesture> + Context {
 impl GesturePinchEventTrait for GesturePinchEvent {}
 
 impl FromRaw<ffi::libinput_event_gesture> for GesturePinchEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &::context::Libinput) -> Self {
+    unsafe fn from_raw(
+        event: *mut ffi::libinput_event_gesture,
+        context: &::context::Libinput,
+    ) -> Self {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN

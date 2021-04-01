@@ -1,8 +1,8 @@
 //! Switch event types
 
 use super::EventTrait;
-use {AsRaw, Context, FromRaw};
 use ffi;
+use {AsRaw, Context, FromRaw};
 
 /// Common functions all Switch-Events implement.
 pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> + Context {
@@ -41,7 +41,10 @@ impl EventTrait for SwitchEvent {
 }
 
 impl FromRaw<ffi::libinput_event_switch> for SwitchEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_switch, context: &::context::Libinput) -> Self {
+    unsafe fn from_raw(
+        event: *mut ffi::libinput_event_switch,
+        context: &::context::Libinput,
+    ) -> Self {
         let base = ffi::libinput_event_switch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_SWITCH_TOGGLE => {

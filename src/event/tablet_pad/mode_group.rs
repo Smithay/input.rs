@@ -26,7 +26,9 @@ impl TabletPadModeGroup {
     ///
     /// Devices without mode switching capabilities return `false` for every button.
     pub fn button_is_toggle(&self, button: u32) -> bool {
-        unsafe { ffi::libinput_tablet_pad_mode_group_button_is_toggle(self.as_raw_mut(), button) != 0 }
+        unsafe {
+            ffi::libinput_tablet_pad_mode_group_button_is_toggle(self.as_raw_mut(), button) != 0
+        }
     }
 
     ffi_func!(

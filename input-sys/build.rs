@@ -14,19 +14,26 @@ fn main() {
     // Setup bindings builder
     let mut builder = bindgen::builder();
 
-    #[cfg(feature="libinput_1_15")]
+    #[cfg(feature = "libinput_1_15")]
     {
         builder = builder.header("include/libinput.1.15.0.h");
     }
-    #[cfg(all(feature="libinput_1_14", not(feature="libinput_1_15")))]
+    #[cfg(all(feature = "libinput_1_14", not(feature = "libinput_1_15")))]
     {
         builder = builder.header("include/libinput.1.14.0.h");
     }
-    #[cfg(all(feature="libinput_1_11", not(any(feature="libinput_1_14", feature="libinput_1_15"))))]
+    #[cfg(all(
+        feature = "libinput_1_11",
+        not(any(feature = "libinput_1_14", feature = "libinput_1_15"))
+    ))]
     {
         builder = builder.header("include/libinput.1.11.0.h");
     }
-    #[cfg(not(any(feature="libinput_1_11", feature="libinput_1_14", feature="libinput_1_15")))]
+    #[cfg(not(any(
+        feature = "libinput_1_11",
+        feature = "libinput_1_14",
+        feature = "libinput_1_15"
+    )))]
     {
         builder = builder.header("include/libinput.1.9.0.h");
     }
