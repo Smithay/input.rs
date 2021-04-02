@@ -9,20 +9,21 @@ repository = "https://github.com/Drakulix/input.rs/tree/master/input-sys"
 keywords = ["wayland", "input", "bindings"]
 categories = ["external-ffi-bindings"]
 license = "MIT"
-exclude = [".travis.yml", ".rustfmt.toml"]
 
 [lib]
 path = "src/lib.rs"
 
-[build-dependencies]
-bindgen = { version = "0.31", optional = true }
-
 [dependencies]
 libc = "0.2"
+
+[build-dependencies.bindgen]
+version = "0.57"
+optional = true
 
 [features]
 default = ["libinput_1_15"]
 gen = ["bindgen"]
+update_bindings = ["gen"]
 libinput_1_11 = []
 libinput_1_14 = []
 libinput_1_15 = []

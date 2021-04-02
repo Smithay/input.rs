@@ -160,7 +160,7 @@ macro_rules! ffi_event_struct {
         {
             unsafe fn from_raw(ffi: *mut $ffi_name, context: &$crate::context::Libinput) -> Self {
                 $struct_name {
-                    ffi: ffi,
+                    ffi,
                     context: context.clone(),
                 }
             }

@@ -154,7 +154,7 @@ impl Libinput {
     /// - userdata - Optionally some userdata attached to the newly created context (see [`Userdata`](./trait.Userdata.html))
     /// - udev_context - Raw pointer to a valid udev context.
     ///
-    /// ## Unsafety
+    /// # Safety
     ///
     /// This function is unsafe, because there is no way to verify that `udev_context` is indeed a valid udev context or even points to valid memory.
     #[cfg(feature = "udev")]
@@ -342,13 +342,50 @@ impl Libinput {
     /// The most simple variant to check for available bytes is to use
     /// `nix::poll`:
     ///
-    /// ```norun
-    /// use nix::poll;
+    /// ```
+    /// # extern crate libc;
+    /// # extern crate nix;
+    /// #
+    /// # use std::fs::{File, OpenOptions};
+    /// # use std::os::unix::{fs::OpenOptionsExt, io::{RawFd, FromRawFd, IntoRawFd, AsRawFd}};
+    /// # use std::path::Path;
+    /// # use libc::{O_RDONLY, O_RDWR, O_WRONLY};
+    /// #
+    /// use input::{Libinput, LibinputInterface};
+    /// use nix::poll::{poll, PollFlags, PollFd};
     ///
-    /// let pollfd = poll::PollFd::new(context.as_raw_fd(), poll:POLLIN);
-    /// while poll::poll(&mut [pollfd], -1).is_ok() {
-    ///     context.dispatch().unwrap();
-    ///     for event in context {
+    /// # struct Interface;
+    /// #
+    /// # impl LibinputInterface for Interface {
+    /// #     fn open_restricted(&mut self, path: &Path, flags: i32) -> Result<RawFd, i32> {
+    /// #         OpenOptions::new()
+    /// #             .custom_flags(flags)
+    /// #             .read((flags & O_RDONLY != 0) | (flags & O_RDWR != 0))
+    /// #             .write((flags & O_WRONLY != 0) | (flags & O_RDWR != 0))
+    /// #             .open(path)
+    /// #             .map(|file| file.into_raw_fd())
+    /// #             .map_err(|err| err.raw_os_error().unwrap())
+    /// #     }
+    /// #     fn close_restricted(&mut self, fd: RawFd) {
+    /// #         unsafe {
+    /// #             File::from_raw_fd(fd);
+    /// #         }
+    /// #     }
+    /// # }
+    /// #
+    /// # // Preventing infinite execution (in particular on CI)
+    /// # std::thread::spawn(|| {
+    /// #     std::thread::sleep(std::time::Duration::from_secs(5));
+    /// #     std::process::exit(0);
+    /// # });
+    /// #
+    /// let mut input = Libinput::new_with_udev(Interface);
+    /// input.udev_assign_seat("seat0").unwrap();
+    ///
+    /// let pollfd = PollFd::new(input.as_raw_fd(), PollFlags::POLLIN);
+    /// while poll(&mut [pollfd], -1).is_ok() {
+    ///     input.dispatch().unwrap();
+    ///     for event in &mut input {
     ///         // do some processing...
     ///     }
     /// }
@@ -358,6 +395,10 @@ impl Libinput {
     /// as event loops e.g. in the `wayland-server` or the `tokio`
     /// crates to wait for data to become available on this file
     /// descriptor.
+    ///
+    /// # Safety
+    ///
+    /// See [`AsRawFd`]
     #[deprecated(since = "0.4.1", note = "Use the provided AsRawFd implementation")]
     pub unsafe fn fd(&self) -> RawFd {
         ffi::libinput_get_fd(self.as_raw_mut())
@@ -373,7 +414,7 @@ impl Libinput {
     ///
     /// If unsure using `()` is always a safe option..
     ///
-    /// ## Unsafety
+    /// # Safety
     ///
     /// If the pointer is pointing to a different struct, invalid memory or `NULL` the returned
     /// struct may panic on use or cause other undefined behavior.

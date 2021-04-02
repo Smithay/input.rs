@@ -8,15 +8,23 @@ version = "0.5.0"
 keywords = ["wayland", "input", "bindings"]
 categories = ["external-ffi-bindings"]
 authors = ["Drakulix (Victor Brekenfeld)"]
+exclude = [".gitignore", ".rustfmt.toml", ".github"]
 
 [dependencies]
-input-sys = { version = "1.15.0", path = "./input-sys", default-features = false }
 libc = "0.2"
-bitflags = "1.0.0"
-udev = { version = "0.4", optional = true }
+bitflags = "1.2"
+
+[dependencies.input-sys]
+version = "1.15.0"
+path = "input-sys"
+default-features = false
+
+[dependencies.udev]
+version = "0.6"
+optional = true
 
 [dev-dependencies]
-nix = "0.13"
+nix = "0.20"
 
 [features]
 default = ["udev", "libinput_1_15"]
@@ -24,3 +32,8 @@ gen = ["input-sys/gen"]
 libinput_1_11 = ["input-sys/libinput_1_11"]
 libinput_1_14 = ["input-sys/libinput_1_14", "libinput_1_11"]
 libinput_1_15 = ["input-sys/libinput_1_15", "libinput_1_14"]
+
+[workspace]
+members = [
+  "input-sys"
+]
