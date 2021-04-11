@@ -1,8 +1,7 @@
 //! Gesture event types
 
 use super::EventTrait;
-use ffi;
-use {AsRaw, Context, FromRaw};
+use crate::{ffi, AsRaw, Context, FromRaw, Libinput};
 
 /// Common functions all Gesture-Events implement.
 pub trait GestureEventTrait: AsRaw<ffi::libinput_event_gesture> + Context {
@@ -44,18 +43,15 @@ pub enum GestureEvent {
 impl EventTrait for GestureEvent {
     #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
-        match *self {
-            GestureEvent::Swipe(ref event) => event.as_raw_event(),
-            GestureEvent::Pinch(ref event) => event.as_raw_event(),
+        match self {
+            GestureEvent::Swipe(event) => event.as_raw_event(),
+            GestureEvent::Pinch(event) => event.as_raw_event(),
         }
     }
 }
 
 impl FromRaw<ffi::libinput_event_gesture> for GestureEvent {
-    unsafe fn from_raw(
-        event: *mut ffi::libinput_event_gesture,
-        context: &::context::Libinput,
-    ) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &Libinput) -> Self {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN
@@ -75,18 +71,18 @@ impl FromRaw<ffi::libinput_event_gesture> for GestureEvent {
 
 impl AsRaw<ffi::libinput_event_gesture> for GestureEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_gesture {
-        match *self {
-            GestureEvent::Swipe(ref event) => event.as_raw(),
-            GestureEvent::Pinch(ref event) => event.as_raw(),
+        match self {
+            GestureEvent::Swipe(event) => event.as_raw(),
+            GestureEvent::Pinch(event) => event.as_raw(),
         }
     }
 }
 
 impl Context for GestureEvent {
-    fn context(&self) -> &::Libinput {
-        match *self {
-            GestureEvent::Swipe(ref event) => event.context(),
-            GestureEvent::Pinch(ref event) => event.context(),
+    fn context(&self) -> &Libinput {
+        match self {
+            GestureEvent::Swipe(event) => event.context(),
+            GestureEvent::Pinch(event) => event.context(),
         }
     }
 }
@@ -173,19 +169,16 @@ impl GestureSwipeEventTrait for GestureSwipeEvent {}
 impl EventTrait for GestureSwipeEvent {
     #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
-        match *self {
-            GestureSwipeEvent::Begin(ref event) => event.as_raw_event(),
-            GestureSwipeEvent::Update(ref event) => event.as_raw_event(),
-            GestureSwipeEvent::End(ref event) => event.as_raw_event(),
+        match self {
+            GestureSwipeEvent::Begin(event) => event.as_raw_event(),
+            GestureSwipeEvent::Update(event) => event.as_raw_event(),
+            GestureSwipeEvent::End(event) => event.as_raw_event(),
         }
     }
 }
 
 impl FromRaw<ffi::libinput_event_gesture> for GestureSwipeEvent {
-    unsafe fn from_raw(
-        event: *mut ffi::libinput_event_gesture,
-        context: &::context::Libinput,
-    ) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &Libinput) -> Self {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN => {
@@ -209,20 +202,20 @@ impl FromRaw<ffi::libinput_event_gesture> for GestureSwipeEvent {
 
 impl AsRaw<ffi::libinput_event_gesture> for GestureSwipeEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_gesture {
-        match *self {
-            GestureSwipeEvent::Begin(ref event) => event.as_raw(),
-            GestureSwipeEvent::Update(ref event) => event.as_raw(),
-            GestureSwipeEvent::End(ref event) => event.as_raw(),
+        match self {
+            GestureSwipeEvent::Begin(event) => event.as_raw(),
+            GestureSwipeEvent::Update(event) => event.as_raw(),
+            GestureSwipeEvent::End(event) => event.as_raw(),
         }
     }
 }
 
 impl Context for GestureSwipeEvent {
-    fn context(&self) -> &::Libinput {
-        match *self {
-            GestureSwipeEvent::Begin(ref event) => event.context(),
-            GestureSwipeEvent::Update(ref event) => event.context(),
-            GestureSwipeEvent::End(ref event) => event.context(),
+    fn context(&self) -> &Libinput {
+        match self {
+            GestureSwipeEvent::Begin(event) => event.context(),
+            GestureSwipeEvent::Update(event) => event.context(),
+            GestureSwipeEvent::End(event) => event.context(),
         }
     }
 }
@@ -241,10 +234,10 @@ pub enum GesturePinchEvent {
 impl EventTrait for GesturePinchEvent {
     #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
-        match *self {
-            GesturePinchEvent::Begin(ref event) => event.as_raw_event(),
-            GesturePinchEvent::Update(ref event) => event.as_raw_event(),
-            GesturePinchEvent::End(ref event) => event.as_raw_event(),
+        match self {
+            GesturePinchEvent::Begin(event) => event.as_raw_event(),
+            GesturePinchEvent::Update(event) => event.as_raw_event(),
+            GesturePinchEvent::End(event) => event.as_raw_event(),
         }
     }
 }
@@ -279,10 +272,7 @@ pub trait GesturePinchEventTrait: AsRaw<ffi::libinput_event_gesture> + Context {
 impl GesturePinchEventTrait for GesturePinchEvent {}
 
 impl FromRaw<ffi::libinput_event_gesture> for GesturePinchEvent {
-    unsafe fn from_raw(
-        event: *mut ffi::libinput_event_gesture,
-        context: &::context::Libinput,
-    ) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &Libinput) -> Self {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN
@@ -306,20 +296,20 @@ impl FromRaw<ffi::libinput_event_gesture> for GesturePinchEvent {
 
 impl AsRaw<ffi::libinput_event_gesture> for GesturePinchEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_gesture {
-        match *self {
-            GesturePinchEvent::Begin(ref event) => event.as_raw(),
-            GesturePinchEvent::Update(ref event) => event.as_raw(),
-            GesturePinchEvent::End(ref event) => event.as_raw(),
+        match self {
+            GesturePinchEvent::Begin(event) => event.as_raw(),
+            GesturePinchEvent::Update(event) => event.as_raw(),
+            GesturePinchEvent::End(event) => event.as_raw(),
         }
     }
 }
 
 impl Context for GesturePinchEvent {
-    fn context(&self) -> &::Libinput {
-        match *self {
-            GesturePinchEvent::Begin(ref event) => event.context(),
-            GesturePinchEvent::Update(ref event) => event.context(),
-            GesturePinchEvent::End(ref event) => event.context(),
+    fn context(&self) -> &Libinput {
+        match self {
+            GesturePinchEvent::Begin(event) => event.context(),
+            GesturePinchEvent::Update(event) => event.context(),
+            GesturePinchEvent::End(event) => event.context(),
         }
     }
 }

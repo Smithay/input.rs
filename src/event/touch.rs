@@ -1,8 +1,7 @@
 //! Touch event types
 
 use super::EventTrait;
-use ffi;
-use {AsRaw, Context, FromRaw};
+use crate::{ffi, AsRaw, Context, FromRaw, Libinput};
 
 /// Common functions all Touch-Events implement.
 pub trait TouchEventTrait: AsRaw<ffi::libinput_event_touch> + Context {
@@ -108,21 +107,18 @@ pub enum TouchEvent {
 impl EventTrait for TouchEvent {
     #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
-        match *self {
-            TouchEvent::Down(ref event) => event.as_raw_event(),
-            TouchEvent::Up(ref event) => event.as_raw_event(),
-            TouchEvent::Motion(ref event) => event.as_raw_event(),
-            TouchEvent::Cancel(ref event) => event.as_raw_event(),
-            TouchEvent::Frame(ref event) => event.as_raw_event(),
+        match self {
+            TouchEvent::Down(event) => event.as_raw_event(),
+            TouchEvent::Up(event) => event.as_raw_event(),
+            TouchEvent::Motion(event) => event.as_raw_event(),
+            TouchEvent::Cancel(event) => event.as_raw_event(),
+            TouchEvent::Frame(event) => event.as_raw_event(),
         }
     }
 }
 
 impl FromRaw<ffi::libinput_event_touch> for TouchEvent {
-    unsafe fn from_raw(
-        event: *mut ffi::libinput_event_touch,
-        context: &::context::Libinput,
-    ) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_touch, context: &Libinput) -> Self {
         let base = ffi::libinput_event_touch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_DOWN => {
@@ -147,24 +143,24 @@ impl FromRaw<ffi::libinput_event_touch> for TouchEvent {
 
 impl AsRaw<ffi::libinput_event_touch> for TouchEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_touch {
-        match *self {
-            TouchEvent::Down(ref event) => event.as_raw(),
-            TouchEvent::Up(ref event) => event.as_raw(),
-            TouchEvent::Motion(ref event) => event.as_raw(),
-            TouchEvent::Cancel(ref event) => event.as_raw(),
-            TouchEvent::Frame(ref event) => event.as_raw(),
+        match self {
+            TouchEvent::Down(event) => event.as_raw(),
+            TouchEvent::Up(event) => event.as_raw(),
+            TouchEvent::Motion(event) => event.as_raw(),
+            TouchEvent::Cancel(event) => event.as_raw(),
+            TouchEvent::Frame(event) => event.as_raw(),
         }
     }
 }
 
 impl Context for TouchEvent {
-    fn context(&self) -> &::Libinput {
-        match *self {
-            TouchEvent::Down(ref event) => event.context(),
-            TouchEvent::Up(ref event) => event.context(),
-            TouchEvent::Motion(ref event) => event.context(),
-            TouchEvent::Cancel(ref event) => event.context(),
-            TouchEvent::Frame(ref event) => event.context(),
+    fn context(&self) -> &Libinput {
+        match self {
+            TouchEvent::Down(event) => event.context(),
+            TouchEvent::Up(event) => event.context(),
+            TouchEvent::Motion(event) => event.context(),
+            TouchEvent::Cancel(event) => event.context(),
+            TouchEvent::Frame(event) => event.context(),
         }
     }
 }

@@ -1,6 +1,6 @@
 //! Libinput Events
 
-use {ffi, AsRaw, Context, Device, FromRaw};
+use crate::{ffi, AsRaw, Context, Device, FromRaw, Libinput};
 
 /// A libinput `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -57,7 +57,7 @@ impl EventTrait for Event {
 }
 
 impl FromRaw<ffi::libinput_event> for Event {
-    unsafe fn from_raw(event: *mut ffi::libinput_event, context: &::context::Libinput) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event, context: &Libinput) -> Self {
         match ffi::libinput_event_get_type(event) {
             ffi::libinput_event_type_LIBINPUT_EVENT_NONE => panic!("Trying to convert null event"),
             ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_ADDED
@@ -112,30 +112,30 @@ impl FromRaw<ffi::libinput_event> for Event {
 
 impl AsRaw<ffi::libinput_event> for Event {
     fn as_raw(&self) -> *const ffi::libinput_event {
-        match *self {
-            Event::Device(ref event) => event.as_raw_event() as *const _,
-            Event::Keyboard(ref event) => event.as_raw_event() as *const _,
-            Event::Pointer(ref event) => event.as_raw_event() as *const _,
-            Event::Touch(ref event) => event.as_raw_event() as *const _,
-            Event::Tablet(ref event) => event.as_raw_event() as *const _,
-            Event::TabletPad(ref event) => event.as_raw_event() as *const _,
-            Event::Gesture(ref event) => event.as_raw_event() as *const _,
-            Event::Switch(ref event) => event.as_raw_event() as *const _,
+        match self {
+            Event::Device(event) => event.as_raw_event() as *const _,
+            Event::Keyboard(event) => event.as_raw_event() as *const _,
+            Event::Pointer(event) => event.as_raw_event() as *const _,
+            Event::Touch(event) => event.as_raw_event() as *const _,
+            Event::Tablet(event) => event.as_raw_event() as *const _,
+            Event::TabletPad(event) => event.as_raw_event() as *const _,
+            Event::Gesture(event) => event.as_raw_event() as *const _,
+            Event::Switch(event) => event.as_raw_event() as *const _,
         }
     }
 }
 
 impl Context for Event {
-    fn context(&self) -> &::Libinput {
-        match *self {
-            Event::Device(ref event) => event.context(),
-            Event::Keyboard(ref event) => event.context(),
-            Event::Pointer(ref event) => event.context(),
-            Event::Touch(ref event) => event.context(),
-            Event::Tablet(ref event) => event.context(),
-            Event::TabletPad(ref event) => event.context(),
-            Event::Gesture(ref event) => event.context(),
-            Event::Switch(ref event) => event.context(),
+    fn context(&self) -> &crate::Libinput {
+        match self {
+            Event::Device(event) => event.context(),
+            Event::Keyboard(event) => event.context(),
+            Event::Pointer(event) => event.context(),
+            Event::Touch(event) => event.context(),
+            Event::Tablet(event) => event.context(),
+            Event::TabletPad(event) => event.context(),
+            Event::Gesture(event) => event.context(),
+            Event::Switch(event) => event.context(),
         }
     }
 }
@@ -150,8 +150,8 @@ macro_rules! ffi_event_struct {
             context: $crate::context::Libinput,
         }
 
-        impl ::std::fmt::Debug for $struct_name {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        impl std::fmt::Debug for $struct_name {
+            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
                 write!(f, "$struct_name @{:p}", self.as_raw())
             }
         }
@@ -173,7 +173,7 @@ macro_rules! ffi_event_struct {
             }
         }
 
-        impl ::Context for $struct_name {
+        impl $crate::Context for $struct_name {
             fn context(&self) -> &$crate::context::Libinput {
                 &self.context
             }
@@ -185,22 +185,22 @@ macro_rules! ffi_event_struct {
             }
         }
 
-        impl ::std::hash::Hash for $struct_name {
-            fn hash<H: ::std::hash::Hasher>(&self, state: &mut H) {
+        impl std::hash::Hash for $struct_name {
+            fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
                 self.as_raw().hash(state);
             }
         }
 
         impl EventTrait for $struct_name {
             #[doc(hidden)]
-            fn as_raw_event(&self) -> *mut ffi::libinput_event {
+            fn as_raw_event(&self) -> *mut $crate::ffi::libinput_event {
                 unsafe { $get_base_fn(self.as_raw_mut()) }
             }
         }
 
         impl Drop for $struct_name {
             fn drop(&mut self) {
-                unsafe { ffi::libinput_event_destroy(self.as_raw_event()) }
+                unsafe { $crate::ffi::libinput_event_destroy(self.as_raw_event()) }
             }
         }
     )

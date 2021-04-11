@@ -1,5 +1,5 @@
+use crate::{ffi, AsRaw, FromRaw, Libinput};
 use std::ffi::CStr;
-use {ffi, AsRaw, FromRaw, Libinput};
 
 ffi_ref_struct!(
 /// A seat has two identifiers, the physical name and the logical name.

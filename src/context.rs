@@ -1,14 +1,15 @@
-use libc;
-use std::ffi::{CStr, CString};
-use std::io::{Error as IoError, Result as IoResult};
-use std::iter::Iterator;
-use std::mem;
-use std::os::unix::io::{AsRawFd, RawFd};
-use std::path::Path;
-use std::rc::Rc;
+use crate::{ffi, AsRaw, Device, Event, FromRaw};
+use std::{
+    ffi::{CStr, CString},
+    io::{Error as IoError, Result as IoResult},
+    iter::Iterator,
+    mem,
+    os::unix::io::{AsRawFd, RawFd},
+    path::Path,
+    rc::Rc,
+};
 #[cfg(feature = "udev")]
 use udev::ffi as udev;
-use {ffi, AsRaw, Device, Event, FromRaw};
 
 /// libinput does not open file descriptors to devices directly,
 /// instead `open_restricted` and `close_restricted` are called for
@@ -45,7 +46,7 @@ unsafe extern "C" fn open_restricted<I: LibinputInterface + 'static>(
 ) -> libc::c_int {
     use std::borrow::Cow;
 
-    if let Some(ref mut interface) = (user_data as *mut I).as_mut() {
+    if let Some(interface) = (user_data as *mut I).as_mut() {
         let path_str = CStr::from_ptr(path).to_string_lossy();
         let res = match path_str {
             Cow::Borrowed(string) => interface.open_restricted(Path::new(string), flags),
@@ -70,7 +71,7 @@ unsafe extern "C" fn close_restricted<I: LibinputInterface + 'static>(
     fd: libc::c_int,
     user_data: *mut libc::c_void,
 ) {
-    if let Some(ref mut interface) = (user_data as *mut I).as_mut() {
+    if let Some(interface) = (user_data as *mut I).as_mut() {
         interface.close_restricted(fd)
     }
 }

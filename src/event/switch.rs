@@ -1,8 +1,7 @@
 //! Switch event types
 
 use super::EventTrait;
-use ffi;
-use {AsRaw, Context, FromRaw};
+use crate::{ffi, AsRaw, Context, FromRaw, Libinput};
 
 /// Common functions all Switch-Events implement.
 pub trait SwitchEventTrait: AsRaw<ffi::libinput_event_switch> + Context {
@@ -34,17 +33,14 @@ pub enum SwitchEvent {
 impl EventTrait for SwitchEvent {
     #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
-        match *self {
-            SwitchEvent::Toggle(ref event) => event.as_raw_event(),
+        match self {
+            SwitchEvent::Toggle(event) => event.as_raw_event(),
         }
     }
 }
 
 impl FromRaw<ffi::libinput_event_switch> for SwitchEvent {
-    unsafe fn from_raw(
-        event: *mut ffi::libinput_event_switch,
-        context: &::context::Libinput,
-    ) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_switch, context: &Libinput) -> Self {
         let base = ffi::libinput_event_switch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_SWITCH_TOGGLE => {
@@ -57,16 +53,16 @@ impl FromRaw<ffi::libinput_event_switch> for SwitchEvent {
 
 impl AsRaw<ffi::libinput_event_switch> for SwitchEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_switch {
-        match *self {
-            SwitchEvent::Toggle(ref event) => event.as_raw(),
+        match self {
+            SwitchEvent::Toggle(event) => event.as_raw(),
         }
     }
 }
 
 impl Context for SwitchEvent {
-    fn context(&self) -> &::Libinput {
-        match *self {
-            SwitchEvent::Toggle(ref event) => event.context(),
+    fn context(&self) -> &Libinput {
+        match self {
+            SwitchEvent::Toggle(event) => event.context(),
         }
     }
 }

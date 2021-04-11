@@ -1,19 +1,20 @@
-use {ffi, AsRaw, FromRaw};
+use crate::{ffi, AsRaw, FromRaw};
 
-ffi_ref_struct!(
-/// A mode on a tablet pad is a virtual grouping of functionality, usually based on
-/// some visual feedback like LEDs on the pad.
-///
-/// The set of buttons, rings and strips that share the same mode are a "mode
-/// group". Whenever the mode changes, all buttons, rings and strips within this
-/// mode group are affected. See
-/// [Tablet pad modes](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-pad-modes)
-/// for detail.
-///
-/// Most tablets only have a single mode group, some tablets provide multiple mode
-/// groups through independent banks of LEDs (e.g. the Wacom Cintiq 24HD). libinput
-/// guarantees that at least one mode group is always available.
-struct TabletPadModeGroup, ffi::libinput_tablet_pad_mode_group, ffi::libinput_tablet_pad_mode_group_ref, ffi::libinput_tablet_pad_mode_group_unref);
+ffi_ref_struct! {
+    /// A mode on a tablet pad is a virtual grouping of functionality, usually based on
+    /// some visual feedback like LEDs on the pad.
+    ///
+    /// The set of buttons, rings and strips that share the same mode are a "mode
+    /// group". Whenever the mode changes, all buttons, rings and strips within this
+    /// mode group are affected. See
+    /// [Tablet pad modes](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-pad-modes)
+    /// for detail.
+    ///
+    /// Most tablets only have a single mode group, some tablets provide multiple mode
+    /// groups through independent banks of LEDs (e.g. the Wacom Cintiq 24HD). libinput
+    /// guarantees that at least one mode group is always available.
+    struct TabletPadModeGroup, ffi::libinput_tablet_pad_mode_group, ffi::libinput_tablet_pad_mode_group_ref, ffi::libinput_tablet_pad_mode_group_unref
+}
 
 impl TabletPadModeGroup {
     /// The toggle button in a mode group is the button assigned to cycle to or

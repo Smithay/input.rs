@@ -1,8 +1,7 @@
 //! Tablet tool event types
 
-use super::EventTrait;
-pub use event::pointer::ButtonState;
-use {ffi, AsRaw, Context, FromRaw};
+use super::{pointer::ButtonState, EventTrait};
+use crate::{ffi, AsRaw, Context, FromRaw, Libinput};
 
 mod tool;
 pub use self::tool::*;
@@ -123,13 +122,13 @@ pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool> + Context
     #[cfg(feature = "libinput_1_14")]
     ffi_func!(
     /// Check if the size major axis was updated in this event.
-    /// 
+    ///
     /// For `TabletToolButtonEvent`s this function always returns false
     fn size_major_has_changed, ffi::libinput_event_tablet_tool_size_major_has_changed, bool);
     #[cfg(feature = "libinput_1_14")]
     ffi_func!(
     /// Check if the size minor axis was updated in this event.
-    /// 
+    ///
     /// For `TabletToolButtonEvent`s this function always returns false
     fn size_minor_has_changed, ffi::libinput_event_tablet_tool_size_minor_has_changed, bool);
     #[cfg(feature = "libinput_1_14")]
@@ -137,10 +136,10 @@ pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool> + Context
     /// Returns the current size in mm along the major axis of the touching ellipse.
     /// This axis is not necessarily aligned with either x or y, the rotation must
     /// be taken into account.
-    /// 
+    ///
     /// Where no rotation is available on a tool, or where rotation is zero, the major
     /// axis aligns with the y axis and the minor axis with the x axis.
-    /// 
+    ///
     /// If the axis does not exist on the current tool, this function returns 0.
     fn size_major, ffi::libinput_event_tablet_tool_get_size_major, f64);
     #[cfg(feature = "libinput_1_14")]
@@ -148,10 +147,10 @@ pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool> + Context
     /// Returns the current size in mm along the minor axis of the touching ellipse.
     /// This axis is not necessarily aligned with either x or y, the rotation must
     /// be taken into account.
-    /// 
+    ///
     /// Where no rotation is available on a tool, or where rotation is zero, the minor
     /// axis aligns with the y axis and the major axis with the x axis.
-    /// 
+    ///
     /// If the axis does not exist on the current tool, this function returns 0.
     fn size_minor, ffi::libinput_event_tablet_tool_get_size_minor, f64);
     ffi_func!(
@@ -327,17 +326,17 @@ pub enum TabletToolEvent {
 impl EventTrait for TabletToolEvent {
     #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
-        match *self {
-            TabletToolEvent::Axis(ref event) => event.as_raw_event(),
-            TabletToolEvent::Proximity(ref event) => event.as_raw_event(),
-            TabletToolEvent::Tip(ref event) => event.as_raw_event(),
-            TabletToolEvent::Button(ref event) => event.as_raw_event(),
+        match self {
+            TabletToolEvent::Axis(event) => event.as_raw_event(),
+            TabletToolEvent::Proximity(event) => event.as_raw_event(),
+            TabletToolEvent::Tip(event) => event.as_raw_event(),
+            TabletToolEvent::Button(event) => event.as_raw_event(),
         }
     }
 }
 
 impl FromRaw<ffi::libinput_event_tablet_tool> for TabletToolEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_tool, context: &::Libinput) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_tool, context: &Libinput) -> Self {
         let base = ffi::libinput_event_tablet_tool_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_AXIS => {
@@ -359,41 +358,42 @@ impl FromRaw<ffi::libinput_event_tablet_tool> for TabletToolEvent {
 
 impl AsRaw<ffi::libinput_event_tablet_tool> for TabletToolEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_tablet_tool {
-        match *self {
-            TabletToolEvent::Axis(ref event) => event.as_raw(),
-            TabletToolEvent::Proximity(ref event) => event.as_raw(),
-            TabletToolEvent::Tip(ref event) => event.as_raw(),
-            TabletToolEvent::Button(ref event) => event.as_raw(),
+        match self {
+            TabletToolEvent::Axis(event) => event.as_raw(),
+            TabletToolEvent::Proximity(event) => event.as_raw(),
+            TabletToolEvent::Tip(event) => event.as_raw(),
+            TabletToolEvent::Button(event) => event.as_raw(),
         }
     }
 }
 
 impl Context for TabletToolEvent {
-    fn context(&self) -> &::Libinput {
-        match *self {
-            TabletToolEvent::Axis(ref event) => event.context(),
-            TabletToolEvent::Proximity(ref event) => event.context(),
-            TabletToolEvent::Tip(ref event) => event.context(),
-            TabletToolEvent::Button(ref event) => event.context(),
+    fn context(&self) -> &Libinput {
+        match self {
+            TabletToolEvent::Axis(event) => event.context(),
+            TabletToolEvent::Proximity(event) => event.context(),
+            TabletToolEvent::Tip(event) => event.context(),
+            TabletToolEvent::Button(event) => event.context(),
         }
     }
 }
 
-ffi_event_struct!(
-/// One or more axes have changed state on a device with the
-/// `DeviceCapability::TabletTool` capability.
-///
-/// This event is only sent when the tool is in proximity, see
-/// `TabletToolProximityEvent` for details.
-///
-/// The proximity event contains the initial state of the axis as the tool comes into
-/// proximity. An event of type `TabletToolAxisEvent` is only sent when an axis value
-/// changes from this initial state. It is possible for a tool to enter and leave
-/// proximity without sending an event of type `TabletToolAxisEvent`.
-///
-/// An event of type `TabletToolAxisEvent` is sent when the tip state does not
-/// change. See the documentation for `TabletToolTipEvent` for more details.
-struct TabletToolAxisEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
+ffi_event_struct! {
+    /// One or more axes have changed state on a device with the
+    /// `DeviceCapability::TabletTool` capability.
+    ///
+    /// This event is only sent when the tool is in proximity, see
+    /// `TabletToolProximityEvent` for details.
+    ///
+    /// The proximity event contains the initial state of the axis as the tool comes into
+    /// proximity. An event of type `TabletToolAxisEvent` is only sent when an axis value
+    /// changes from this initial state. It is possible for a tool to enter and leave
+    /// proximity without sending an event of type `TabletToolAxisEvent`.
+    ///
+    /// An event of type `TabletToolAxisEvent` is sent when the tip state does not
+    /// change. See the documentation for `TabletToolTipEvent` for more details.
+    struct TabletToolAxisEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event
+}
 
 /// The state of proximity for a tool on a device.
 ///
@@ -411,26 +411,27 @@ pub enum ProximityState {
     In,
 }
 
-ffi_event_struct!(
-/// Signals that a tool has come in or out of proximity of a device with the
-/// `DeviceCapability::TabletTool` capability.
-///
-/// Proximity events contain each of the current values for each axis, and these
-/// values may be extracted from them in the same way they are with
-/// `TabletToolAxisEvent` events.
-///
-/// Some tools may always be in proximity. For these tools, proximity events with
-/// `ProximityState::In` are sent only once after `DeviceAddedEvent`, and proximity
-/// events with `ProximityState::Out` are sent only once before `DeviceRemovedEvent`.
-///
-/// If the tool that comes into proximity supports x/y coordinates, libinput
-/// guarantees that both x and y are set in the proximity event.
-///
-/// When a tool goes out of proximity, the value of every axis should be assumed to
-/// have an undefined state and any buttons that are currently held down on the
-/// stylus are marked as released. Button release events for each button that was
-/// held down on the stylus are sent before the proximity out event.
-struct TabletToolProximityEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
+ffi_event_struct! {
+    /// Signals that a tool has come in or out of proximity of a device with the
+    /// `DeviceCapability::TabletTool` capability.
+    ///
+    /// Proximity events contain each of the current values for each axis, and these
+    /// values may be extracted from them in the same way they are with
+    /// `TabletToolAxisEvent` events.
+    ///
+    /// Some tools may always be in proximity. For these tools, proximity events with
+    /// `ProximityState::In` are sent only once after `DeviceAddedEvent`, and proximity
+    /// events with `ProximityState::Out` are sent only once before `DeviceRemovedEvent`.
+    ///
+    /// If the tool that comes into proximity supports x/y coordinates, libinput
+    /// guarantees that both x and y are set in the proximity event.
+    ///
+    /// When a tool goes out of proximity, the value of every axis should be assumed to
+    /// have an undefined state and any buttons that are currently held down on the
+    /// stylus are marked as released. Button release events for each button that was
+    /// held down on the stylus are sent before the proximity out event.
+    struct TabletToolProximityEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event
+}
 
 impl TabletToolProximityEvent {
     /// Returns the new proximity state of a tool from a proximity event.
@@ -465,24 +466,25 @@ pub enum TipState {
     Down,
 }
 
-ffi_event_struct!(
-/// Signals that a tool has come in contact with the surface of a device with the
-/// `DeviceCapability::TabletTool` capability.
-///
-/// On devices without distance proximity detection, the `TabletToolTipEvent` is sent
-/// immediately after `TabletToolProximityEvent` for the tip down event, and
-/// immediately before for the tip up event.
-///
-/// The decision when a tip touches the surface is device-dependent and may be
-/// derived from pressure data or other means. If the tip state is changed by axes
-/// changing state, the `TabletToolTipEvent` includes the changed axes and no
-/// additional axis event is sent for this state change. In other words, a caller
-/// must look at both `TabletToolAxisEvent` and `TabletToolTipEvent` events to know
-/// the current state of the axes.
-///
-/// If a button state change occurs at the same time as a tip state change, the order
-/// of events is device-dependent.
-struct TabletToolTipEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
+ffi_event_struct! {
+    /// Signals that a tool has come in contact with the surface of a device with the
+    /// `DeviceCapability::TabletTool` capability.
+    ///
+    /// On devices without distance proximity detection, the `TabletToolTipEvent` is sent
+    /// immediately after `TabletToolProximityEvent` for the tip down event, and
+    /// immediately before for the tip up event.
+    ///
+    /// The decision when a tip touches the surface is device-dependent and may be
+    /// derived from pressure data or other means. If the tip state is changed by axes
+    /// changing state, the `TabletToolTipEvent` includes the changed axes and no
+    /// additional axis event is sent for this state change. In other words, a caller
+    /// must look at both `TabletToolAxisEvent` and `TabletToolTipEvent` events to know
+    /// the current state of the axes.
+    ///
+    /// If a button state change occurs at the same time as a tip state change, the order
+    /// of events is device-dependent.
+    struct TabletToolTipEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event
+}
 
 impl TabletToolTipEvent {
     /// Returns the new tip state of a tool from a tip event.
@@ -498,17 +500,18 @@ impl TabletToolTipEvent {
     }
 }
 
-ffi_event_struct!(
-/// Signals that a tool has changed a logical button state on a device with the
-/// `DeviceCapability::TabletTool` capability.
-///
-/// Button state changes occur on their own and do not include axis state changes. If
-/// button and axis state changes occur within the same logical hardware event, the
-/// order of the `TabletToolButtonEvent` and `TabletToolAxisEvent` is device-specific.
-///
-/// This event is not to be confused with the button events emitted by the tablet
-/// pad. See `TabletPadButtonEvent`.
-struct TabletToolButtonEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event);
+ffi_event_struct! {
+    /// Signals that a tool has changed a logical button state on a device with the
+    /// `DeviceCapability::TabletTool` capability.
+    ///
+    /// Button state changes occur on their own and do not include axis state changes. If
+    /// button and axis state changes occur within the same logical hardware event, the
+    /// order of the `TabletToolButtonEvent` and `TabletToolAxisEvent` is device-specific.
+    ///
+    /// This event is not to be confused with the button events emitted by the tablet
+    /// pad. See `TabletPadButtonEvent`.
+    struct TabletToolButtonEvent, ffi::libinput_event_tablet_tool, ffi::libinput_event_tablet_tool_get_base_event
+}
 
 impl TabletToolButtonEvent {
     ffi_func!(

@@ -1,9 +1,7 @@
 //! Tablet pad event types
 
-pub use super::keyboard::KeyState;
-pub use super::pointer::ButtonState;
-use super::EventTrait;
-use {ffi, AsRaw, Context, FromRaw};
+pub use super::{keyboard::KeyState, pointer::ButtonState, EventTrait};
+use crate::{ffi, AsRaw, Context, FromRaw, Libinput};
 
 mod mode_group;
 pub use self::mode_group::*;
@@ -92,18 +90,18 @@ pub enum TabletPadEvent {
 impl EventTrait for TabletPadEvent {
     #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
-        match *self {
-            TabletPadEvent::Button(ref event) => event.as_raw_event(),
-            TabletPadEvent::Ring(ref event) => event.as_raw_event(),
-            TabletPadEvent::Strip(ref event) => event.as_raw_event(),
+        match self {
+            TabletPadEvent::Button(event) => event.as_raw_event(),
+            TabletPadEvent::Ring(event) => event.as_raw_event(),
+            TabletPadEvent::Strip(event) => event.as_raw_event(),
             #[cfg(feature = "libinput_1_15")]
-            TabletPadEvent::Key(ref event) => event.as_raw_event(),
+            TabletPadEvent::Key(event) => event.as_raw_event(),
         }
     }
 }
 
 impl FromRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_pad, context: &::Libinput) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_pad, context: &Libinput) -> Self {
         let base = ffi::libinput_event_tablet_pad_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_BUTTON => {
@@ -126,24 +124,24 @@ impl FromRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
 
 impl AsRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_tablet_pad {
-        match *self {
-            TabletPadEvent::Button(ref event) => event.as_raw(),
-            TabletPadEvent::Ring(ref event) => event.as_raw(),
-            TabletPadEvent::Strip(ref event) => event.as_raw(),
+        match self {
+            TabletPadEvent::Button(event) => event.as_raw(),
+            TabletPadEvent::Ring(event) => event.as_raw(),
+            TabletPadEvent::Strip(event) => event.as_raw(),
             #[cfg(feature = "libinput_1_15")]
-            TabletPadEvent::Key(ref event) => event.as_raw(),
+            TabletPadEvent::Key(event) => event.as_raw(),
         }
     }
 }
 
 impl Context for TabletPadEvent {
-    fn context(&self) -> &::Libinput {
-        match *self {
-            TabletPadEvent::Button(ref event) => event.context(),
-            TabletPadEvent::Ring(ref event) => event.context(),
-            TabletPadEvent::Strip(ref event) => event.context(),
+    fn context(&self) -> &Libinput {
+        match self {
+            TabletPadEvent::Button(event) => event.context(),
+            TabletPadEvent::Ring(event) => event.context(),
+            TabletPadEvent::Strip(event) => event.context(),
             #[cfg(feature = "libinput_1_15")]
-            TabletPadEvent::Key(ref event) => event.context(),
+            TabletPadEvent::Key(event) => event.context(),
         }
     }
 }

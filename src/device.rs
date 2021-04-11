@@ -1,12 +1,14 @@
-use event::switch::Switch;
-use event::tablet_pad::TabletPadModeGroup;
+use crate::{
+    event::{switch::Switch, tablet_pad::TabletPadModeGroup},
+    ffi, AsRaw, FromRaw, Libinput, Seat,
+};
+use bitflags::bitflags;
 use std::ffi::{CStr, CString};
 #[cfg(feature = "udev")]
 use udev::{
-    ffi::{udev, udev_device, udev_device_get_udev},
+    ffi::{udev as udev_context, udev_device, udev_device_get_udev},
     Device as UdevDevice, FromRawWithContext as UdevFromRawWithContext,
 };
-use {ffi, AsRaw, FromRaw, Libinput, Seat};
 
 /// Capabilities on a device.
 ///
@@ -337,7 +339,7 @@ impl Device {
     #[cfg(feature = "udev")]
     pub unsafe fn udev_device(&self) -> Option<UdevDevice> {
         let dev: *mut udev_device = ffi::libinput_device_get_udev_device(self.ffi) as *mut _;
-        let ctx: *mut udev = udev_device_get_udev(dev);
+        let ctx: *mut udev_context = udev_device_get_udev(dev);
         if dev.is_null() {
             None
         } else {
