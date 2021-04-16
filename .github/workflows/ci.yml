@@ -37,7 +37,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: sudo apt-get install -y libudev-dev
+      - run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libudev-dev
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -64,7 +66,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - run: sudo apt-get install -y libudev-dev
+      - run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libudev-dev
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
@@ -100,7 +104,9 @@ jobs:
           default: true
           override: true
       - name: Install libudev
-        run: sudo apt-get install -y libudev-dev
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libudev-dev
       - name: Cargo cache
         uses: actions/cache@v2
         with:
