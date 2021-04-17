@@ -1,8 +1,7 @@
 //! Pointer event types
 
 use super::EventTrait;
-use ffi;
-use {AsRaw, Context, FromRaw};
+use crate::{ffi, AsRaw, Context, FromRaw, Libinput};
 
 /// Common functions for all Pointer-Events implement.
 pub trait PointerEventTrait: AsRaw<ffi::libinput_event_pointer> + Context {
@@ -40,20 +39,17 @@ pub enum PointerEvent {
 impl EventTrait for PointerEvent {
     #[doc(hidden)]
     fn as_raw_event(&self) -> *mut ffi::libinput_event {
-        match *self {
-            PointerEvent::Motion(ref event) => event.as_raw_event(),
-            PointerEvent::MotionAbsolute(ref event) => event.as_raw_event(),
-            PointerEvent::Button(ref event) => event.as_raw_event(),
-            PointerEvent::Axis(ref event) => event.as_raw_event(),
+        match self {
+            PointerEvent::Motion(event) => event.as_raw_event(),
+            PointerEvent::MotionAbsolute(event) => event.as_raw_event(),
+            PointerEvent::Button(event) => event.as_raw_event(),
+            PointerEvent::Axis(event) => event.as_raw_event(),
         }
     }
 }
 
 impl FromRaw<ffi::libinput_event_pointer> for PointerEvent {
-    unsafe fn from_raw(
-        event: *mut ffi::libinput_event_pointer,
-        context: &::context::Libinput,
-    ) -> Self {
+    unsafe fn from_raw(event: *mut ffi::libinput_event_pointer, context: &Libinput) -> Self {
         let base = ffi::libinput_event_pointer_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION => {
@@ -75,22 +71,22 @@ impl FromRaw<ffi::libinput_event_pointer> for PointerEvent {
 
 impl AsRaw<ffi::libinput_event_pointer> for PointerEvent {
     fn as_raw(&self) -> *const ffi::libinput_event_pointer {
-        match *self {
-            PointerEvent::Motion(ref event) => event.as_raw(),
-            PointerEvent::MotionAbsolute(ref event) => event.as_raw(),
-            PointerEvent::Button(ref event) => event.as_raw(),
-            PointerEvent::Axis(ref event) => event.as_raw(),
+        match self {
+            PointerEvent::Motion(event) => event.as_raw(),
+            PointerEvent::MotionAbsolute(event) => event.as_raw(),
+            PointerEvent::Button(event) => event.as_raw(),
+            PointerEvent::Axis(event) => event.as_raw(),
         }
     }
 }
 
 impl Context for PointerEvent {
-    fn context(&self) -> &::Libinput {
-        match *self {
-            PointerEvent::Motion(ref event) => event.context(),
-            PointerEvent::MotionAbsolute(ref event) => event.context(),
-            PointerEvent::Button(ref event) => event.context(),
-            PointerEvent::Axis(ref event) => event.context(),
+    fn context(&self) -> &Libinput {
+        match self {
+            PointerEvent::Motion(event) => event.context(),
+            PointerEvent::MotionAbsolute(event) => event.context(),
+            PointerEvent::Button(event) => event.context(),
+            PointerEvent::Axis(event) => event.context(),
         }
     }
 }

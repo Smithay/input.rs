@@ -33,7 +33,6 @@
 //! Here's a small example that prints all events:
 //!
 //! ```
-//! extern crate input;
 //! use input::{Libinput, LibinputInterface};
 //! use std::fs::{File, OpenOptions};
 //! use std::os::unix::{fs::OpenOptionsExt, io::{RawFd, FromRawFd, IntoRawFd}};
@@ -81,16 +80,7 @@
 
 #![deny(missing_docs)]
 
-extern crate input_sys;
-extern crate libc;
-
-#[macro_use]
-extern crate bitflags;
-
-#[cfg(feature = "udev")]
-extern crate udev;
-
-/// Unsafe c-api.
+/// Unsafe raw C API.
 pub mod ffi {
     pub use input_sys::*;
 }

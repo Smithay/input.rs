@@ -9,6 +9,7 @@ repository = "https://github.com/Drakulix/input.rs/tree/master/input-sys"
 keywords = ["wayland", "input", "bindings"]
 categories = ["external-ffi-bindings"]
 license = "MIT"
+edition = "2018"
 
 [lib]
 path = "src/lib.rs"

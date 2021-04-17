@@ -1,14 +1,14 @@
-use libc;
-use std::ffi::{CStr, CString};
-use std::io::{Error as IoError, Result as IoResult};
-use std::iter::Iterator;
-use std::mem;
-use std::os::unix::io::{AsRawFd, RawFd};
-use std::path::Path;
-use std::rc::Rc;
+use crate::{ffi, AsRaw, Device, Event, FromRaw};
+use std::{
+    ffi::{CStr, CString},
+    io::{Error as IoError, Result as IoResult},
+    iter::Iterator,
+    os::unix::io::{AsRawFd, RawFd},
+    path::Path,
+    rc::Rc,
+};
 #[cfg(feature = "udev")]
 use udev::ffi as udev;
-use {ffi, AsRaw, Device, Event, FromRaw};
 
 /// libinput does not open file descriptors to devices directly,
 /// instead `open_restricted` and `close_restricted` are called for
@@ -45,7 +45,7 @@ unsafe extern "C" fn open_restricted<I: LibinputInterface + 'static>(
 ) -> libc::c_int {
     use std::borrow::Cow;
 
-    if let Some(ref mut interface) = (user_data as *mut I).as_mut() {
+    if let Some(interface) = (user_data as *mut I).as_mut() {
         let path_str = CStr::from_ptr(path).to_string_lossy();
         let res = match path_str {
             Cow::Borrowed(string) => interface.open_restricted(Path::new(string), flags),
@@ -70,7 +70,7 @@ unsafe extern "C" fn close_restricted<I: LibinputInterface + 'static>(
     fd: libc::c_int,
     user_data: *mut libc::c_void,
 ) {
-    if let Some(ref mut interface) = (user_data as *mut I).as_mut() {
+    if let Some(interface) = (user_data as *mut I).as_mut() {
         interface.close_restricted(fd)
     }
 }
@@ -85,7 +85,7 @@ unsafe extern "C" fn close_restricted<I: LibinputInterface + 'static>(
 /// receive events.
 pub struct Libinput {
     ffi: *mut ffi::libinput,
-    _interface: Option<Rc<Box<dyn LibinputInterface + 'static>>>,
+    _interface: Option<Rc<dyn LibinputInterface + 'static>>,
 }
 
 impl ::std::fmt::Debug for Libinput {
@@ -159,7 +159,7 @@ impl Libinput {
     /// This function is unsafe, because there is no way to verify that `udev_context` is indeed a valid udev context or even points to valid memory.
     #[cfg(feature = "udev")]
     pub fn new_with_udev<I: LibinputInterface + 'static>(interface: I) -> Libinput {
-        let mut boxed_userdata = Box::new(interface);
+        let boxed_userdata = Rc::new(interface);
         let boxed_interface = Box::new(ffi::libinput_interface {
             open_restricted: Some(open_restricted::<I>),
             close_restricted: Some(close_restricted::<I>),
@@ -168,20 +168,16 @@ impl Libinput {
         let context = unsafe {
             let udev = udev::udev_new();
             let libinput = ffi::libinput_udev_create_context(
-                &*boxed_interface as *const _,
-                &mut *boxed_userdata as *mut I as *mut libc::c_void,
+                Box::into_raw(boxed_interface),
+                Rc::as_ptr(&boxed_userdata) as *mut _,
                 udev as *mut input_sys::udev,
             );
             udev::udev_unref(udev);
             Libinput {
                 ffi: libinput,
-                _interface: Some(Rc::new(
-                    boxed_userdata as Box<dyn LibinputInterface + 'static>,
-                )),
+                _interface: Some(boxed_userdata as Rc<dyn LibinputInterface>),
             }
         };
-
-        mem::forget(boxed_interface);
 
         context
     }
@@ -199,7 +195,7 @@ impl Libinput {
     /// - userdata - Optionally some userdata attached to the newly created context (see [`Userdata`](./trait.Userdata.html))
     ///
     pub fn new_from_path<I: 'static + LibinputInterface>(interface: I) -> Libinput {
-        let mut boxed_userdata = Box::new(interface);
+        let boxed_userdata = Rc::new(interface);
         let boxed_interface = Box::new(ffi::libinput_interface {
             open_restricted: Some(open_restricted::<I>),
             close_restricted: Some(close_restricted::<I>),
@@ -208,16 +204,12 @@ impl Libinput {
         let context = Libinput {
             ffi: unsafe {
                 ffi::libinput_path_create_context(
-                    &*boxed_interface as *const _,
-                    &mut *boxed_userdata as *mut I as *mut libc::c_void,
+                    Box::into_raw(boxed_interface),
+                    Rc::as_ptr(&boxed_userdata) as *mut _,
                 )
             },
-            _interface: Some(Rc::new(
-                boxed_userdata as Box<dyn LibinputInterface + 'static>,
-            )),
+            _interface: Some(boxed_userdata as Rc<dyn LibinputInterface>),
         };
-
-        mem::forget(boxed_interface);
 
         context
     }
