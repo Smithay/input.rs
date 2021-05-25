@@ -38,8 +38,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          sudo apt-get update -y
-          sudo apt-get install -y libudev-dev
+          sudo apt-get update -qqy
+          sudo apt-get install -qqy libudev-dev
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -67,8 +67,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - run: |
-          sudo apt-get update -y
-          sudo apt-get install -y libudev-dev
+          sudo apt-get update -qqy
+          sudo apt-get install -qqy libudev-dev
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
@@ -105,8 +105,8 @@ jobs:
           override: true
       - name: Install libudev
         run: |
-          sudo apt-get update -y
-          sudo apt-get install -y libudev-dev
+          sudo apt-get update -qqy
+          sudo apt-get install -qqy libudev-dev
       - name: Cargo cache
         uses: actions/cache@v2
         with:
@@ -169,13 +169,20 @@ jobs:
             rust: nightly
             target: x86_64-unknown-linux-gnu
     runs-on: ${{ matrix.os }}
+    container: ubuntu:focal
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
+      - run: |
+          TZ=Etc/UTC
+          ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime
+          echo ${TZ} > /etc/timezone
+          apt-get update -qqy
+          apt-get install -qqy sudo curl gcc pkg-config libclang-dev dpkg-dev
       - name: Setup linux toolchain
         if: contains(matrix.target, '-linux-') && startsWith(matrix.target, 'x86_64-')
         run: |
-          sudo apt-get update -y
-          sudo apt-get install -y libinput-dev
+          sudo apt-get install -qqy libinput-dev
       - name: Setup cross linux toolchain
         if: contains(matrix.target, '-linux-') && !startsWith(matrix.target, 'x86_64-')
         run: |
@@ -202,9 +209,9 @@ jobs:
           esac
           sudo dpkg --add-architecture ${SYSTEM_ARCH}
           dpkg --print-foreign-architectures
-          sudo apt-get update -y
-          sudo apt-get upgrade -y --fix-broken
-          sudo apt-get install -y libinput-dev:${SYSTEM_ARCH} gcc-${GCC_TARGET} pkg-config-${GCC_TARGET}
+          sudo apt-get update -qqy
+          sudo apt-get dist-upgrade -qqy --fix-broken
+          sudo apt-get install -qqy --fix-broken -o Debug::pkgProblemResolver=yes libinput-dev:${SYSTEM_ARCH} gcc-${GCC_TARGET} pkg-config-${GCC_TARGET}
           echo "CARGO_TARGET_${ENV_TARGET_UC}_LINKER=${GCC_TARGET}-gcc" >> $GITHUB_ENV
           echo "PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV
           echo "PKG_CONFIG_${ENV_TARGET}=${GCC_TARGET}-pkg-config" >> $GITHUB_ENV
