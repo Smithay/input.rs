@@ -89,9 +89,17 @@ impl FromRaw<ffi::libinput_event> for Event {
                     context,
                 ))
             }
+            #[cfg(not(feature = "libinput_1_15"))]
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_BUTTON
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_RING
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP => Event::TabletPad(
+                TabletPadEvent::from_raw(ffi::libinput_event_get_tablet_pad_event(event), context),
+            ),
+            #[cfg(feature = "libinput_1_15")]
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_BUTTON
+            | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_RING
+            | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP
+            | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_KEY => Event::TabletPad(
                 TabletPadEvent::from_raw(ffi::libinput_event_get_tablet_pad_event(event), context),
             ),
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN
