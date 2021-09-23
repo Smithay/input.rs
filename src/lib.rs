@@ -104,7 +104,12 @@ pub trait Context {
 
 /// Trait for types that allow to be initialized from a raw pointer
 pub trait FromRaw<T> {
+    #[doc(hidden)]
+    unsafe fn try_from_raw(ffi: *mut T, context: &context::Libinput) -> Option<Self>
+        where Self: Sized;
+
     /// Create a new instance of this type from a raw pointer and it's context.
+    /// If the type of the struct is a valid libinput type, but is unknown to this library, it panics instead.
     ///
     /// ## Warning
     ///
@@ -139,6 +144,9 @@ macro_rules! ffi_ref_struct {
 
         impl $crate::FromRaw<$ffi_name> for $struct_name
         {
+            unsafe fn try_from_raw(ffi: *mut $ffi_name, context: &$crate::Libinput) -> Option<Self> {
+                Some(Self::from_raw(ffi, context))
+            }
             unsafe fn from_raw(ffi: *mut $ffi_name, context: &$crate::Libinput) -> Self {
                 $struct_name {
                     ffi: $ref_fn(ffi),

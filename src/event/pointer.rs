@@ -26,6 +26,7 @@ impl<T: AsRaw<ffi::libinput_event_pointer> + Context> PointerEventTrait for T {}
 
 /// A pointer related `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum PointerEvent {
     /// An event related to moving a pointer
     Motion(PointerMotionEvent),
@@ -66,35 +67,38 @@ impl EventTrait for PointerEvent {
 }
 
 impl FromRaw<ffi::libinput_event_pointer> for PointerEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_pointer, context: &Libinput) -> Self {
+    unsafe fn try_from_raw(event: *mut ffi::libinput_event_pointer, context: &Libinput) -> Option<Self> {
         let base = ffi::libinput_event_pointer_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION => {
-                PointerEvent::Motion(PointerMotionEvent::from_raw(event, context))
+                Some(PointerEvent::Motion(PointerMotionEvent::try_from_raw(event, context)?))
             }
             ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE => {
-                PointerEvent::MotionAbsolute(PointerMotionAbsoluteEvent::from_raw(event, context))
+                Some(PointerEvent::MotionAbsolute(PointerMotionAbsoluteEvent::try_from_raw(event, context)?))
             }
             ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_BUTTON => {
-                PointerEvent::Button(PointerButtonEvent::from_raw(event, context))
+                Some(PointerEvent::Button(PointerButtonEvent::try_from_raw(event, context)?))
             }
             ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_AXIS => {
-                PointerEvent::Axis(PointerAxisEvent::from_raw(event, context))
+                Some(PointerEvent::Axis(PointerAxisEvent::try_from_raw(event, context)?))
             }
             #[cfg(feature = "libinput_1_19")]
             ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_WHEEL => {
-                PointerEvent::ScrollWheel(PointerScrollWheelEvent::from_raw(event, context))
+                Some(PointerEvent::ScrollWheel(PointerScrollWheelEvent::try_from_raw(event, context)?))
             }
             #[cfg(feature = "libinput_1_19")]
             ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_FINGER => {
-                PointerEvent::ScrollFinger(PointerScrollFingerEvent::from_raw(event, context))
+                Some(PointerEvent::ScrollFinger(PointerScrollFingerEvent::try_from_raw(event, context)?))
             }
             #[cfg(feature = "libinput_1_19")]
             ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS => {
-                PointerEvent::ScrollContinuous(PointerScrollContinuousEvent::from_raw(event, context))
+                Some(PointerEvent::ScrollContinuous(PointerScrollContinuousEvent::try_from_raw(event, context)?))
             }
-            _ => unreachable!(),
+            _ => None
         }
+    }
+    unsafe fn from_raw(event: *mut ffi::libinput_event_pointer, context: &Libinput) -> Self {
+        Self::try_from_raw(event, context).expect("Unknown pointer event type")
     }
 }
 
@@ -361,7 +365,8 @@ impl PointerAxisEvent {
             ffi::libinput_pointer_axis_source_LIBINPUT_POINTER_AXIS_SOURCE_WHEEL_TILT => {
                 AxisSource::WheelTilt
             }
-            _ => panic!("libinput returned invalid 'libinput_pointer_axis_source'"),
+            // Axis Event is deprecated, no new variants will be added
+            _ => unreachable!(),
         }
     }
 

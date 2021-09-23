@@ -91,6 +91,7 @@ pub trait TouchEventPosition: AsRaw<ffi::libinput_event_touch> {
 
 /// A touch related `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum TouchEvent {
     /// An event related to resting the finger on the screen
     Down(TouchDownEvent),
@@ -118,26 +119,29 @@ impl EventTrait for TouchEvent {
 }
 
 impl FromRaw<ffi::libinput_event_touch> for TouchEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_touch, context: &Libinput) -> Self {
+    unsafe fn try_from_raw(event: *mut ffi::libinput_event_touch, context: &Libinput) -> Option<Self> {
         let base = ffi::libinput_event_touch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_DOWN => {
-                TouchEvent::Down(TouchDownEvent::from_raw(event, context))
+                Some(TouchEvent::Down(TouchDownEvent::try_from_raw(event, context)?))
             }
             ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_UP => {
-                TouchEvent::Up(TouchUpEvent::from_raw(event, context))
+                Some(TouchEvent::Up(TouchUpEvent::try_from_raw(event, context)?))
             }
             ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_MOTION => {
-                TouchEvent::Motion(TouchMotionEvent::from_raw(event, context))
+                Some(TouchEvent::Motion(TouchMotionEvent::try_from_raw(event, context)?))
             }
             ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_CANCEL => {
-                TouchEvent::Cancel(TouchCancelEvent::from_raw(event, context))
+                Some(TouchEvent::Cancel(TouchCancelEvent::try_from_raw(event, context)?))
             }
             ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_FRAME => {
-                TouchEvent::Frame(TouchFrameEvent::from_raw(event, context))
+                Some(TouchEvent::Frame(TouchFrameEvent::try_from_raw(event, context)?))
             }
-            _ => unreachable!(),
+            _ => None,
         }
+    }
+    unsafe fn from_raw(event: *mut ffi::libinput_event_touch, context: &Libinput) -> Self {
+        Self::try_from_raw(event, context).expect("Unknown touch event type")
     }
 }
 

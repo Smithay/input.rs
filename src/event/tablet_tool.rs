@@ -260,6 +260,7 @@ impl<T: AsRaw<ffi::libinput_event_tablet_tool> + Context> TabletToolEventTrait f
 
 /// An event related to a tablet tool
 #[derive(Debug, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum TabletToolEvent {
     /// One or more axes have changed state on a device with the
     /// `DeviceCapability::TabletTool` capability.
@@ -336,23 +337,26 @@ impl EventTrait for TabletToolEvent {
 }
 
 impl FromRaw<ffi::libinput_event_tablet_tool> for TabletToolEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_tool, context: &Libinput) -> Self {
+    unsafe fn try_from_raw(event: *mut ffi::libinput_event_tablet_tool, context: &Libinput) -> Option<Self> {
         let base = ffi::libinput_event_tablet_tool_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_AXIS => {
-                TabletToolEvent::Axis(TabletToolAxisEvent::from_raw(event, context))
+                Some(TabletToolEvent::Axis(TabletToolAxisEvent::try_from_raw(event, context)?))
             }
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY => {
-                TabletToolEvent::Proximity(TabletToolProximityEvent::from_raw(event, context))
+                Some(TabletToolEvent::Proximity(TabletToolProximityEvent::try_from_raw(event, context)?))
             }
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_TIP => {
-                TabletToolEvent::Tip(TabletToolTipEvent::from_raw(event, context))
+                Some(TabletToolEvent::Tip(TabletToolTipEvent::try_from_raw(event, context)?))
             }
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_BUTTON => {
-                TabletToolEvent::Button(TabletToolButtonEvent::from_raw(event, context))
+                Some(TabletToolEvent::Button(TabletToolButtonEvent::try_from_raw(event, context)?))
             }
-            _ => unreachable!(),
+            _ => None,
         }
+    }
+    unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_tool, context: &Libinput) -> Self {
+        Self::try_from_raw(event, context).expect("Unknown tablet tool event type")
     }
 }
 

@@ -4,6 +4,7 @@ use crate::{ffi, AsRaw, Context, Device, FromRaw, Libinput};
 
 /// A libinput `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum Event {
     /// A device related `Event`
     Device(DeviceEvent),
@@ -58,22 +59,26 @@ impl EventTrait for Event {
 
 impl FromRaw<ffi::libinput_event> for Event {
     unsafe fn from_raw(event: *mut ffi::libinput_event, context: &Libinput) -> Self {
+        Self::try_from_raw(event, context).expect("libinput returned invalid 'libinput_event_type'")
+    }
+
+    unsafe fn try_from_raw(event: *mut ffi::libinput_event, context: &Libinput) -> Option<Self> {
         match ffi::libinput_event_get_type(event) {
-            ffi::libinput_event_type_LIBINPUT_EVENT_NONE => panic!("Trying to convert null event"),
+            ffi::libinput_event_type_LIBINPUT_EVENT_NONE => None,
             ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_ADDED
-            | ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_REMOVED => Event::Device(
-                DeviceEvent::from_raw(ffi::libinput_event_get_device_notify_event(event), context),
-            ),
-            ffi::libinput_event_type_LIBINPUT_EVENT_KEYBOARD_KEY => Event::Keyboard(
-                KeyboardEvent::from_raw(ffi::libinput_event_get_keyboard_event(event), context),
-            ),
+            | ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_REMOVED => Some(Event::Device(
+                DeviceEvent::try_from_raw(ffi::libinput_event_get_device_notify_event(event), context)?,
+            )),
+            ffi::libinput_event_type_LIBINPUT_EVENT_KEYBOARD_KEY => Some(Event::Keyboard(
+                KeyboardEvent::try_from_raw(ffi::libinput_event_get_keyboard_event(event), context)?,
+            )),
             #[cfg(not(feature = "libinput_1_19"))]
             ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION
             | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE
             | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_BUTTON
-            | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_AXIS => Event::Pointer(
-                PointerEvent::from_raw(ffi::libinput_event_get_pointer_event(event), context),
-            ),
+            | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_AXIS => Some(Event::Pointer(
+                PointerEvent::try_from_raw(ffi::libinput_event_get_pointer_event(event), context)?,
+            )),
             #[cfg(feature = "libinput_1_19")]
             ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION
             | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE
@@ -81,47 +86,47 @@ impl FromRaw<ffi::libinput_event> for Event {
             | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_AXIS
             | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_WHEEL
             | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_FINGER
-            | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS => Event::Pointer(
-                PointerEvent::from_raw(ffi::libinput_event_get_pointer_event(event), context),
-            ),
+            | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS => Some(Event::Pointer(
+                PointerEvent::try_from_raw(ffi::libinput_event_get_pointer_event(event), context)?,
+            )),
             ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_DOWN
             | ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_UP
             | ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_MOTION
             | ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_CANCEL
-            | ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_FRAME => Event::Touch(
-                TouchEvent::from_raw(ffi::libinput_event_get_touch_event(event), context),
-            ),
+            | ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_FRAME => Some(Event::Touch(
+                TouchEvent::try_from_raw(ffi::libinput_event_get_touch_event(event), context)?,
+            )),
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_AXIS
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_TIP
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_BUTTON => {
-                Event::Tablet(TabletToolEvent::from_raw(
+                Some(Event::Tablet(TabletToolEvent::try_from_raw(
                     ffi::libinput_event_get_tablet_tool_event(event),
                     context,
-                ))
+                )?))
             }
             #[cfg(not(feature = "libinput_1_15"))]
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_BUTTON
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_RING
-            | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP => Event::TabletPad(
-                TabletPadEvent::from_raw(ffi::libinput_event_get_tablet_pad_event(event), context),
-            ),
+            | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP => Some(Event::TabletPad(
+                TabletPadEvent::try_from_raw(ffi::libinput_event_get_tablet_pad_event(event), context)?,
+            )),
             #[cfg(feature = "libinput_1_15")]
             ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_BUTTON
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_RING
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP
-            | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_KEY => Event::TabletPad(
-                TabletPadEvent::from_raw(ffi::libinput_event_get_tablet_pad_event(event), context),
-            ),
+            | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_KEY => Some(Event::TabletPad(
+                TabletPadEvent::try_from_raw(ffi::libinput_event_get_tablet_pad_event(event), context)?,
+            )),
             #[cfg(not(feature = "libinput_1_19"))]
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_END
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_BEGIN
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_UPDATE
-            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END => Event::Gesture(
-                GestureEvent::from_raw(ffi::libinput_event_get_gesture_event(event), context),
-            ),
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END => Some(Event::Gesture(
+                GestureEvent::try_from_raw(ffi::libinput_event_get_gesture_event(event), context)?,
+            )),
             #[cfg(feature = "libinput_1_19")]
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE
@@ -130,13 +135,13 @@ impl FromRaw<ffi::libinput_event> for Event {
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_UPDATE
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_BEGIN
-            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_END => Event::Gesture(
-                GestureEvent::from_raw(ffi::libinput_event_get_gesture_event(event), context),
-            ),
-            ffi::libinput_event_type_LIBINPUT_EVENT_SWITCH_TOGGLE => Event::Switch(
-                SwitchEvent::from_raw(ffi::libinput_event_get_switch_event(event), context),
-            ),
-            _ => panic!("libinput returned invalid 'libinput_event_type'"),
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_END => Some(Event::Gesture(
+                GestureEvent::try_from_raw(ffi::libinput_event_get_gesture_event(event), context)?,
+            )),
+            ffi::libinput_event_type_LIBINPUT_EVENT_SWITCH_TOGGLE => Some(Event::Switch(
+                SwitchEvent::try_from_raw(ffi::libinput_event_get_switch_event(event), context)?,
+            )),
+            _ => None,
         }
     }
 }
@@ -189,6 +194,9 @@ macro_rules! ffi_event_struct {
 
         impl FromRaw<$ffi_name> for $struct_name
         {
+            unsafe fn try_from_raw(ffi: *mut $ffi_name, context: &$crate::context::Libinput) -> Option<Self> {
+                Some(Self::from_raw(ffi, context))
+            }
             unsafe fn from_raw(ffi: *mut $ffi_name, context: &$crate::context::Libinput) -> Self {
                 $struct_name {
                     ffi,
