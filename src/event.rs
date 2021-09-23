@@ -113,12 +113,24 @@ impl FromRaw<ffi::libinput_event> for Event {
             | ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_KEY => Event::TabletPad(
                 TabletPadEvent::from_raw(ffi::libinput_event_get_tablet_pad_event(event), context),
             ),
+            #[cfg(not(feature = "libinput_1_19"))]
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_END
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_BEGIN
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_UPDATE
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END => Event::Gesture(
+                GestureEvent::from_raw(ffi::libinput_event_get_gesture_event(event), context),
+            ),
+            #[cfg(feature = "libinput_1_19")]
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_END
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_BEGIN
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_UPDATE
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_BEGIN
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_END => Event::Gesture(
                 GestureEvent::from_raw(ffi::libinput_event_get_gesture_event(event), context),
             ),
             ffi::libinput_event_type_LIBINPUT_EVENT_SWITCH_TOGGLE => Event::Switch(
