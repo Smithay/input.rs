@@ -67,10 +67,21 @@ impl FromRaw<ffi::libinput_event> for Event {
             ffi::libinput_event_type_LIBINPUT_EVENT_KEYBOARD_KEY => Event::Keyboard(
                 KeyboardEvent::from_raw(ffi::libinput_event_get_keyboard_event(event), context),
             ),
+            #[cfg(not(feature = "libinput_1_19"))]
             ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION
             | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE
             | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_BUTTON
             | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_AXIS => Event::Pointer(
+                PointerEvent::from_raw(ffi::libinput_event_get_pointer_event(event), context),
+            ),
+            #[cfg(feature = "libinput_1_19")]
+            ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION
+            | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE
+            | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_BUTTON
+            | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_AXIS
+            | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_WHEEL
+            | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_FINGER
+            | ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS => Event::Pointer(
                 PointerEvent::from_raw(ffi::libinput_event_get_pointer_event(event), context),
             ),
             ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_DOWN
