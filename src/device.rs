@@ -544,9 +544,12 @@ impl Device {
             }
             _x => {
                 #[cfg(feature = "log")]
-                log::warn!("Unknown AccelProfile ({}). Unsupported libinput version?", _x);
+                log::warn!(
+                    "Unknown AccelProfile ({}). Unsupported libinput version?",
+                    _x
+                );
                 None
-            },
+            }
         }
     }
 
@@ -563,9 +566,12 @@ impl Device {
             }
             _x => {
                 #[cfg(feature = "log")]
-                log::warn!("Unknown AccelProfile ({}). Unsupported libinput version?", _x);
+                log::warn!(
+                    "Unknown AccelProfile ({}). Unsupported libinput version?",
+                    _x
+                );
                 None
-            },
+            }
         }
     }
 
@@ -764,7 +770,10 @@ impl Device {
             }
             _x => {
                 #[cfg(feature = "log")]
-                log::warn!("Unknown ClickMethod ({}). Unsupported libinput version?", _x);
+                log::warn!(
+                    "Unknown ClickMethod ({}). Unsupported libinput version?",
+                    _x
+                );
                 None
             }
         }
@@ -786,7 +795,10 @@ impl Device {
             }
             _x => {
                 #[cfg(feature = "log")]
-                log::warn!("Unknown ClickMethod ({}). Unsupported libinput version?", _x);
+                log::warn!(
+                    "Unknown ClickMethod ({}). Unsupported libinput version?",
+                    _x
+                );
                 None
             }
         }
@@ -1127,7 +1139,7 @@ impl Device {
     ///
     /// The method defines when to generate scroll axis events
     /// instead of pointer motion events.
-    /// 
+    ///
     /// A return value of `None` means the scroll method is not known
     pub fn config_scroll_default_method(&self) -> Option<ScrollMethod> {
         match unsafe { ffi::libinput_device_config_scroll_get_default_method(self.as_raw_mut()) } {
@@ -1137,13 +1149,18 @@ impl Device {
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG => {
                 Some(ScrollMethod::TwoFinger)
             }
-            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE => Some(ScrollMethod::Edge),
+            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE => {
+                Some(ScrollMethod::Edge)
+            }
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN => {
                 Some(ScrollMethod::OnButtonDown)
             }
             _x => {
                 #[cfg(feature = "log")]
-                log::warn!("Unknown ScrollMethod ({}). Unsupported libinput version?", _x);
+                log::warn!(
+                    "Unknown ScrollMethod ({}). Unsupported libinput version?",
+                    _x
+                );
                 None
             }
         }
@@ -1163,7 +1180,9 @@ impl Device {
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG => {
                 Some(ScrollMethod::TwoFinger)
             }
-            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE => Some(ScrollMethod::Edge),
+            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE => {
+                Some(ScrollMethod::Edge)
+            }
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN => {
                 Some(ScrollMethod::OnButtonDown)
             }

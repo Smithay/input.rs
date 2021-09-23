@@ -143,9 +143,11 @@ impl Iterator for Libinput {
                     Some(x) => return Some(x),
                     None => {
                         #[cfg(feature = "log")]
-                        log::warn!("Skipping unknown event: {}", unsafe { ffi::libinput_event_get_type(ptr) });
-                        continue
-                    },
+                        log::warn!("Skipping unknown event: {}", unsafe {
+                            ffi::libinput_event_get_type(ptr)
+                        });
+                        continue;
+                    }
                 }
             }
         }

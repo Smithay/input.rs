@@ -37,15 +37,18 @@ impl EventTrait for DeviceEvent {
 }
 
 impl FromRaw<ffi::libinput_event_device_notify> for DeviceEvent {
-    unsafe fn try_from_raw(event: *mut ffi::libinput_event_device_notify, context: &Libinput) -> Option<Self> {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_device_notify,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_device_notify_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_ADDED => {
-                Some(DeviceEvent::Added(DeviceAddedEvent::try_from_raw(event, context)?))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_REMOVED => {
-                Some(DeviceEvent::Removed(DeviceRemovedEvent::try_from_raw(event, context)?))
-            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_ADDED => Some(DeviceEvent::Added(
+                DeviceAddedEvent::try_from_raw(event, context)?,
+            )),
+            ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_REMOVED => Some(DeviceEvent::Removed(
+                DeviceRemovedEvent::try_from_raw(event, context)?,
+            )),
             _ => None,
         }
     }

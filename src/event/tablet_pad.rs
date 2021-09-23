@@ -102,22 +102,25 @@ impl EventTrait for TabletPadEvent {
 }
 
 impl FromRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
-    unsafe fn try_from_raw(event: *mut ffi::libinput_event_tablet_pad, context: &Libinput) -> Option<Self> {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_tablet_pad,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_tablet_pad_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_BUTTON => {
-                Some(TabletPadEvent::Button(TabletPadButtonEvent::try_from_raw(event, context)?))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_RING => {
-                Some(TabletPadEvent::Ring(TabletPadRingEvent::try_from_raw(event, context)?))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP => {
-                Some(TabletPadEvent::Strip(TabletPadStripEvent::try_from_raw(event, context)?))
-            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_BUTTON => Some(
+                TabletPadEvent::Button(TabletPadButtonEvent::try_from_raw(event, context)?),
+            ),
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_RING => Some(TabletPadEvent::Ring(
+                TabletPadRingEvent::try_from_raw(event, context)?,
+            )),
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP => Some(
+                TabletPadEvent::Strip(TabletPadStripEvent::try_from_raw(event, context)?),
+            ),
             #[cfg(feature = "libinput_1_15")]
-            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_KEY => {
-                Some(TabletPadEvent::Key(TabletPadKeyEvent::try_from_raw(event, context)?))
-            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_KEY => Some(TabletPadEvent::Key(
+                TabletPadKeyEvent::try_from_raw(event, context)?,
+            )),
             _ => None,
         }
     }

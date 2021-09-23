@@ -62,12 +62,15 @@ impl EventTrait for KeyboardEvent {
 }
 
 impl FromRaw<ffi::libinput_event_keyboard> for KeyboardEvent {
-    unsafe fn try_from_raw(event: *mut ffi::libinput_event_keyboard, context: &Libinput) -> Option<Self> {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_keyboard,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_keyboard_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type_LIBINPUT_EVENT_KEYBOARD_KEY => {
-                Some(KeyboardEvent::Key(KeyboardKeyEvent::try_from_raw(event, context)?))
-            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_KEYBOARD_KEY => Some(KeyboardEvent::Key(
+                KeyboardKeyEvent::try_from_raw(event, context)?,
+            )),
             _ => None,
         }
     }

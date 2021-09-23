@@ -73,25 +73,35 @@ impl TabletTool {
     /// Return the tool type for a tool object,
     /// see [Vendor-specific tablet tool types](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-tool-types)
     /// for details.
-    /// 
+    ///
     /// A return value of `None` means the tool type is not known.
     pub fn tool_type(&self) -> Option<TabletToolType> {
         match unsafe { ffi::libinput_tablet_tool_get_type(self.as_raw_mut()) } {
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_PEN => Some(TabletToolType::Pen),
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_PEN => {
+                Some(TabletToolType::Pen)
+            }
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_ERASER => {
                 Some(TabletToolType::Eraser)
             }
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_BRUSH => Some(TabletToolType::Brush),
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_BRUSH => {
+                Some(TabletToolType::Brush)
+            }
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_PENCIL => {
                 Some(TabletToolType::Pencil)
             }
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_AIRBRUSH => {
                 Some(TabletToolType::Airbrush)
             }
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_MOUSE => Some(TabletToolType::Mouse),
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_LENS => Some(TabletToolType::Lens),
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_MOUSE => {
+                Some(TabletToolType::Mouse)
+            }
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_LENS => {
+                Some(TabletToolType::Lens)
+            }
             #[cfg(feature = "libinput_1_14")]
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_TOTEM => Some(TabletToolType::Totem),
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_TOTEM => {
+                Some(TabletToolType::Totem)
+            }
             _x => {
                 #[cfg(feature = "log")]
                 log::warn!("Unknown `TabletToolType` returned by libinput: {}", _x);

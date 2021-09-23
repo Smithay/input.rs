@@ -41,12 +41,15 @@ impl EventTrait for SwitchEvent {
 }
 
 impl FromRaw<ffi::libinput_event_switch> for SwitchEvent {
-    unsafe fn try_from_raw(event: *mut ffi::libinput_event_switch, context: &Libinput) -> Option<Self> {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_switch,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_switch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type_LIBINPUT_EVENT_SWITCH_TOGGLE => {
-                Some(SwitchEvent::Toggle(SwitchToggleEvent::try_from_raw(event, context)?))
-            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_SWITCH_TOGGLE => Some(SwitchEvent::Toggle(
+                SwitchToggleEvent::try_from_raw(event, context)?,
+            )),
             _ => None,
         }
     }
@@ -109,7 +112,7 @@ struct SwitchToggleEvent, ffi::libinput_event_switch, ffi::libinput_event_switch
 
 impl SwitchToggleEvent {
     /// Return the switch that triggered this event.
-    /// 
+    ///
     /// A return value of `None` means, the switch type is not known
     pub fn switch(&self) -> Option<Switch> {
         match unsafe { ffi::libinput_event_switch_get_switch(self.as_raw_mut()) } {

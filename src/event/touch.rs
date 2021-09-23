@@ -119,24 +119,27 @@ impl EventTrait for TouchEvent {
 }
 
 impl FromRaw<ffi::libinput_event_touch> for TouchEvent {
-    unsafe fn try_from_raw(event: *mut ffi::libinput_event_touch, context: &Libinput) -> Option<Self> {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_touch,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_touch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_DOWN => {
-                Some(TouchEvent::Down(TouchDownEvent::try_from_raw(event, context)?))
-            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_DOWN => Some(TouchEvent::Down(
+                TouchDownEvent::try_from_raw(event, context)?,
+            )),
             ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_UP => {
                 Some(TouchEvent::Up(TouchUpEvent::try_from_raw(event, context)?))
             }
-            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_MOTION => {
-                Some(TouchEvent::Motion(TouchMotionEvent::try_from_raw(event, context)?))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_CANCEL => {
-                Some(TouchEvent::Cancel(TouchCancelEvent::try_from_raw(event, context)?))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_FRAME => {
-                Some(TouchEvent::Frame(TouchFrameEvent::try_from_raw(event, context)?))
-            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_MOTION => Some(TouchEvent::Motion(
+                TouchMotionEvent::try_from_raw(event, context)?,
+            )),
+            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_CANCEL => Some(TouchEvent::Cancel(
+                TouchCancelEvent::try_from_raw(event, context)?,
+            )),
+            ffi::libinput_event_type_LIBINPUT_EVENT_TOUCH_FRAME => Some(TouchEvent::Frame(
+                TouchFrameEvent::try_from_raw(event, context)?,
+            )),
             _ => None,
         }
     }

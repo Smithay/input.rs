@@ -337,21 +337,24 @@ impl EventTrait for TabletToolEvent {
 }
 
 impl FromRaw<ffi::libinput_event_tablet_tool> for TabletToolEvent {
-    unsafe fn try_from_raw(event: *mut ffi::libinput_event_tablet_tool, context: &Libinput) -> Option<Self> {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_tablet_tool,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_tablet_tool_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_AXIS => {
-                Some(TabletToolEvent::Axis(TabletToolAxisEvent::try_from_raw(event, context)?))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY => {
-                Some(TabletToolEvent::Proximity(TabletToolProximityEvent::try_from_raw(event, context)?))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_TIP => {
-                Some(TabletToolEvent::Tip(TabletToolTipEvent::try_from_raw(event, context)?))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_BUTTON => {
-                Some(TabletToolEvent::Button(TabletToolButtonEvent::try_from_raw(event, context)?))
-            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_AXIS => Some(
+                TabletToolEvent::Axis(TabletToolAxisEvent::try_from_raw(event, context)?),
+            ),
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY => Some(
+                TabletToolEvent::Proximity(TabletToolProximityEvent::try_from_raw(event, context)?),
+            ),
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_TIP => Some(TabletToolEvent::Tip(
+                TabletToolTipEvent::try_from_raw(event, context)?,
+            )),
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_BUTTON => Some(
+                TabletToolEvent::Button(TabletToolButtonEvent::try_from_raw(event, context)?),
+            ),
             _ => None,
         }
     }

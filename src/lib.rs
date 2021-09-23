@@ -106,7 +106,8 @@ pub trait Context {
 pub trait FromRaw<T> {
     #[doc(hidden)]
     unsafe fn try_from_raw(ffi: *mut T, context: &context::Libinput) -> Option<Self>
-        where Self: Sized;
+    where
+        Self: Sized;
 
     /// Create a new instance of this type from a raw pointer and it's context.
     /// If the type of the struct is a valid libinput type, but is unknown to this library, it panics instead.
