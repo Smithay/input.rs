@@ -1,6 +1,6 @@
 [package]
 name = "input-sys"
-version = "1.15.1"
+version = "1.16.0"
 authors = ["Victor Brekenfeld (Drakulix) <github@drakulix.de>"]
 build = "build.rs"
 description = "Bindgen generated unsafe libinput wrapper"
@@ -28,3 +28,4 @@ update_bindings = ["gen"]
 libinput_1_11 = []
 libinput_1_14 = []
 libinput_1_15 = []
+libinput_1_19 = []
