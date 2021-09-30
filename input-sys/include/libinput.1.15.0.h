@@ -253,12 +253,6 @@ enum libinput_pointer_axis {
  *
  * The source for a libinput_pointer_axis event. See
  * libinput_event_pointer_get_axis_source() for details.
- *
- * @note Pointer axis sources are deprecated, the source is now encoded in
- * the event types
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL,
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_FINGER, and
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS.
  */
 enum libinput_pointer_axis_source {
 	/**
@@ -278,10 +272,6 @@ enum libinput_pointer_axis_source {
 	 * The event is caused by the tilting of a mouse wheel rather than
 	 * its rotation. This method is commonly used on mice without
 	 * separate horizontal scroll wheels.
-	 *
-	 * @deprecated This axis source is deprecated as of libinput 1.16.
-	 * It was never used by any device before libinput 1.16. All wheel
-	 * tilt devices use @ref LIBINPUT_POINTER_AXIS_SOURCE_WHEEL instead.
 	 */
 	LIBINPUT_POINTER_AXIS_SOURCE_WHEEL_TILT,
 };
@@ -748,79 +738,7 @@ enum libinput_event_type {
 	LIBINPUT_EVENT_POINTER_MOTION = 400,
 	LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE,
 	LIBINPUT_EVENT_POINTER_BUTTON,
-	/**
-	 * A scroll event from various sources.
-	 *
-	 * This event is deprecated as of libinput 1.19. Use
-	 * @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL,
-	 * @ref LIBINPUT_EVENT_POINTER_SCROLL_FINGER, and
-	 * @ref LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS instead.
-	 *
-	 * Use libinput_event_pointer_get_axis_source() to determine the
-	 * source of a scroll event. For libinput versions 1.19 and later,
-	 * the source is encoded in the event type.
-	 *
-	 * This event is sent **in addition** to events of type
-	 * @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL,
-	 * @ref LIBINPUT_EVENT_POINTER_SCROLL_FINGER, and
-	 * @ref LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS.
-	 * Do not mix and match, either use the old event or the new events.
-	 * libinput makes no guarantee about the relation between
-	 * @ref LIBINPUT_EVENT_POINTER_AXIS and the new event types
-	 * @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL,
-	 * @ref LIBINPUT_EVENT_POINTER_SCROLL_FINGER, and
-	 * @ref LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS. You may receive
-	 * multiple zero, one or more new events per legacy event.
-	 *
-	 * @warning Ignore this event if you are processing
-	 * @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL,
-	 * @ref LIBINPUT_EVENT_POINTER_SCROLL_FINGER, and
-	 * @ref LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS.
-	 */
 	LIBINPUT_EVENT_POINTER_AXIS,
-
-	/**
-	 * A scroll event from a wheel. This event is sent is sent **in
-	 * addition** to the @ref LIBINPUT_EVENT_POINTER_AXIS
-	 * event for all events with a
-	 * libinput_event_pointer_get_axis_source() of @ref
-	 * LIBINPUT_POINTER_AXIS_SOURCE_WHEEL. Ignore @ref
-	 * LIBINPUT_EVENT_POINTER_AXIS if you are processing this event.
-	 *
-	 * See the libinput documentation for details.
-	 *
-	 * @since 1.19
-	 */
-	LIBINPUT_EVENT_POINTER_SCROLL_WHEEL,
-
-	/**
-	 * A scroll event caused by the movement of one or more fingers on a
-	 * device. This event is sent is sent **in addition** to the @ref
-	 * LIBINPUT_EVENT_POINTER_AXIS event for all events with a
-	 * libinput_event_pointer_get_axis_source() of @ref
-	 * LIBINPUT_POINTER_AXIS_SOURCE_FINGER. Ignore @ref
-	 * LIBINPUT_EVENT_POINTER_AXIS if you are processing this event.
-	 *
-	 * See the libinput documentation for details.
-	 *
-	 * @since 1.19
-	 */
-	LIBINPUT_EVENT_POINTER_SCROLL_FINGER,
-
-	/**
-	 * A scroll event from a continuous scroll source, e.g. button
-	 * scrolling. This event is sent is sent **in
-	 * addition** to the @ref LIBINPUT_EVENT_POINTER_AXIS
-	 * event for all events with a
-	 * libinput_event_pointer_get_axis_source() of @ref
-	 * LIBINPUT_POINTER_AXIS_SOURCE_CONTINUOUS. Ignore @ref
-	 * LIBINPUT_EVENT_POINTER_AXIS if you are processing this event.
-	 *
-	 * See the libinput documentation for details.
-	 *
-	 * @since 1.19
-	 */
-	LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS,
 
 	LIBINPUT_EVENT_TOUCH_DOWN = 500,
 	LIBINPUT_EVENT_TOUCH_UP,
@@ -974,11 +892,6 @@ enum libinput_event_type {
 	LIBINPUT_EVENT_GESTURE_PINCH_BEGIN,
 	LIBINPUT_EVENT_GESTURE_PINCH_UPDATE,
 	LIBINPUT_EVENT_GESTURE_PINCH_END,
-	/**
-	 * @since 1.19
-	 */
-	LIBINPUT_EVENT_GESTURE_HOLD_BEGIN,
-	LIBINPUT_EVENT_GESTURE_HOLD_END,
 
 	/**
 	 * @since 1.7
@@ -1493,15 +1406,10 @@ libinput_event_pointer_get_seat_button_count(
  * is a scroll stop event.
  *
  * For pointer events that are not of type @ref LIBINPUT_EVENT_POINTER_AXIS,
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL, @ref
- * LIBINPUT_EVENT_POINTER_SCROLL_FINGER, or @ref
- * LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS this function returns 0.
+ * this function returns 0.
  *
  * @note It is an application bug to call this function for events other than
- * @ref LIBINPUT_EVENT_POINTER_AXIS,
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL,
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_FINGER, or
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS.
+ * @ref LIBINPUT_EVENT_POINTER_AXIS.
  *
  * @return Non-zero if this event contains a value for this axis
  */
@@ -1557,29 +1465,27 @@ libinput_event_pointer_get_axis_value(struct libinput_event_pointer *event,
  * Scrolling is in discrete steps, the value is the angle the wheel moved
  * in degrees. The default is 15 degrees per wheel click, but some mice may
  * have differently grained wheels. It is up to the caller how to interpret
- * such different step sizes. Callers should use
- * libinput_event_pointer_get_scroll_value_v120() for a simpler API of
- * handling scroll wheel events of different step sizes.
+ * such different step sizes.
  *
- * If the source is @ref LIBINPUT_POINTER_AXIS_SOURCE_CONTINUOUS, libinput
- * guarantees that a scroll sequence is terminated with a scroll value of 0.
+ * If the source is @ref LIBINPUT_POINTER_AXIS_SOURCE_CONTINUOUS, no
+ * terminating event is guaranteed (though it may happen).
  * The coordinate system is identical to the cursor movement, i.e. a
  * scroll value of 1 represents the equivalent relative motion of 1.
  *
- * @deprecated The source @ref LIBINPUT_POINTER_AXIS_SOURCE_WHEEL_TILT is
- * deprecated as of libinput 1.16. No device has ever sent this source.
+ * If the source is @ref LIBINPUT_POINTER_AXIS_SOURCE_WHEEL_TILT, no
+ * terminating event is guaranteed (though it may happen).
+ * Scrolling is in discrete steps and there is no physical equivalent for
+ * the value returned here. For backwards compatibility, the value returned
+ * by this function is identical to a single mouse wheel rotation by this
+ * device (see the documentation for @ref LIBINPUT_POINTER_AXIS_SOURCE_WHEEL
+ * above). Callers should not use this value but instead exclusively refer
+ * to the value returned by libinput_event_pointer_get_axis_value_discrete().
  *
  * For pointer events that are not of type @ref LIBINPUT_EVENT_POINTER_AXIS,
  * this function returns 0.
  *
  * @note It is an application bug to call this function for events other than
  * @ref LIBINPUT_EVENT_POINTER_AXIS.
- *
- * @note This function is superfluous as of libinput 1.19. The event
- * codes for @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL, @ref
- * LIBINPUT_EVENT_POINTER_SCROLL_FINGER and @ref
- * LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS have the axis source encoded in
- * the event type.
  *
  * @return The source for this axis event
  */
@@ -1592,14 +1498,6 @@ libinput_event_pointer_get_axis_source(struct libinput_event_pointer *event);
  * Return the axis value in discrete steps for a given axis event. How a
  * value translates into a discrete step depends on the source.
  *
- * @note This function does not support high-resolution mouse wheels and
- * should be considered deprecated as of libinput 1.19. Callers should use
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL and
- * libinput_event_pointer_get_scroll_value_v120() instead.
- *
- * If the event is not of type @ref LIBINPUT_EVENT_POINTER_AXIS, this
- * function returns 0.
- *
  * If the source is @ref LIBINPUT_POINTER_AXIS_SOURCE_WHEEL, the discrete
  * value correspond to the number of physical mouse wheel clicks.
  *
@@ -1609,103 +1507,10 @@ libinput_event_pointer_get_axis_source(struct libinput_event_pointer *event);
  * @return The discrete value for the given event.
  *
  * @see libinput_event_pointer_get_axis_value
- * @see libinput_event_pointer_get_scroll_value_v120
  */
 double
 libinput_event_pointer_get_axis_value_discrete(struct libinput_event_pointer *event,
 					       enum libinput_pointer_axis axis);
-
-/**
- * @ingroup event_pointer
- *
- * Return the axis value of the given axis. The interpretation of the value
- * depends on the axis. For the two scrolling axes
- * @ref LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL and
- * @ref LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL, the value of the event is in
- * relative scroll units, with the positive direction being down or right,
- * respectively. If libinput_event_pointer_has_axis() returns 0 for an axis,
- * this function returns 0 for that axis.
- *
- * If the event is @ref LIBINPUT_EVENT_POINTER_SCROLL_FINGER, libinput
- * guarantees that a scroll sequence is terminated with a scroll value of 0.
- * A caller may use this information to decide on whether kinetic scrolling
- * should be triggered on this scroll sequence.
- * The coordinate system is identical to the cursor movement, i.e. a
- * scroll value of 1 represents the equivalent relative motion of 1.
- *
- * If the event is @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL, no terminating
- * event is guaranteed (though it may happen).
- * Scrolling is in discrete steps, the value is the angle the wheel moved
- * in degrees. The default is 15 degrees per wheel click, but some mice may
- * have differently grained wheels. It is up to the caller how to interpret
- * such different step sizes. Callers should use
- * libinput_event_pointer_get_scroll_value_v120() for a simpler API of
- * handling scroll wheel events of different step sizes.
- *
- * If the event is @ref LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS, libinput
- * guarantees that a scroll sequence is terminated with a scroll value of 0.
- * The coordinate system is identical to the cursor movement, i.e. a
- * scroll value of 1 represents the equivalent relative motion of 1.
- *
- * For pointer events that are not of type
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL,
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_FINGER, or
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS, this function returns zero.
- *
- * @note It is an application bug to call this function for events other than
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL,
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_FINGER, or
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS.
- *
- * @return The axis value of this event
- *
- * @see libinput_event_pointer_get_scroll_value_v120
- *
- * @since 1.19
- */
-double
-libinput_event_pointer_get_scroll_value(struct libinput_event_pointer *event,
-					enum libinput_pointer_axis axis);
-
-/**
- * @ingroup event_pointer
- *
- * For events of type @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL
- * the v120-normalized value represents the movement in logical mouse wheel
- * clicks, normalized to the -120..+120 range.
- *
- * A value that is a fraction of ±120 indicates a wheel movement less than
- * one logical click, a caller should either scroll by the respective
- * fraction of the normal scroll distance or accumulate that value until a
- * multiple of 120 is reached.
- *
- * For most callers, this is the preferred way of handling high-resolution
- * scroll events.
- *
- * The normalized v120 value does not take device-specific physical angles
- * or distances into account, i.e. a wheel with a click angle of 20 degrees
- * produces only 18 logical clicks per 360 degree rotation, a wheel with a
- * click angle of 15 degrees produces 24 logical clicks per 360 degree
- * rotation. Where the physical angle matters, use
- * libinput_event_pointer_get_axis_value() instead.
- *
- * The magic number 120 originates from the <a
- * href="http://download.microsoft.com/download/b/d/1/bd1f7ef4-7d72-419e-bc5c-9f79ad7bb66e/wheel.docx">
- * Windows Vista Mouse Wheel design document</a>.
- *
- * @note It is an application bug to call this function for events other than
- * @ref LIBINPUT_EVENT_POINTER_SCROLL_WHEEL.
- *
- * @return A value normalized to the 0-±120 range
- *
- * @see libinput_event_pointer_get_axis_value
- * @see libinput_event_pointer_get_axis_value_discrete
- *
- * @since 1.19
- */
-double
-libinput_event_pointer_get_scroll_value_v120(struct libinput_event_pointer *event,
-					     enum libinput_pointer_axis axis);
 
 /**
  * @ingroup event_pointer
@@ -4757,9 +4562,10 @@ enum libinput_config_drag_state {
  * @ingroup config
  *
  * Enable or disable tap-and-drag on this device. When enabled, a
- * tap immediately followed by a finger down results in a button down event,
- * subsequent finger motion thus triggers a drag. The button is released
- * on finger up. See the libinput documentation for more details.
+ * single-finger tap immediately followed by a finger down results in a
+ * button down event, subsequent finger motion thus triggers a drag. The
+ * button is released on finger up. See the libinput documentation for more
+ * details.
  *
  * @param device The device to configure
  * @param enable @ref LIBINPUT_CONFIG_DRAG_ENABLED to enable, @ref
@@ -5249,7 +5055,7 @@ libinput_device_config_accel_get_profiles(struct libinput_device *device);
  * mode.
  *
  * @param device The device to configure
- * @param profile The profile to set the device to.
+ * @param mode The mode to set the device to.
  *
  * @return A config status code
  *
@@ -5257,7 +5063,7 @@ libinput_device_config_accel_get_profiles(struct libinput_device *device);
  */
 enum libinput_config_status
 libinput_device_config_accel_set_profile(struct libinput_device *device,
-					 enum libinput_config_accel_profile profile);
+					 enum libinput_config_accel_profile mode);
 
 /**
  * @ingroup config
