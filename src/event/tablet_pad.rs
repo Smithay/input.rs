@@ -60,6 +60,7 @@ impl<T: AsRaw<ffi::libinput_event_tablet_pad> + Context> TabletPadEventTrait for
 
 /// A tablet-pad related `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum TabletPadEvent {
     /// A button pressed on a device with the `DeviceCapability::TabletPad`
     /// capability.
@@ -101,24 +102,30 @@ impl EventTrait for TabletPadEvent {
 }
 
 impl FromRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_pad, context: &Libinput) -> Self {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_tablet_pad,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_tablet_pad_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_BUTTON => {
-                TabletPadEvent::Button(TabletPadButtonEvent::from_raw(event, context))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_RING => {
-                TabletPadEvent::Ring(TabletPadRingEvent::from_raw(event, context))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP => {
-                TabletPadEvent::Strip(TabletPadStripEvent::from_raw(event, context))
-            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_BUTTON => Some(
+                TabletPadEvent::Button(TabletPadButtonEvent::try_from_raw(event, context)?),
+            ),
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_RING => Some(TabletPadEvent::Ring(
+                TabletPadRingEvent::try_from_raw(event, context)?,
+            )),
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP => Some(
+                TabletPadEvent::Strip(TabletPadStripEvent::try_from_raw(event, context)?),
+            ),
             #[cfg(feature = "libinput_1_15")]
-            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_KEY => {
-                TabletPadEvent::Key(TabletPadKeyEvent::from_raw(event, context))
-            }
-            _ => unreachable!(),
+            ffi::libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_KEY => Some(TabletPadEvent::Key(
+                TabletPadKeyEvent::try_from_raw(event, context)?,
+            )),
+            _ => None,
         }
+    }
+    unsafe fn from_raw(event: *mut ffi::libinput_event_tablet_pad, context: &Libinput) -> Self {
+        Self::try_from_raw(event, context).expect("Unknown tablet pad event type")
     }
 }
 
@@ -218,7 +225,11 @@ impl TabletPadRingEvent {
             ffi::libinput_tablet_pad_ring_axis_source_LIBINPUT_TABLET_PAD_RING_SOURCE_FINGER => {
                 RingAxisSource::Finger
             }
-            _ => panic!("libinput returned invalid 'libinput_tablet_pad_ring_axis_source'"),
+            _x => {
+                #[cfg(feature = "log")]
+                log::warn!("Unknown `RingAxisSource` returned by libinput: {}", _x);
+                RingAxisSource::Unknown
+            }
         }
     }
 }
@@ -267,7 +278,11 @@ impl TabletPadStripEvent {
             ffi::libinput_tablet_pad_strip_axis_source_LIBINPUT_TABLET_PAD_STRIP_SOURCE_FINGER => {
                 StripAxisSource::Finger
             }
-            _ => panic!("libinput returned invalid 'libinput_tablet_pad_strip_axis_source'"),
+            _x => {
+                #[cfg(feature = "log")]
+                log::warn!("Unknown `StripAxisSource` returned by libinput: {}", _x);
+                StripAxisSource::Unknown
+            }
         }
     }
 }

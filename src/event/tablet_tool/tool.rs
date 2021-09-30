@@ -19,6 +19,7 @@ use crate::{ffi, AsRaw, FromRaw};
 /// putting a Wacom stroke nib into a classic pen leaves the tool type as
 /// `TabletToolType::Pen`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum TabletToolType {
     /// A generic pen.
     Pen,
@@ -72,24 +73,40 @@ impl TabletTool {
     /// Return the tool type for a tool object,
     /// see [Vendor-specific tablet tool types](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-tool-types)
     /// for details.
-    pub fn tool_type(&self) -> TabletToolType {
+    ///
+    /// A return value of `None` means the tool type is not known.
+    pub fn tool_type(&self) -> Option<TabletToolType> {
         match unsafe { ffi::libinput_tablet_tool_get_type(self.as_raw_mut()) } {
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_PEN => TabletToolType::Pen,
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_ERASER => {
-                TabletToolType::Eraser
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_PEN => {
+                Some(TabletToolType::Pen)
             }
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_BRUSH => TabletToolType::Brush,
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_ERASER => {
+                Some(TabletToolType::Eraser)
+            }
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_BRUSH => {
+                Some(TabletToolType::Brush)
+            }
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_PENCIL => {
-                TabletToolType::Pencil
+                Some(TabletToolType::Pencil)
             }
             ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_AIRBRUSH => {
-                TabletToolType::Airbrush
+                Some(TabletToolType::Airbrush)
             }
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_MOUSE => TabletToolType::Mouse,
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_LENS => TabletToolType::Lens,
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_MOUSE => {
+                Some(TabletToolType::Mouse)
+            }
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_LENS => {
+                Some(TabletToolType::Lens)
+            }
             #[cfg(feature = "libinput_1_14")]
-            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_TOTEM => TabletToolType::Totem,
-            _ => panic!("libinput returned invalid 'libinput_tablet_tool_type'"),
+            ffi::libinput_tablet_tool_type_LIBINPUT_TABLET_TOOL_TYPE_TOTEM => {
+                Some(TabletToolType::Totem)
+            }
+            _x => {
+                #[cfg(feature = "log")]
+                log::warn!("Unknown `TabletToolType` returned by libinput: {}", _x);
+                None
+            }
         }
     }
 

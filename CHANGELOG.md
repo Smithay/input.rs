@@ -1,3 +1,11 @@
+## 0.7.0
+
+- Add libinput 1.19 support
+
+## 0.6.0
+
+- Upgrade udev dependency to 0.6.0
+
 ## 0.5.0
 
 - Upgrade udev dependency to 0.4.0

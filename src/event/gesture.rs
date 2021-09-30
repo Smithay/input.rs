@@ -33,11 +33,15 @@ impl<T: AsRaw<ffi::libinput_event_gesture> + Context> GestureEventTrait for T {}
 
 /// A gesture related `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum GestureEvent {
     /// A swipe gesture `Event`
     Swipe(GestureSwipeEvent),
     /// A pinch gesture `Event`
     Pinch(GesturePinchEvent),
+    #[cfg(feature = "libinput_1_19")]
+    /// A hold gesture `Event`
+    Hold(GestureHoldEvent),
 }
 
 impl EventTrait for GestureEvent {
@@ -46,26 +50,39 @@ impl EventTrait for GestureEvent {
         match self {
             GestureEvent::Swipe(event) => event.as_raw_event(),
             GestureEvent::Pinch(event) => event.as_raw_event(),
+            #[cfg(feature = "libinput_1_19")]
+            GestureEvent::Hold(event) => event.as_raw_event(),
         }
     }
 }
 
 impl FromRaw<ffi::libinput_event_gesture> for GestureEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &Libinput) -> Self {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_gesture,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE
-            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_END => {
-                GestureEvent::Swipe(GestureSwipeEvent::from_raw(event, context))
-            }
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_END => Some(
+                GestureEvent::Swipe(GestureSwipeEvent::try_from_raw(event, context)?),
+            ),
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_BEGIN
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_UPDATE
-            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END => {
-                GestureEvent::Pinch(GesturePinchEvent::from_raw(event, context))
-            }
-            _ => unreachable!(),
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END => Some(
+                GestureEvent::Pinch(GesturePinchEvent::try_from_raw(event, context)?),
+            ),
+            #[cfg(feature = "libinput_1_19")]
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_BEGIN
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_END => Some(GestureEvent::Hold(
+                GestureHoldEvent::try_from_raw(event, context)?,
+            )),
+            _ => None,
         }
+    }
+    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &Libinput) -> Self {
+        Self::try_from_raw(event, context).expect("Unknown gesture event type")
     }
 }
 
@@ -74,6 +91,8 @@ impl AsRaw<ffi::libinput_event_gesture> for GestureEvent {
         match self {
             GestureEvent::Swipe(event) => event.as_raw(),
             GestureEvent::Pinch(event) => event.as_raw(),
+            #[cfg(feature = "libinput_1_19")]
+            GestureEvent::Hold(event) => event.as_raw(),
         }
     }
 }
@@ -83,6 +102,8 @@ impl Context for GestureEvent {
         match self {
             GestureEvent::Swipe(event) => event.context(),
             GestureEvent::Pinch(event) => event.context(),
+            #[cfg(feature = "libinput_1_19")]
+            GestureEvent::Hold(event) => event.context(),
         }
     }
 }
@@ -144,6 +165,7 @@ pub trait GestureEndEvent: AsRaw<ffi::libinput_event_gesture> {
 
 /// Events for swipe gestures
 #[derive(Debug, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum GestureSwipeEvent {
     /// Swipe gesture began
     Begin(GestureSwipeBeginEvent),
@@ -178,25 +200,36 @@ impl EventTrait for GestureSwipeEvent {
 }
 
 impl FromRaw<ffi::libinput_event_gesture> for GestureSwipeEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &Libinput) -> Self {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_gesture,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN => {
-                GestureSwipeEvent::Begin(GestureSwipeBeginEvent::from_raw(event, context))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE => {
-                GestureSwipeEvent::Update(GestureSwipeUpdateEvent::from_raw(event, context))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_END => {
-                GestureSwipeEvent::End(GestureSwipeEndEvent::from_raw(event, context))
-            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN => Some(
+                GestureSwipeEvent::Begin(GestureSwipeBeginEvent::try_from_raw(event, context)?),
+            ),
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE => Some(
+                GestureSwipeEvent::Update(GestureSwipeUpdateEvent::try_from_raw(event, context)?),
+            ),
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_END => Some(
+                GestureSwipeEvent::End(GestureSwipeEndEvent::try_from_raw(event, context)?),
+            ),
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_BEGIN
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_UPDATE
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END => {
                 panic!("Tried to make GestureSwipeEvent from Pinch event")
             }
-            _ => unreachable!(),
+            #[cfg(feature = "libinput_1_19")]
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_BEGIN
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_END => {
+                panic!("Tried to make GestureSwipeEvent from Hold event")
+            }
+            _ => None,
         }
+    }
+    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &Libinput) -> Self {
+        Self::try_from_raw(event, context).expect("Unknown gesture event type")
     }
 }
 
@@ -222,6 +255,7 @@ impl Context for GestureSwipeEvent {
 
 /// Events for pinch gestures
 #[derive(Debug, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum GesturePinchEvent {
     /// Pinch gesture began
     Begin(GesturePinchBeginEvent),
@@ -272,7 +306,10 @@ pub trait GesturePinchEventTrait: AsRaw<ffi::libinput_event_gesture> + Context {
 impl GesturePinchEventTrait for GesturePinchEvent {}
 
 impl FromRaw<ffi::libinput_event_gesture> for GesturePinchEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &Libinput) -> Self {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_gesture,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_gesture_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
             ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN
@@ -280,17 +317,25 @@ impl FromRaw<ffi::libinput_event_gesture> for GesturePinchEvent {
             | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_END => {
                 panic!("Tried to make GesturePinchEvent from Swipe event")
             }
-            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_BEGIN => {
-                GesturePinchEvent::Begin(GesturePinchBeginEvent::from_raw(event, context))
+            #[cfg(feature = "libinput_1_19")]
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_BEGIN
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_END => {
+                panic!("Tried to make GestureSwipeEvent from Hold event")
             }
-            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_UPDATE => {
-                GesturePinchEvent::Update(GesturePinchUpdateEvent::from_raw(event, context))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END => {
-                GesturePinchEvent::End(GesturePinchEndEvent::from_raw(event, context))
-            }
-            _ => unreachable!(),
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_BEGIN => Some(
+                GesturePinchEvent::Begin(GesturePinchBeginEvent::try_from_raw(event, context)?),
+            ),
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_UPDATE => Some(
+                GesturePinchEvent::Update(GesturePinchUpdateEvent::try_from_raw(event, context)?),
+            ),
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END => Some(
+                GesturePinchEvent::End(GesturePinchEndEvent::try_from_raw(event, context)?),
+            ),
+            _ => None,
         }
+    }
+    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &Libinput) -> Self {
+        Self::try_from_raw(event, context).expect("Unknown gesture event type")
     }
 }
 
@@ -310,6 +355,95 @@ impl Context for GesturePinchEvent {
             GesturePinchEvent::Begin(event) => event.context(),
             GesturePinchEvent::Update(event) => event.context(),
             GesturePinchEvent::End(event) => event.context(),
+        }
+    }
+}
+
+#[cfg(feature = "libinput_1_19")]
+#[derive(Debug, PartialEq, Eq, Hash)]
+#[non_exhaustive]
+/// Events for hold gestures
+pub enum GestureHoldEvent {
+    /// Hold gesture began
+    Begin(GestureHoldBeginEvent),
+    /// Hold gesture ended
+    End(GestureHoldEndEvent),
+}
+
+#[cfg(feature = "libinput_1_19")]
+impl EventTrait for GestureHoldEvent {
+    #[doc(hidden)]
+    fn as_raw_event(&self) -> *mut ffi::libinput_event {
+        match self {
+            GestureHoldEvent::Begin(event) => event.as_raw_event(),
+            GestureHoldEvent::End(event) => event.as_raw_event(),
+        }
+    }
+}
+
+#[cfg(feature = "libinput_1_19")]
+/// Common functions for hold gesture events
+pub trait GestureHoldEventTrait: AsRaw<ffi::libinput_event_gesture> + Context {
+    /// Convert into a general `GesturePinchEvent`
+    fn into_gesture_hold_event(self) -> GestureHoldEvent
+    where
+        Self: Sized,
+    {
+        unsafe { GestureHoldEvent::from_raw(self.as_raw_mut(), self.context()) }
+    }
+}
+
+#[cfg(feature = "libinput_1_19")]
+impl GestureHoldEventTrait for GestureHoldEvent {}
+
+#[cfg(feature = "libinput_1_19")]
+impl FromRaw<ffi::libinput_event_gesture> for GestureHoldEvent {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_gesture,
+        context: &Libinput,
+    ) -> Option<Self> {
+        let base = ffi::libinput_event_gesture_get_base_event(event);
+        match ffi::libinput_event_get_type(base) {
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_END => {
+                panic!("Tried to make GesturePinchEvent from Swipe event")
+            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_BEGIN
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_UPDATE
+            | ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END => {
+                panic!("Tried to make GestureSwipeEvent from Pinch event")
+            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_BEGIN => Some(
+                GestureHoldEvent::Begin(GestureHoldBeginEvent::try_from_raw(event, context)?),
+            ),
+            ffi::libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_END => Some(
+                GestureHoldEvent::End(GestureHoldEndEvent::try_from_raw(event, context)?),
+            ),
+            _ => None,
+        }
+    }
+    unsafe fn from_raw(event: *mut ffi::libinput_event_gesture, context: &Libinput) -> Self {
+        Self::try_from_raw(event, context).expect("Unknown gesture event type")
+    }
+}
+
+#[cfg(feature = "libinput_1_19")]
+impl AsRaw<ffi::libinput_event_gesture> for GestureHoldEvent {
+    fn as_raw(&self) -> *const ffi::libinput_event_gesture {
+        match self {
+            GestureHoldEvent::Begin(event) => event.as_raw(),
+            GestureHoldEvent::End(event) => event.as_raw(),
+        }
+    }
+}
+
+#[cfg(feature = "libinput_1_19")]
+impl Context for GestureHoldEvent {
+    fn context(&self) -> &Libinput {
+        match self {
+            GestureHoldEvent::Begin(event) => event.context(),
+            GestureHoldEvent::End(event) => event.context(),
         }
     }
 }
@@ -374,3 +508,19 @@ struct GesturePinchEndEvent, ffi::libinput_event_gesture, ffi::libinput_event_ge
 impl GesturePinchEventTrait for GesturePinchEndEvent {}
 
 impl GestureEndEvent for GesturePinchEndEvent {}
+
+#[cfg(feature = "libinput_1_19")]
+ffi_event_struct!(
+/// Hold gesture began
+struct GestureHoldBeginEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
+
+#[cfg(feature = "libinput_1_19")]
+impl GestureHoldEventTrait for GestureHoldBeginEvent {}
+
+#[cfg(feature = "libinput_1_19")]
+ffi_event_struct!(
+/// Hold gesture ended
+struct GestureHoldEndEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
+
+#[cfg(feature = "libinput_1_19")]
+impl GestureHoldEventTrait for GestureHoldEndEvent {}

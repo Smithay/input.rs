@@ -134,11 +134,22 @@ impl ::std::hash::Hash for Libinput {
 impl Iterator for Libinput {
     type Item = Event;
     fn next(&mut self) -> Option<Self::Item> {
-        let ptr = unsafe { ffi::libinput_get_event(self.as_raw_mut()) };
-        if ptr.is_null() {
-            None
-        } else {
-            unsafe { Some(Event::from_raw(ptr, self)) }
+        loop {
+            let ptr = unsafe { ffi::libinput_get_event(self.as_raw_mut()) };
+            if ptr.is_null() {
+                return None;
+            } else {
+                match unsafe { Event::try_from_raw(ptr, self) } {
+                    Some(x) => return Some(x),
+                    None => {
+                        #[cfg(feature = "log")]
+                        log::warn!("Skipping unknown event: {}", unsafe {
+                            ffi::libinput_event_get_type(ptr)
+                        });
+                        continue;
+                    }
+                }
+            }
         }
     }
 }
@@ -321,7 +332,7 @@ impl Libinput {
         unsafe {
             match ffi::libinput_dispatch(self.as_raw_mut()) {
                 0 => Ok(()),
-                x if x < 0 => Err(IoError::from_raw_os_error(x)),
+                x if x < 0 => Err(IoError::from_raw_os_error(-x)),
                 _ => unreachable!(),
             }
         }

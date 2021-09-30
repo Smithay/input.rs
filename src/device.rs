@@ -15,6 +15,7 @@ use udev::{
 /// A device may have one or more capabilities at a time, capabilities
 /// remain static for the lifetime of the device.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum DeviceCapability {
     /// Keyboard capability
     Keyboard,
@@ -34,6 +35,7 @@ pub enum DeviceCapability {
 
 /// Pointer Acceleration Profile
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum AccelProfile {
     /// A flat acceleration profile.
     ///
@@ -51,6 +53,7 @@ pub enum AccelProfile {
 /// buttons, usually on a device that does not have a specific
 /// physical button available.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum ClickMethod {
     /// Use software-button areas (see [Clickfinger behavior](https://wayland.freedesktop.org/libinput/doc/latest/clickpad_softbuttons.html#clickfinger))
     /// to generate button events.
@@ -62,6 +65,7 @@ pub enum ClickMethod {
 /// The scroll method of a device selects when to generate scroll axis
 /// events instead of pointer motion events.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum ScrollMethod {
     /// Never send scroll events instead of pointer motion events.
     ///
@@ -117,6 +121,7 @@ bitflags! {
 
 /// Map 1/2/3 finger tips to buttons
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum TapButtonMap {
     /// 1/2/3 finger tap maps to left/right/middle
     LeftRightMiddle,
@@ -537,7 +542,14 @@ impl Device {
             ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE => {
                 Some(AccelProfile::Adaptive)
             }
-            _ => panic!("libinput returned invalid 'libinput_config_accel_profile'"),
+            _x => {
+                #[cfg(feature = "log")]
+                log::warn!(
+                    "Unknown AccelProfile ({}). Unsupported libinput version?",
+                    _x
+                );
+                None
+            }
         }
     }
 
@@ -552,7 +564,14 @@ impl Device {
             ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE => {
                 Some(AccelProfile::Adaptive)
             }
-            _ => panic!("libinput returned invalid 'libinput_config_accel_profile'"),
+            _x => {
+                #[cfg(feature = "log")]
+                log::warn!(
+                    "Unknown AccelProfile ({}). Unsupported libinput version?",
+                    _x
+                );
+                None
+            }
         }
     }
 
@@ -749,7 +768,14 @@ impl Device {
             ffi::libinput_config_click_method_LIBINPUT_CONFIG_CLICK_METHOD_CLICKFINGER => {
                 Some(ClickMethod::Clickfinger)
             }
-            _ => panic!("libinput returned invalid 'libinput_config_click_method'"),
+            _x => {
+                #[cfg(feature = "log")]
+                log::warn!(
+                    "Unknown ClickMethod ({}). Unsupported libinput version?",
+                    _x
+                );
+                None
+            }
         }
     }
 
@@ -767,7 +793,14 @@ impl Device {
             ffi::libinput_config_click_method_LIBINPUT_CONFIG_CLICK_METHOD_CLICKFINGER => {
                 Some(ClickMethod::Clickfinger)
             }
-            _ => panic!("libinput returned invalid 'libinput_config_click_method'"),
+            _x => {
+                #[cfg(feature = "log")]
+                log::warn!(
+                    "Unknown ClickMethod ({}). Unsupported libinput version?",
+                    _x
+                );
+                None
+            }
         }
     }
 
@@ -1106,19 +1139,30 @@ impl Device {
     ///
     /// The method defines when to generate scroll axis events
     /// instead of pointer motion events.
-    pub fn config_scroll_default_method(&self) -> ScrollMethod {
+    ///
+    /// A return value of `None` means the scroll method is not known
+    pub fn config_scroll_default_method(&self) -> Option<ScrollMethod> {
         match unsafe { ffi::libinput_device_config_scroll_get_default_method(self.as_raw_mut()) } {
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL => {
-                ScrollMethod::NoScroll
+                Some(ScrollMethod::NoScroll)
             }
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG => {
-                ScrollMethod::TwoFinger
+                Some(ScrollMethod::TwoFinger)
             }
-            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE => ScrollMethod::Edge,
+            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE => {
+                Some(ScrollMethod::Edge)
+            }
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN => {
-                ScrollMethod::OnButtonDown
+                Some(ScrollMethod::OnButtonDown)
             }
-            _ => panic!("libinput returned invalid 'libinput_config_scroll_method'"),
+            _x => {
+                #[cfg(feature = "log")]
+                log::warn!(
+                    "Unknown ScrollMethod ({}). Unsupported libinput version?",
+                    _x
+                );
+                None
+            }
         }
     }
 
@@ -1126,17 +1170,21 @@ impl Device {
     ///
     /// The method defines when to generate scroll axis events
     /// instead of pointer motion events.
-    pub fn config_scroll_method(&self) -> ScrollMethod {
+    ///
+    /// A return value of `None` means the scroll method is not known
+    pub fn config_scroll_method(&self) -> Option<ScrollMethod> {
         match unsafe { ffi::libinput_device_config_scroll_get_method(self.as_raw_mut()) } {
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL => {
-                ScrollMethod::NoScroll
+                Some(ScrollMethod::NoScroll)
             }
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG => {
-                ScrollMethod::TwoFinger
+                Some(ScrollMethod::TwoFinger)
             }
-            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE => ScrollMethod::Edge,
+            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE => {
+                Some(ScrollMethod::Edge)
+            }
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN => {
-                ScrollMethod::OnButtonDown
+                Some(ScrollMethod::OnButtonDown)
             }
             _ => panic!("libinput returned invalid 'libinput_config_scroll_method'"),
         }

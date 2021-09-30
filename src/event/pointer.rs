@@ -1,4 +1,5 @@
 //! Pointer event types
+#![allow(deprecated)]
 
 use super::EventTrait;
 use crate::{ffi, AsRaw, Context, FromRaw, Libinput};
@@ -25,6 +26,7 @@ impl<T: AsRaw<ffi::libinput_event_pointer> + Context> PointerEventTrait for T {}
 
 /// A pointer related `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum PointerEvent {
     /// An event related to moving a pointer
     Motion(PointerMotionEvent),
@@ -33,7 +35,20 @@ pub enum PointerEvent {
     /// An event related to button pressed on a pointer device
     Button(PointerButtonEvent),
     /// An event related to moving axis on a pointer device
+    #[cfg_attr(
+        feature = "libinput_1_19",
+        deprecated = "Use `PointerEvent::Scroll*` events instead"
+    )]
     Axis(PointerAxisEvent),
+    /// A scroll event from a wheel.
+    #[cfg(feature = "libinput_1_19")]
+    ScrollWheel(PointerScrollWheelEvent),
+    /// A scroll event caused by the movement of one or more fingers on a device.
+    #[cfg(feature = "libinput_1_19")]
+    ScrollFinger(PointerScrollFingerEvent),
+    /// A scroll event from a continuous scroll source, e.g. button scrolling.
+    #[cfg(feature = "libinput_1_19")]
+    ScrollContinuous(PointerScrollContinuousEvent),
 }
 
 impl EventTrait for PointerEvent {
@@ -44,28 +59,56 @@ impl EventTrait for PointerEvent {
             PointerEvent::MotionAbsolute(event) => event.as_raw_event(),
             PointerEvent::Button(event) => event.as_raw_event(),
             PointerEvent::Axis(event) => event.as_raw_event(),
+            #[cfg(feature = "libinput_1_19")]
+            PointerEvent::ScrollWheel(event) => event.as_raw_event(),
+            #[cfg(feature = "libinput_1_19")]
+            PointerEvent::ScrollFinger(event) => event.as_raw_event(),
+            #[cfg(feature = "libinput_1_19")]
+            PointerEvent::ScrollContinuous(event) => event.as_raw_event(),
         }
     }
 }
 
 impl FromRaw<ffi::libinput_event_pointer> for PointerEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_pointer, context: &Libinput) -> Self {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_pointer,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_pointer_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION => {
-                PointerEvent::Motion(PointerMotionEvent::from_raw(event, context))
-            }
+            ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION => Some(PointerEvent::Motion(
+                PointerMotionEvent::try_from_raw(event, context)?,
+            )),
             ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE => {
-                PointerEvent::MotionAbsolute(PointerMotionAbsoluteEvent::from_raw(event, context))
+                Some(PointerEvent::MotionAbsolute(
+                    PointerMotionAbsoluteEvent::try_from_raw(event, context)?,
+                ))
             }
-            ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_BUTTON => {
-                PointerEvent::Button(PointerButtonEvent::from_raw(event, context))
+            ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_BUTTON => Some(PointerEvent::Button(
+                PointerButtonEvent::try_from_raw(event, context)?,
+            )),
+            ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_AXIS => Some(PointerEvent::Axis(
+                PointerAxisEvent::try_from_raw(event, context)?,
+            )),
+            #[cfg(feature = "libinput_1_19")]
+            ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_WHEEL => Some(
+                PointerEvent::ScrollWheel(PointerScrollWheelEvent::try_from_raw(event, context)?),
+            ),
+            #[cfg(feature = "libinput_1_19")]
+            ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_FINGER => Some(
+                PointerEvent::ScrollFinger(PointerScrollFingerEvent::try_from_raw(event, context)?),
+            ),
+            #[cfg(feature = "libinput_1_19")]
+            ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_SCROLL_CONTINUOUS => {
+                Some(PointerEvent::ScrollContinuous(
+                    PointerScrollContinuousEvent::try_from_raw(event, context)?,
+                ))
             }
-            ffi::libinput_event_type_LIBINPUT_EVENT_POINTER_AXIS => {
-                PointerEvent::Axis(PointerAxisEvent::from_raw(event, context))
-            }
-            _ => unreachable!(),
+            _ => None,
         }
+    }
+    unsafe fn from_raw(event: *mut ffi::libinput_event_pointer, context: &Libinput) -> Self {
+        Self::try_from_raw(event, context).expect("Unknown pointer event type")
     }
 }
 
@@ -76,6 +119,12 @@ impl AsRaw<ffi::libinput_event_pointer> for PointerEvent {
             PointerEvent::MotionAbsolute(event) => event.as_raw(),
             PointerEvent::Button(event) => event.as_raw(),
             PointerEvent::Axis(event) => event.as_raw(),
+            #[cfg(feature = "libinput_1_19")]
+            PointerEvent::ScrollWheel(event) => event.as_raw(),
+            #[cfg(feature = "libinput_1_19")]
+            PointerEvent::ScrollFinger(event) => event.as_raw(),
+            #[cfg(feature = "libinput_1_19")]
+            PointerEvent::ScrollContinuous(event) => event.as_raw(),
         }
     }
 }
@@ -87,6 +136,12 @@ impl Context for PointerEvent {
             PointerEvent::MotionAbsolute(event) => event.context(),
             PointerEvent::Button(event) => event.context(),
             PointerEvent::Axis(event) => event.context(),
+            #[cfg(feature = "libinput_1_19")]
+            PointerEvent::ScrollWheel(event) => event.context(),
+            #[cfg(feature = "libinput_1_19")]
+            PointerEvent::ScrollFinger(event) => event.context(),
+            #[cfg(feature = "libinput_1_19")]
+            PointerEvent::ScrollContinuous(event) => event.context(),
         }
     }
 }
@@ -218,6 +273,10 @@ impl PointerButtonEvent {
 }
 
 /// The source for a `PointerAxisEvent`.
+#[cfg_attr(
+    feature = "libinput_1_19",
+    deprecated = "Use `PointerEvent::Scroll*` events instead"
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum AxisSource {
     /// The event is caused by the rotation of a wheel.
@@ -229,6 +288,10 @@ pub enum AxisSource {
     /// The event is caused by the tilting of a mouse wheel rather than its rotation.
     ///
     /// This method is commonly used on mice without separate horizontal scroll wheels.
+    #[cfg_attr(
+        feature = "libinput_1_19",
+        deprecated = "No device has ever sent this source."
+    )]
     WheelTilt,
 }
 
@@ -248,13 +311,18 @@ pub enum Axis {
 
 ffi_event_struct!(
 /// An event related to moving axis on a pointer device
+#[cfg_attr(feature = "libinput_1_19", deprecated = "Use `PointerEvent::Scroll*` events instead")]
 struct PointerAxisEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
 
 impl PointerAxisEvent {
     /// Check if the event has a valid value for the given axis.
     ///
-    /// If this function returns non-zero for an axis and `axis_value` returns a
+    /// If this function returns true for an axis and `axis_value` returns a
     /// value of 0, the event is a scroll stop event.
+    #[cfg_attr(
+        feature = "libinput_1_19",
+        deprecated = "Use `PointerScrollEvent::has_axis` instead"
+    )]
     pub fn has_axis(&self, axis: Axis) -> bool {
         unsafe {
             ffi::libinput_event_pointer_has_axis(
@@ -300,6 +368,10 @@ impl PointerAxisEvent {
     /// rotation by this device (see the documentation for `WheelTilt` above).
     /// Callers should not use this value but instead exclusively refer to the
     //. value returned by `axis_value_discrete`.
+    #[cfg_attr(
+        feature = "libinput_1_19",
+        deprecated = "Use `PointerScroll*` events instead"
+    )]
     pub fn axis_source(&self) -> AxisSource {
         match unsafe { ffi::libinput_event_pointer_get_axis_source(self.as_raw_mut()) } {
             ffi::libinput_pointer_axis_source_LIBINPUT_POINTER_AXIS_SOURCE_WHEEL => {
@@ -314,7 +386,8 @@ impl PointerAxisEvent {
             ffi::libinput_pointer_axis_source_LIBINPUT_POINTER_AXIS_SOURCE_WHEEL_TILT => {
                 AxisSource::WheelTilt
             }
-            _ => panic!("libinput returned invalid 'libinput_pointer_axis_source'"),
+            // Axis Event is deprecated, no new variants will be added
+            _ => unreachable!(),
         }
     }
 
@@ -327,6 +400,10 @@ impl PointerAxisEvent {
     ///
     /// If `has_axis` returns `false` for an axis, this function returns 0 for
     /// that axis.
+    #[cfg_attr(
+        feature = "libinput_1_19",
+        deprecated = "Use `PointerScrollEvent::scroll_value` instead"
+    )]
     pub fn axis_value(&self, axis: Axis) -> f64 {
         unsafe {
             ffi::libinput_event_pointer_get_axis_value(
@@ -352,6 +429,10 @@ impl PointerAxisEvent {
     ///
     /// If the source is `Continuous` or `Finger`, the discrete value is always
     /// `None`.
+    #[cfg_attr(
+        feature = "libinput_1_19",
+        deprecated = "Use `PointerScrollWheelEvent::scroll_value_v120` instead"
+    )]
     pub fn axis_value_discrete(&self, axis: Axis) -> Option<f64> {
         match self.axis_source() {
             AxisSource::Continuous | AxisSource::Finger => None,
@@ -368,6 +449,118 @@ impl PointerAxisEvent {
                     },
                 )
             }),
+        }
+    }
+}
+
+#[cfg(feature = "libinput_1_19")]
+ffi_event_struct!(
+/// An event related to moving a scroll whell on a pointer device
+struct PointerScrollWheelEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
+
+#[cfg(feature = "libinput_1_19")]
+ffi_event_struct!(
+/// An event related to moving a finger on a pointer device
+struct PointerScrollFingerEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
+
+#[cfg(feature = "libinput_1_19")]
+ffi_event_struct!(
+/// An event related to a continuous scroll source on a pointer device
+struct PointerScrollContinuousEvent, ffi::libinput_event_pointer, ffi::libinput_event_pointer_get_base_event);
+
+#[cfg(feature = "libinput_1_19")]
+/// Common functions of PointerScroll type events
+pub trait PointerScrollEvent: AsRaw<ffi::libinput_event_pointer> {
+    /// Check if the event has a valid value for the given axis.
+    ///
+    /// If this function returns true for an axis and `axis_value` returns a
+    /// value of 0, the event is a scroll stop event.
+    fn has_axis(&self, axis: Axis) -> bool {
+        unsafe {
+            ffi::libinput_event_pointer_has_axis(
+                self.as_raw_mut(),
+                match axis {
+                    Axis::Vertical => {
+                        ffi::libinput_pointer_axis_LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL
+                    }
+                    Axis::Horizontal => {
+                        ffi::libinput_pointer_axis_LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL
+                    }
+                },
+            ) != 0
+        }
+    }
+
+    /// Return the axis value of the given axis.
+    ///
+    /// The interpretation of the value depends on the axis. For the two scrolling axes [`Axis::Vertical`] and [`Axis::Horizontal`],
+    /// the value of the event is in relative scroll units, with the positive direction being down or right,
+    /// respectively. If [`PointerScrollEvent::has_axis`] returns false for an axis, this function returns 0 for that axis.
+    ///
+    /// If the event is a [`PointerScrollFingerEvent`], libinput guarantees that a scroll sequence is terminated with a scroll value of 0.
+    /// A caller may use this information to decide on whether kinetic scrolling should be triggered on this scroll sequence.
+    /// The coordinate system is identical to the cursor movement, i.e. a scroll value of 1 represents the equivalent relative motion of 1.
+    ///
+    /// If the event is a [`PointerScrollWheelEvent`], no terminating event is guaranteed (though it may happen).
+    /// Scrolling is in discrete steps, the value is the angle the wheel moved in degrees. The default is 15 degrees per wheel click,
+    /// but some mice may have differently grained wheels. It is up to the caller how to interpret such different step sizes.
+    /// Callers should use [`PointerScrollWheelEvent::scroll_value_v120`] for a simpler API of handling scroll wheel events of different step sizes.
+    ///
+    /// If the event is a [`PointerScrollContinuousEvent`], libinput guarantees that a scroll sequence is terminated with a scroll value of 0.
+    /// The coordinate system is identical to the cursor movement, i.e. a scroll value of 1 represents the equivalent relative motion of 1.
+    fn scroll_value(&self, axis: Axis) -> f64 {
+        unsafe {
+            ffi::libinput_event_pointer_get_scroll_value(
+                self.as_raw_mut(),
+                match axis {
+                    Axis::Vertical => {
+                        ffi::libinput_pointer_axis_LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL
+                    }
+                    Axis::Horizontal => {
+                        ffi::libinput_pointer_axis_LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL
+                    }
+                },
+            )
+        }
+    }
+}
+
+#[cfg(feature = "libinput_1_19")]
+impl PointerScrollEvent for PointerScrollWheelEvent {}
+#[cfg(feature = "libinput_1_19")]
+impl PointerScrollEvent for PointerScrollFingerEvent {}
+#[cfg(feature = "libinput_1_19")]
+impl PointerScrollEvent for PointerScrollContinuousEvent {}
+
+#[cfg(feature = "libinput_1_19")]
+impl PointerScrollWheelEvent {
+    /// Return the axis value as a v120-normalized value, that represents the movement in logical mouse wheel clicks, normalized to the -120..+120 range.
+    ///
+    /// A value that is a fraction of ±120 indicates a wheel movement less than one logical click,
+    /// a caller should either scroll by the respective fraction of the normal scroll distance or accumulate
+    /// that value until a multiple of 120 is reached.
+    ///
+    /// For most callers, this is the preferred way of handling high-resolution scroll events.
+    ///
+    /// The normalized v120 value does not take device-specific physical angles or distances into account,
+    /// i.e. a wheel with a click angle of 20 degrees produces only 18 logical clicks per 360 degree rotation,
+    /// a wheel with a click angle of 15 degrees produces 24 logical clicks per 360 degree rotation.
+    /// Where the physical angle matters, use [`PointerScrollEvent::scroll_value`] instead.
+    ///
+    /// The magic number 120 originates from the [Windows Vista Mouse Wheel design document](http://download.microsoft.com/download/b/d/1/bd1f7ef4-7d72-419e-bc5c-9f79ad7bb66e/wheel.docx).
+    pub fn scroll_value_v120(&self, axis: Axis) -> f64 {
+        unsafe {
+            ffi::libinput_event_pointer_get_scroll_value_v120(
+                self.as_raw_mut(),
+                match axis {
+                    Axis::Vertical => {
+                        ffi::libinput_pointer_axis_LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL
+                    }
+                    Axis::Horizontal => {
+                        ffi::libinput_pointer_axis_LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL
+                    }
+                },
+            )
         }
     }
 }

@@ -25,6 +25,7 @@ impl<T: AsRaw<ffi::libinput_event_switch> + Context> SwitchEventTrait for T {}
 
 /// A switch related `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum SwitchEvent {
     /// An event related a switch, that was toggled
     Toggle(SwitchToggleEvent),
@@ -40,14 +41,20 @@ impl EventTrait for SwitchEvent {
 }
 
 impl FromRaw<ffi::libinput_event_switch> for SwitchEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_switch, context: &Libinput) -> Self {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_switch,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_switch_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type_LIBINPUT_EVENT_SWITCH_TOGGLE => {
-                SwitchEvent::Toggle(SwitchToggleEvent::from_raw(event, context))
-            }
-            _ => unreachable!(),
+            ffi::libinput_event_type_LIBINPUT_EVENT_SWITCH_TOGGLE => Some(SwitchEvent::Toggle(
+                SwitchToggleEvent::try_from_raw(event, context)?,
+            )),
+            _ => None,
         }
+    }
+    unsafe fn from_raw(event: *mut ffi::libinput_event_switch, context: &Libinput) -> Self {
+        Self::try_from_raw(event, context).expect("Unknown switch event type")
     }
 }
 
@@ -70,6 +77,7 @@ impl Context for SwitchEvent {
 /// Types of Switches
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(u32)]
+#[non_exhaustive]
 pub enum Switch {
     /// The laptop lid was closed when the `SwitchState` is
     /// `On`, or was opened when it is `Off`
@@ -104,11 +112,17 @@ struct SwitchToggleEvent, ffi::libinput_event_switch, ffi::libinput_event_switch
 
 impl SwitchToggleEvent {
     /// Return the switch that triggered this event.
-    pub fn switch(&self) -> Switch {
+    ///
+    /// A return value of `None` means, the switch type is not known
+    pub fn switch(&self) -> Option<Switch> {
         match unsafe { ffi::libinput_event_switch_get_switch(self.as_raw_mut()) } {
-            ffi::libinput_switch_LIBINPUT_SWITCH_LID => Switch::Lid,
-            ffi::libinput_switch_LIBINPUT_SWITCH_TABLET_MODE => Switch::TabletMode,
-            _ => panic!("libinput returned invalid 'libinput_switch'"),
+            ffi::libinput_switch_LIBINPUT_SWITCH_LID => Some(Switch::Lid),
+            ffi::libinput_switch_LIBINPUT_SWITCH_TABLET_MODE => Some(Switch::TabletMode),
+            _x => {
+                #[cfg(feature = "log")]
+                log::warn!("Unknown Switch type returned by libinput: {}", _x);
+                None
+            }
         }
     }
 

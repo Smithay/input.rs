@@ -18,6 +18,7 @@ impl<T: AsRaw<ffi::libinput_event_device_notify> + Context> DeviceEventTrait for
 
 /// A device related `Event`
 #[derive(Debug, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum DeviceEvent {
     /// Signals that a device has been added to the context.
     Added(DeviceAddedEvent),
@@ -36,17 +37,23 @@ impl EventTrait for DeviceEvent {
 }
 
 impl FromRaw<ffi::libinput_event_device_notify> for DeviceEvent {
-    unsafe fn from_raw(event: *mut ffi::libinput_event_device_notify, context: &Libinput) -> Self {
+    unsafe fn try_from_raw(
+        event: *mut ffi::libinput_event_device_notify,
+        context: &Libinput,
+    ) -> Option<Self> {
         let base = ffi::libinput_event_device_notify_get_base_event(event);
         match ffi::libinput_event_get_type(base) {
-            ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_ADDED => {
-                DeviceEvent::Added(DeviceAddedEvent::from_raw(event, context))
-            }
-            ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_REMOVED => {
-                DeviceEvent::Removed(DeviceRemovedEvent::from_raw(event, context))
-            }
-            _ => unreachable!(),
+            ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_ADDED => Some(DeviceEvent::Added(
+                DeviceAddedEvent::try_from_raw(event, context)?,
+            )),
+            ffi::libinput_event_type_LIBINPUT_EVENT_DEVICE_REMOVED => Some(DeviceEvent::Removed(
+                DeviceRemovedEvent::try_from_raw(event, context)?,
+            )),
+            _ => None,
         }
+    }
+    unsafe fn from_raw(event: *mut ffi::libinput_event_device_notify, context: &Libinput) -> Self {
+        Self::try_from_raw(event, context).expect("Unknown libinput_event_device type")
     }
 }
 

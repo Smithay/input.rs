@@ -10,12 +10,14 @@
 These bindings closely follow libinput's concepts and it's original API.
 Please refer to the [libinput documentation](https://wayland.freedesktop.org/libinput/doc/latest/) to understand the general structure and concepts.
 
+**Note:** Due to a bug within libinput, these bindings are *not* compatible with libinput 1.19.**0**. Please use the fixed 1.19.**1** version.
+
 ## Usage
 
 Add to your `Cargo.toml`:
 
 ```toml
-input = "0.5"
+input = "0.7"
 ```
 
 Configure and run event loop:
