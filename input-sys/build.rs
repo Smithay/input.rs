@@ -71,6 +71,10 @@ fn main() {
 
         // Setup bindings builder
         let generated = bindgen::builder()
+            .clang_arg(match cfg!(target_os = "freebsd") {
+                true => "-I/usr/local/include",
+                false => "",
+            })
             .header(header.display().to_string())
             .ctypes_prefix("::libc")
             .whitelist_type(r"^libinput_.*$")
