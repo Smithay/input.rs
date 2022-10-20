@@ -20,6 +20,17 @@ Add to your `Cargo.toml`:
 input = "0.7"
 ```
 
+Install the libinput dev dependencies:
+
+Ubuntu:
+```
+apt-get install libinput-dev
+```
+Fedora
+```
+dnf install libinput-devel
+```
+
 Configure and run event loop:
 
 ```rust
