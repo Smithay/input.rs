@@ -35,7 +35,7 @@
 //! ```
 //! use input::{Libinput, LibinputInterface};
 //! use std::fs::{File, OpenOptions};
-//! use std::os::unix::{fs::OpenOptionsExt, io::{RawFd, FromRawFd, IntoRawFd}};
+//! use std::os::unix::{fs::OpenOptionsExt, io::OwnedFd};
 //! use std::path::Path;
 //!
 //! extern crate libc;
@@ -44,18 +44,18 @@
 //! struct Interface;
 //!
 //! impl LibinputInterface for Interface {
-//!     fn open_restricted(&mut self, path: &Path, flags: i32) -> Result<RawFd, i32> {
+//!     fn open_restricted(&mut self, path: &Path, flags: i32) -> Result<OwnedFd, i32> {
 //!         OpenOptions::new()
 //!             .custom_flags(flags)
 //!             .read((flags & O_RDONLY != 0) | (flags & O_RDWR != 0))
 //!             .write((flags & O_WRONLY != 0) | (flags & O_RDWR != 0))
 //!             .open(path)
-//!             .map(|file| file.into_raw_fd())
+//!             .map(|file| file.into())
 //!             .map_err(|err| err.raw_os_error().unwrap())
 //!     }
-//!     fn close_restricted(&mut self, fd: RawFd) {
+//!     fn close_restricted(&mut self, fd: OwnedFd) {
 //!         unsafe {
-//!             File::from_raw_fd(fd);
+//!             File::from(fd);
 //!         }
 //!     }
 //! }
