@@ -1,4 +1,5 @@
 use crate::{ffi, AsRaw, Device, Event, FromRaw};
+use io_lifetimes::{AsFd, BorrowedFd};
 use std::{
     ffi::{CStr, CString},
     io::{Error as IoError, Result as IoResult},
@@ -432,5 +433,11 @@ impl Libinput {
 impl AsRawFd for Libinput {
     fn as_raw_fd(&self) -> RawFd {
         unsafe { ffi::libinput_get_fd(self.as_raw_mut()) }
+    }
+}
+
+impl AsFd for Libinput {
+    fn as_fd(&self) -> BorrowedFd<'_> {
+        unsafe { BorrowedFd::borrow_raw(self.as_raw_fd()) }
     }
 }
