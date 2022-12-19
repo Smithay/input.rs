@@ -1,9 +1,10 @@
 use crate::{ffi, AsRaw, Device, Event, FromRaw};
+use io_lifetimes::{AsFd, BorrowedFd, OwnedFd};
 use std::{
     ffi::{CStr, CString},
     io::{Error as IoError, Result as IoResult},
     iter::Iterator,
-    os::unix::io::{AsRawFd, RawFd},
+    os::unix::io::{AsRawFd, FromRawFd, IntoRawFd, RawFd},
     path::Path,
     rc::Rc,
 };
@@ -29,13 +30,13 @@ pub trait LibinputInterface {
     ///
     /// ## Returns
     /// The file descriptor, or a negative errno on failure.
-    fn open_restricted(&mut self, path: &Path, flags: i32) -> Result<RawFd, i32>;
+    fn open_restricted(&mut self, path: &Path, flags: i32) -> Result<OwnedFd, i32>;
 
     /// Close the file descriptor.
     ///
     /// ## Parameter
     /// `fd` - The file descriptor to close
-    fn close_restricted(&mut self, fd: RawFd);
+    fn close_restricted(&mut self, fd: OwnedFd);
 }
 
 unsafe extern "C" fn open_restricted<I: LibinputInterface + 'static>(
@@ -52,7 +53,7 @@ unsafe extern "C" fn open_restricted<I: LibinputInterface + 'static>(
             Cow::Owned(string) => interface.open_restricted(Path::new(&string), flags),
         };
         match res {
-            Ok(fd) => fd,
+            Ok(fd) => fd.into_raw_fd(),
             Err(errno) => {
                 if errno > 0 {
                     -errno
@@ -71,7 +72,7 @@ unsafe extern "C" fn close_restricted<I: LibinputInterface + 'static>(
     user_data: *mut libc::c_void,
 ) {
     if let Some(interface) = (user_data as *mut I).as_mut() {
-        interface.close_restricted(fd)
+        interface.close_restricted(unsafe { OwnedFd::from_raw_fd(fd) })
     }
 }
 
@@ -350,7 +351,7 @@ impl Libinput {
     /// # extern crate nix;
     /// #
     /// # use std::fs::{File, OpenOptions};
-    /// # use std::os::unix::{fs::OpenOptionsExt, io::{RawFd, FromRawFd, IntoRawFd, AsRawFd}};
+    /// # use std::os::unix::{fs::OpenOptionsExt, io::{AsRawFd, OwnedFd}};
     /// # use std::path::Path;
     /// # use libc::{O_RDONLY, O_RDWR, O_WRONLY};
     /// #
@@ -360,18 +361,18 @@ impl Libinput {
     /// # struct Interface;
     /// #
     /// # impl LibinputInterface for Interface {
-    /// #     fn open_restricted(&mut self, path: &Path, flags: i32) -> Result<RawFd, i32> {
+    /// #     fn open_restricted(&mut self, path: &Path, flags: i32) -> Result<OwnedFd, i32> {
     /// #         OpenOptions::new()
     /// #             .custom_flags(flags)
     /// #             .read((flags & O_RDONLY != 0) | (flags & O_RDWR != 0))
     /// #             .write((flags & O_WRONLY != 0) | (flags & O_RDWR != 0))
     /// #             .open(path)
-    /// #             .map(|file| file.into_raw_fd())
+    /// #             .map(|file| file.into())
     /// #             .map_err(|err| err.raw_os_error().unwrap())
     /// #     }
-    /// #     fn close_restricted(&mut self, fd: RawFd) {
+    /// #     fn close_restricted(&mut self, fd: OwnedFd) {
     /// #         unsafe {
-    /// #             File::from_raw_fd(fd);
+    /// #             File::from(fd);
     /// #         }
     /// #     }
     /// # }
@@ -432,5 +433,11 @@ impl Libinput {
 impl AsRawFd for Libinput {
     fn as_raw_fd(&self) -> RawFd {
         unsafe { ffi::libinput_get_fd(self.as_raw_mut()) }
+    }
+}
+
+impl AsFd for Libinput {
+    fn as_fd(&self) -> BorrowedFd<'_> {
+        unsafe { BorrowedFd::borrow_raw(self.as_raw_fd()) }
     }
 }

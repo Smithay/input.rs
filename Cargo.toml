@@ -12,6 +12,7 @@ edition = "2018"
 exclude = [".gitignore", ".rustfmt.toml", ".github"]
 
 [dependencies]
+io-lifetimes = "1.0.3"
 libc = "0.2"
 bitflags = "1.2"
 log = { version = "0.4", optional = true }
