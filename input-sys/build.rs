@@ -1,7 +1,7 @@
 #[cfg(feature = "gen")]
 extern crate bindgen;
 
-use std::env;
+use std::{env, path::Path};
 
 const LIB_VERSIONS: &[(u8, u8, u8)] = &[(1, 19, 0), (1, 15, 0), (1, 14, 0), (1, 11, 0), (1, 9, 0)];
 
@@ -21,26 +21,25 @@ fn lib_versions() -> impl Iterator<Item = &'static (u8, u8, u8)> {
 #[cfg(not(feature = "gen"))]
 fn main() {
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
-    if matches!(target_os.as_str(), "linux") {
-        println!("cargo:rustc-env=LIBINPUT_TARGET_OS={}", target_os);
-    } else {
-        panic!(
-            "No prebuilt bindings for target os: {}. Try use `gen` feature.",
-            target_os
-        );
-    }
-
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
-    if matches!(target_arch.as_str(), "x86" | "x86_64" | "arm" | "aarch64") {
-        println!("cargo:rustc-env=LIBINPUT_TARGET_ARCH={}", target_arch);
-    } else {
+    let version = lib_versions().next().unwrap();
+
+    let bind_name = format!("gen_{}_{}.rs", version.0, version.1);
+    let bindings_file = Path::new("src")
+        .join("platforms")
+        .join(&target_os)
+        .join(&target_arch)
+        .join(bind_name);
+
+    if !bindings_file.is_file() {
         panic!(
-            "No prebuilt bindings for target arch: {}. Try use `gen` feature.",
-            target_arch
+            "No prebuilt bindings for target OS `{}` and/or architecture `{}`. Try `gen` feature.",
+            target_os, target_arch
         );
     }
 
-    let version = lib_versions().next().unwrap();
+    println!("cargo:rustc-env=LIBINPUT_TARGET_OS={}", target_os);
+    println!("cargo:rustc-env=LIBINPUT_TARGET_ARCH={}", target_arch);
     println!(
         "cargo:rustc-env=LIBINPUT_VERSION_STR={}_{}",
         version.0, version.1
@@ -49,8 +48,6 @@ fn main() {
 
 #[cfg(feature = "gen")]
 fn main() {
-    use std::path::Path;
-
     let version = lib_versions().next().unwrap();
     println!(
         "cargo:rustc-env=LIBINPUT_VERSION_STR={}_{}",
