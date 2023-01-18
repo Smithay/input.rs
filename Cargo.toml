@@ -7,7 +7,7 @@ repository = "https://github.com/Drakulix/input.rs"
 version = "0.7.1"
 keywords = ["wayland", "input", "bindings"]
 categories = ["external-ffi-bindings"]
-authors = ["Drakulix (Victor Brekenfeld)"]
+authors = ["Drakulix (Victoria Brekenfeld)"]
 edition = "2018"
 exclude = [".gitignore", ".rustfmt.toml", ".github"]
 
@@ -30,12 +30,13 @@ optional = true
 nix = "0.26"
 
 [features]
-default = ["udev", "log", "libinput_1_19"]
+default = ["udev", "log", "libinput_1_21"]
 gen = ["input-sys/gen"]
 libinput_1_11 = ["input-sys/libinput_1_11"]
 libinput_1_14 = ["input-sys/libinput_1_14", "libinput_1_11"]
 libinput_1_15 = ["input-sys/libinput_1_15", "libinput_1_14"]
 libinput_1_19 = ["input-sys/libinput_1_19", "libinput_1_15"]
+libinput_1_21 = ["input-sys/libinput_1_21", "libinput_1_19"]
 
 [workspace]
 members = [
