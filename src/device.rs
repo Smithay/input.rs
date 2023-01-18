@@ -937,6 +937,7 @@ impl Device {
     ///
     /// If the device does not support disable-while-trackpointing, this
     /// function returns `false`.
+    #[cfg(feature = "libinput_1_21")]
     pub fn config_dwtp_default_enabled(&self) -> bool {
         match unsafe { ffi::libinput_device_config_dwtp_get_default_enabled(self.as_raw_mut()) } {
             ffi::libinput_config_dwtp_state_LIBINPUT_CONFIG_DWTP_ENABLED => true,
@@ -950,6 +951,7 @@ impl Device {
     ///
     /// If the device does not support disable-while-trackpointing, this
     /// function returns `false`.
+    #[cfg(feature = "libinput_1_21")]
     pub fn config_dwtp_enabled(&self) -> bool {
         match unsafe { ffi::libinput_device_config_dwtp_get_enabled(self.as_raw_mut()) } {
             ffi::libinput_config_dwtp_state_LIBINPUT_CONFIG_DWTP_ENABLED => true,
@@ -964,6 +966,7 @@ impl Device {
     ///
     /// This feature is usually available on Thinkpads and
     /// disables the touchpad while using the trackpoint.
+    #[cfg(feature = "libinput_1_21")]
     pub fn config_dwtp_is_available, ffi::libinput_device_config_dwtp_is_available, bool);
 
     /// Enable or disable the disable-while-trackpointing feature.
@@ -975,6 +978,7 @@ impl Device {
     ///
     /// Enabling or disabling disable-while-trackpointing may not take
     /// effect immediately.
+    #[cfg(feature = "libinput_1_21")]
     pub fn config_dwtp_set_enabled(&self, enabled: bool) -> DeviceConfigResult {
         match unsafe {
             ffi::libinput_device_config_dwtp_set_enabled(
