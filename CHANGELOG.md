@@ -1,3 +1,11 @@
+## 0.8.0
+
+- Use safe-io types
+- Add libinput 1.21 support
+- Add (untested) pre-generated FreeBSD bindings
+- Upgrade udev dependency to 0.7
+- Fix udev-device-unref memory corruption
+
 ## 0.7.0
 
 - Add libinput 1.19 support
