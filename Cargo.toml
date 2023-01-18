@@ -4,7 +4,7 @@ description = "libinput bindings for rust"
 license = "MIT"
 documentation = "https://docs.rs/input"
 repository = "https://github.com/Drakulix/input.rs"
-version = "0.7.1"
+version = "0.8.0"
 keywords = ["wayland", "input", "bindings"]
 categories = ["external-ffi-bindings"]
 authors = ["Drakulix (Victoria Brekenfeld)"]
@@ -18,7 +18,7 @@ bitflags = "1.2"
 log = { version = "0.4", optional = true }
 
 [dependencies.input-sys]
-version = "1.16.1"
+version = "1.17.0"
 path = "input-sys"
 default-features = false
 
