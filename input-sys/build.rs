@@ -3,7 +3,14 @@ extern crate bindgen;
 
 use std::{env, path::Path};
 
-const LIB_VERSIONS: &[(u8, u8, u8)] = &[(1, 19, 0), (1, 15, 0), (1, 14, 0), (1, 11, 0), (1, 9, 0)];
+const LIB_VERSIONS: &[(u8, u8, u8)] = &[
+    (1, 21, 0),
+    (1, 19, 0),
+    (1, 15, 0),
+    (1, 14, 0),
+    (1, 11, 0),
+    (1, 9, 0),
+];
 
 fn lib_versions() -> impl Iterator<Item = &'static (u8, u8, u8)> {
     LIB_VERSIONS

@@ -932,6 +932,71 @@ impl Device {
         }
     }
 
+    /// Check if the disable-while trackpointing feature is enabled on this
+    /// device by default.
+    ///
+    /// If the device does not support disable-while-trackpointing, this
+    /// function returns `false`.
+    pub fn config_dwtp_default_enabled(&self) -> bool {
+        match unsafe { ffi::libinput_device_config_dwtp_get_default_enabled(self.as_raw_mut()) } {
+            ffi::libinput_config_dwtp_state_LIBINPUT_CONFIG_DWTP_ENABLED => true,
+            ffi::libinput_config_dwtp_state_LIBINPUT_CONFIG_DWTP_DISABLED => false,
+            _ => panic!("libinput returned invalid 'libinput_config_dwtp_state'"),
+        }
+    }
+
+    /// Check if the disable-while trackpointing feature is currently enabled
+    /// on this device.
+    ///
+    /// If the device does not support disable-while-trackpointing, this
+    /// function returns `false`.
+    pub fn config_dwtp_enabled(&self) -> bool {
+        match unsafe { ffi::libinput_device_config_dwtp_get_enabled(self.as_raw_mut()) } {
+            ffi::libinput_config_dwtp_state_LIBINPUT_CONFIG_DWTP_ENABLED => true,
+            ffi::libinput_config_dwtp_state_LIBINPUT_CONFIG_DWTP_DISABLED => false,
+            _ => panic!("libinput returned invalid 'libinput_config_dwtp_state'"),
+        }
+    }
+
+    ffi_func!(
+    /// Check if this device supports configurable
+    /// disable-while-trackpointing feature.
+    ///
+    /// This feature is usually available on Thinkpads and
+    /// disables the touchpad while using the trackpoint.
+    pub fn config_dwtp_is_available, ffi::libinput_device_config_dwtp_is_available, bool);
+
+    /// Enable or disable the disable-while-trackpointing feature.
+    ///
+    /// When enabled, the device will be disabled while using the trackpoint and
+    /// for a short period after.
+    ///
+    /// ## Note
+    ///
+    /// Enabling or disabling disable-while-trackpointing may not take
+    /// effect immediately.
+    pub fn config_dwtp_set_enabled(&self, enabled: bool) -> DeviceConfigResult {
+        match unsafe {
+            ffi::libinput_device_config_dwtp_set_enabled(
+                self.as_raw_mut(),
+                if enabled {
+                    ffi::libinput_config_dwtp_state_LIBINPUT_CONFIG_DWTP_ENABLED
+                } else {
+                    ffi::libinput_config_dwtp_state_LIBINPUT_CONFIG_DWTP_DISABLED
+                },
+            )
+        } {
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
+                Err(DeviceConfigError::Unsupported)
+            }
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
+            _ => panic!("libinput returned invalid 'libinput_config_status'"),
+        }
+    }
+
     ffi_func!(
     /// Get the current left-handed configuration of the device.
     pub fn config_left_handed, ffi::libinput_device_config_left_handed_get, bool);
