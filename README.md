@@ -1,6 +1,6 @@
 # Rust libinput bindings
 
-[![Build Status](https://img.shields.io/github/workflow/status/Smithay/input.rs/Rust?logo=github-actions&logoColor=white&style=for-the-badge)](https://github.com/Smithay/input.rs/actions/workflows/ci.yml)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/Smithay/input.rs/ci.yml?branch=master&logo=github-actions&logoColor=white&style=for-the-badge)](https://github.com/Smithay/input.rs/actions/workflows/ci.yml)
 [![Crates.io](https://img.shields.io/crates/v/input.svg?logo=rust&style=for-the-badge)](https://crates.io/crates/input)
 [![License](https://img.shields.io/crates/l/input.svg?style=for-the-badge)](https://crates.io/crates/input)
 [![Docs](https://img.shields.io/docsrs/input?style=for-the-badge)](https://docs.rs/input)
