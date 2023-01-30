@@ -523,4 +523,7 @@ ffi_event_struct!(
 struct GestureHoldEndEvent, ffi::libinput_event_gesture, ffi::libinput_event_gesture_get_base_event);
 
 #[cfg(feature = "libinput_1_19")]
+impl GestureEndEvent for GestureHoldEndEvent {}
+
+#[cfg(feature = "libinput_1_19")]
 impl GestureHoldEventTrait for GestureHoldEndEvent {}
