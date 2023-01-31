@@ -1,4 +1,12 @@
-## 0.8.0
+## 0.8.2
+
+- Added missing `GestureEndEvent` implementation for `GestureHoldEvent`
+
+## 0.8.1
+
+- Fix missing feature flags for libinput 1.21
+
+## 0.8.0 (yanked)
 
 - Use safe-io types
 - Add libinput 1.21 support
