@@ -53,9 +53,7 @@ impl LibinputInterface for Interface {
             .map_err(|err| err.raw_os_error().unwrap())
     }
     fn close_restricted(&mut self, fd: OwnedFd) {
-        unsafe {
-            File::from(fd);
-        }
+        drop(File::from(fd));
     }
 }
 
