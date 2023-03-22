@@ -35,12 +35,10 @@ Configure and run event loop:
 
 ```rust
 use input::{Libinput, LibinputInterface};
+use libc::{O_RDONLY, O_RDWR, O_WRONLY};
 use std::fs::{File, OpenOptions};
 use std::os::unix::{fs::OpenOptionsExt, io::OwnedFd};
 use std::path::Path;
-
-extern crate libc;
-use libc::{O_RDONLY, O_RDWR, O_WRONLY};
 
 struct Interface;
 
