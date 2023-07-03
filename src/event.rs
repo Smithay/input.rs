@@ -203,7 +203,7 @@ macro_rules! ffi_event_struct {
 
         impl std::fmt::Debug for $struct_name {
             fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                write!(f, "$struct_name @{:p}", self.as_raw())
+                write!(f, "{} @{:p}", stringify!($struct_name), self.as_raw())
             }
         }
 
