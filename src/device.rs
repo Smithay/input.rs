@@ -816,13 +816,13 @@ impl Device {
         let bitmask = unsafe { ffi::libinput_device_config_click_get_methods(self.as_raw_mut()) };
         if bitmask
             & ffi::libinput_config_click_method_LIBINPUT_CONFIG_CLICK_METHOD_CLICKFINGER as u32
-            == bitmask
+            != 0
         {
             methods.push(ClickMethod::Clickfinger);
         }
         if bitmask
             & ffi::libinput_config_click_method_LIBINPUT_CONFIG_CLICK_METHOD_BUTTON_AREAS as u32
-            == bitmask
+            != 0
         {
             methods.push(ClickMethod::ButtonAreas);
         }
@@ -1268,22 +1268,18 @@ impl Device {
     pub fn config_scroll_methods(&self) -> Vec<ScrollMethod> {
         let mut methods = Vec::new();
         let bitmask = unsafe { ffi::libinput_device_config_scroll_get_methods(self.as_raw_mut()) };
-        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL as u32
-            == bitmask
+        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL as u32 != 0
         {
             methods.push(ScrollMethod::NoScroll);
         }
-        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG as u32 == bitmask
-        {
+        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG as u32 != 0 {
             methods.push(ScrollMethod::TwoFinger);
         }
-        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE as u32
-            == bitmask
-        {
+        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_EDGE as u32 != 0 {
             methods.push(ScrollMethod::Edge);
         }
         if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN as u32
-            == bitmask
+            != 0
         {
             methods.push(ScrollMethod::OnButtonDown);
         }
