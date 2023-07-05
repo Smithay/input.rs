@@ -1,3 +1,12 @@
+// Allow unnecessary casts since ffi types may differ by C ABI
+// TODO Error type instead of `Result<_, ()>`
+// TODO Better way to handle `SendEventsMode::ENABLED` being 0?
+#![allow(
+    clippy::bad_bit_mask,
+    clippy::result_unit_err,
+    clippy::unnecessary_cast
+)]
+
 use crate::{
     event::{switch::Switch, tablet_pad::TabletPadModeGroup},
     ffi, AsRaw, FromRaw, Libinput, Seat,

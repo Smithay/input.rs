@@ -1,3 +1,6 @@
+// TODO Error type instead of `Result<_, ()>`
+#![allow(clippy::result_unit_err)]
+
 use crate::{ffi, AsRaw, Device, Event, FromRaw};
 use io_lifetimes::{AsFd, BorrowedFd, OwnedFd};
 use std::{
@@ -177,7 +180,7 @@ impl Libinput {
             close_restricted: Some(close_restricted::<I>),
         });
 
-        let context = unsafe {
+        unsafe {
             let udev = udev::udev_new();
             let libinput = ffi::libinput_udev_create_context(
                 Box::into_raw(boxed_interface),
@@ -189,9 +192,7 @@ impl Libinput {
                 ffi: libinput,
                 _interface: Some(boxed_userdata as Rc<dyn LibinputInterface>),
             }
-        };
-
-        context
+        }
     }
 
     /// Create a new libinput context that requires the caller to manually add or remove devices.
@@ -213,7 +214,7 @@ impl Libinput {
             close_restricted: Some(close_restricted::<I>),
         });
 
-        let context = Libinput {
+        Libinput {
             ffi: unsafe {
                 ffi::libinput_path_create_context(
                     Box::into_raw(boxed_interface),
@@ -221,9 +222,7 @@ impl Libinput {
                 )
             },
             _interface: Some(boxed_userdata as Rc<dyn LibinputInterface>),
-        };
-
-        context
+        }
     }
 
     /// Add a device to a libinput context initialized with
