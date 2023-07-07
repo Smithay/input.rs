@@ -1,3 +1,8 @@
+## 0.8.3
+
+- Fixed bitflags test for config entries (see https://github.com/Smithay/input.rs/pull/54, thanks @ids1024)
+- Fixed use of struct\_name in Debug impls (see https://github.com/Smithay/input.rs/pull/53, thanks @ids1024)
+
 ## 0.8.2
 
 - Added missing `GestureEndEvent` implementation for `GestureHoldEvent`
