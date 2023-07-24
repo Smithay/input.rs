@@ -81,8 +81,8 @@ fn main() {
             })
             .header(header.display().to_string())
             .ctypes_prefix("::libc")
-            .whitelist_type(r"^libinput_.*$")
-            .whitelist_function(r"^libinput_.*$")
+            .allowlist_type(r"^libinput_.*$")
+            .allowlist_function(r"^libinput_.*$")
             .generate()
             .unwrap();
 

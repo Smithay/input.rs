@@ -18,7 +18,7 @@ path = "src/lib.rs"
 libc = "0.2"
 
 [build-dependencies.bindgen]
-version = "0.57"
+version = "0.63"
 optional = true
 
 [features]
