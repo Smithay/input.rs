@@ -14,7 +14,7 @@ exclude = [".gitignore", ".rustfmt.toml", ".github"]
 [dependencies]
 io-lifetimes = "1.0.3"
 libc = "0.2"
-bitflags = "1.2"
+bitflags = "2.4"
 log = { version = "0.4", optional = true }
 
 [dependencies.input-sys]
@@ -23,7 +23,7 @@ path = "input-sys"
 default-features = false
 
 [dependencies.udev]
-version = "0.7"
+version = "0.8"
 optional = true
 
 [dev-dependencies]

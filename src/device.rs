@@ -103,6 +103,7 @@ pub enum DeviceConfigError {
 bitflags! {
     /// The send-event mode of a device defines when a device may generate
     /// events and pass those events to the caller.
+    #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
     pub struct SendEventsMode: u32 {
         /// Send events from this device normally.
         ///
@@ -152,6 +153,7 @@ pub type DeviceConfigResult = Result<(), DeviceConfigError>;
 
 bitflags! {
     /// Mask reflecting LEDs on a device.
+    #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
     pub struct Led: u32 {
         /// Num Lock Led
         const NUMLOCK = ffi::libinput_led_LIBINPUT_LED_NUM_LOCK;
