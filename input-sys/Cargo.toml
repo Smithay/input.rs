@@ -23,8 +23,8 @@ optional = true
 
 [features]
 default = ["libinput_1_21"]
-gen = ["bindgen"]
-update_bindings = ["gen"]
+use_bindgen = ["bindgen"]
+update_bindings = ["use_bindgen"]
 libinput_1_11 = []
 libinput_1_14 = []
 libinput_1_15 = []

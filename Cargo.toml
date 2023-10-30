@@ -31,7 +31,7 @@ nix = "0.26"
 
 [features]
 default = ["udev", "log", "libinput_1_21"]
-gen = ["input-sys/gen"]
+use_bindgen = ["input-sys/use_bindgen"]
 libinput_1_11 = ["input-sys/libinput_1_11"]
 libinput_1_14 = ["input-sys/libinput_1_14", "libinput_1_11"]
 libinput_1_15 = ["input-sys/libinput_1_15", "libinput_1_14"]
