@@ -10,11 +10,7 @@ include!(concat!(
 
 #[cfg(not(feature = "gen"))]
 include!(concat!(
-    "platforms/",
-    env!("LIBINPUT_TARGET_OS"),
-    "/",
-    env!("LIBINPUT_TARGET_ARCH"),
-    "/gen_",
+    "bindings/gen_",
     env!("LIBINPUT_VERSION_STR"),
     ".rs"
 ));

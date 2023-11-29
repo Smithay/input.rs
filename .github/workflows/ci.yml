@@ -11,7 +11,7 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -36,7 +36,7 @@ jobs:
   doc:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: |
           sudo apt-get update -qqy
           sudo apt-get install -qqy libudev-dev
@@ -65,7 +65,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - run: |
           sudo apt-get update -qqy
           sudo apt-get install -qqy libudev-dev
@@ -96,7 +96,7 @@ jobs:
   check-minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
@@ -172,7 +172,7 @@ jobs:
     container: ubuntu:focal
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: |
           TZ=Etc/UTC
           ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime
@@ -182,41 +182,16 @@ jobs:
       - name: Setup linux toolchain
         if: contains(matrix.target, '-linux-') && startsWith(matrix.target, 'x86_64-')
         run: |
-          sudo apt-get install -qqy libinput-dev
+          sudo apt-get install -y libinput-dev libudev-dev
       - name: Setup cross linux toolchain
         if: contains(matrix.target, '-linux-') && !startsWith(matrix.target, 'x86_64-')
         run: |
-          case "${{ matrix.target }}" in
-            i686-*) SYSTEM_ARCH=i386 ;;
-            arm*) SYSTEM_ARCH=armhf ;;
-            aarch64*) SYSTEM_ARCH=arm64 ;;
-          esac
-          GCC_TARGET=$(printf "${{ matrix.target }}" | sed 's/-unknown-/-/' | sed 's/arm[^-]*/arm/g')
-          ENV_TARGET=$(printf "${{ matrix.target }}" | tr '-' '_')
-          ENV_TARGET_UC=$(printf "${ENV_TARGET}" | tr '[[:lower:]]' '[[:upper:]]')
-          sudo rm -f /etc/apt/sources.list.d/*.list
-          case "${{ matrix.target }}" in
-            arm* | aarch64*)
-          sudo tee /etc/apt/sources.list << EOF
-          deb [arch=i386,amd64] http://archive.ubuntu.com/ubuntu/ focal main universe
-          deb [arch=i386,amd64] http://archive.ubuntu.com/ubuntu/ focal-updates main universe
-          deb [arch=i386,amd64] http://security.ubuntu.com/ubuntu/ focal-security main universe
-          deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal main universe
-          deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-updates main universe
-          deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-security main universe
-          EOF
-              ;;
-          esac
-          sudo dpkg --add-architecture ${SYSTEM_ARCH}
-          dpkg --print-foreign-architectures
-          sudo apt-get update -qqy
-          sudo apt-get dist-upgrade -qqy --fix-broken
-          sudo apt-get install -qqy --fix-broken -o Debug::pkgProblemResolver=yes libinput-dev:${SYSTEM_ARCH} gcc-${GCC_TARGET} pkg-config-${GCC_TARGET}
-          echo "CARGO_TARGET_${ENV_TARGET_UC}_LINKER=${GCC_TARGET}-gcc" >> $GITHUB_ENV
-          echo "PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV
-          echo "PKG_CONFIG_${ENV_TARGET}=${GCC_TARGET}-pkg-config" >> $GITHUB_ENV
-          echo "PKG_CONFIG=${GCC_TARGET}-pkg-config" >> $GITHUB_ENV
-          echo "BINDGEN_EXTRA_CLANG_ARGS=\"-L/usr/lib/${GCC_TARGET} -L/lib/${GCC_TARGET}\"" >> $GITHUB_ENV
+          GCC_TARGET=$(printf "${{ matrix.target }}" | sed 's/-unknown-/-/;s/arm[^-]*/arm/;s/riscv[^-]*/riscv64/')
+          ENV_TARGET=$(printf "${{ matrix.target }}" | tr '-' '_'  | tr '[[:lower:]]' '[[:upper:]]')
+          sudo apt-get update -y
+          sudo apt-get install -y gcc-${GCC_TARGET}
+          echo "CARGO_TARGET_${ENV_TARGET}_LINKER=${GCC_TARGET}-gcc" >> $GITHUB_ENV
+          echo "BINDGEN_EXTRA_CLANG_ARGS=--sysroot=/usr/${GCC_TARGET} -isystem ${PWD}/.github/workflows/cross-include" >> $GITHUB_ENV
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -251,22 +226,33 @@ jobs:
         with:
           command: build
           args: --manifest-path input-sys/Cargo.toml --target ${{ matrix.target }} --no-default-features --features update_bindings,libinput_1_11,libinput_1_14,libinput_1_15,libinput_1_19,libinput_1_21
+      - name: Copy bindings
+        run: |
+          for i in input-sys/src/bindings/*.rs
+          do
+              cp $i $(basename $i .rs)-${{ matrix.target }}.rs
+          done
       - name: Upload bindings
         if: matrix.task == 'bindings'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bindings
-          path: |
-            input-sys/${{ env.INPUT_SYS_BINDINGS_FILE }}
-            LICENSE
-            README.md
+          path: gen_*.rs
       - name: Build
+        if: contains(matrix.target, '-linux-') && startsWith(matrix.target, 'x86_64-')
         uses: actions-rs/cargo@v1
         with:
           command: build
           args: --target ${{ matrix.target }}
+      - name: Build
+        if: contains(matrix.target, '-linux-') && !startsWith(matrix.target, 'x86_64-')
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          # Disable udev feature so we don't need library in cross-sysroot
+          args: --target ${{ matrix.target }} --no-default-features --features log,libinput_1_21
       - name: Test
-        if: contains(matrix.target, '-linux-') && (startsWith(matrix.target, 'x86_64-') || startsWith(matrix.target, 'i686-'))
+        if: contains(matrix.target, '-linux-') && startsWith(matrix.target, 'x86_64-')
         uses: actions-rs/cargo@v1
         timeout-minutes: 12
         env:
@@ -275,17 +261,51 @@ jobs:
           command: test
           args: --all --target ${{ matrix.target }}
 
+  compare-bindings:
+    needs:
+      - test
+    runs-on: ubuntu-22.04
+    steps:
+      - name: download bindings
+        uses: actions/download-artifact@v3
+        with:
+          name: bindings
+      - name: compare
+        run: |
+          code=0
+          for i in gen_*.rs
+          do
+            base=$(echo ${i} | cut -f 1 -d -)
+            if cmp -s ${base}-x86_64-unknown-linux-gnu.rs ${i}
+            then
+              echo ${i} matches x86_64 bindings
+            else
+              echo ${i} does not match x86_64 bindings
+              diff ${base}-x86_64-unknown-linux-gnu.rs ${i}
+              code=1
+            fi
+          done
+          exit ${code}
+
+  # TODO copy x86
   update-bindings:
     if: ${{ github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/') }}
     needs:
-      - test
+      - compare-bindings
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download bindings
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings
+      - name: Copy x86_64 bindings
+        run: |
+          for i in gen_*-x86_64-unknown-linux-gnu.rs
+          do
+              cp $i input-sys/src/bindings/$(basename i x86_64-unknown-linux-gnu.rs).rs
+          done
+          rm gen_*.rs
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:
@@ -307,7 +327,7 @@ jobs:
       - test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
