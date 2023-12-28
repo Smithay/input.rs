@@ -347,15 +347,15 @@ impl Libinput {
     ///
     /// ```
     /// # extern crate libc;
-    /// # extern crate nix;
+    /// # extern crate rustix;
     /// #
     /// # use std::fs::{File, OpenOptions};
-    /// # use std::os::unix::{fs::OpenOptionsExt, io::{AsRawFd, OwnedFd}};
+    /// # use std::os::unix::{fs::OpenOptionsExt, io::OwnedFd};
     /// # use std::path::Path;
     /// # use libc::{O_RDONLY, O_RDWR, O_WRONLY};
     /// #
     /// use input::{Libinput, LibinputInterface};
-    /// use nix::poll::{poll, PollFlags, PollFd};
+    /// use rustix::event::{poll, PollFlags, PollFd};
     ///
     /// # struct Interface;
     /// #
@@ -385,8 +385,7 @@ impl Libinput {
     /// let mut input = Libinput::new_with_udev(Interface);
     /// input.udev_assign_seat("seat0").unwrap();
     ///
-    /// let pollfd = PollFd::new(input.as_raw_fd(), PollFlags::POLLIN);
-    /// while poll(&mut [pollfd], -1).is_ok() {
+    /// while poll(&mut [PollFd::new(&input, PollFlags::IN)], -1).is_ok() {
     ///     input.dispatch().unwrap();
     ///     for event in &mut input {
     ///         // do some processing...

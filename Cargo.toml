@@ -27,7 +27,7 @@ version = "0.8"
 optional = true
 
 [dev-dependencies]
-nix = "0.26"
+rustix = { version = "0.38", features = ["event"] }
 
 [features]
 default = ["udev", "log", "libinput_1_21"]
