@@ -32,11 +32,7 @@ fn main() {
     let version = lib_versions().next().unwrap();
 
     let bind_name = format!("gen_{}_{}.rs", version.0, version.1);
-    let bindings_file = Path::new("src")
-        .join("platforms")
-        .join(&target_os)
-        .join(&target_arch)
-        .join(bind_name);
+    let bindings_file = Path::new("src").join("bindings").join(bind_name);
 
     if !bindings_file.is_file() {
         panic!(
@@ -62,10 +58,7 @@ fn main() {
     );
 
     #[cfg(feature = "update_bindings")]
-    let dest_dir = Path::new("src")
-        .join("platforms")
-        .join(env::var("CARGO_CFG_TARGET_OS").unwrap())
-        .join(env::var("CARGO_CFG_TARGET_ARCH").unwrap());
+    let dest_dir = Path::new("src/bindings");
 
     for version in lib_versions() {
         let header = Path::new("include").join(format!(
@@ -80,9 +73,14 @@ fn main() {
                 false => "",
             })
             .header(header.display().to_string())
-            .ctypes_prefix("::libc")
-            .whitelist_type(r"^libinput_.*$")
-            .whitelist_function(r"^libinput_.*$")
+            .allowlist_type(r"^libinput_.*$")
+            .allowlist_function(r"^libinput_.*$")
+            // Requires `va_list`
+            // TODO Use `std::ffi::VaList` when stable?
+            .blocklist_type("libinput_log_handler")
+            .blocklist_function("libinput_log_set_handler")
+            .blocklist_type(".*va_list.*")
+            .layout_tests(false)
             .generate()
             .unwrap();
 
@@ -104,20 +102,6 @@ fn main() {
 
             fs::create_dir_all(&dest_dir).unwrap();
             fs::copy(&bind_file, &dest_file).unwrap();
-        }
-    }
-
-    #[cfg(feature = "update_bindings")]
-    {
-        use std::{fs, io::Write};
-
-        if let Ok(github_env) = env::var("GITHUB_ENV") {
-            let mut env_file = fs::OpenOptions::new()
-                .create(true)
-                .append(true)
-                .open(github_env)
-                .unwrap();
-            writeln!(env_file, "INPUT_SYS_BINDINGS_FILE={}", dest_dir.display()).unwrap();
         }
     }
 }

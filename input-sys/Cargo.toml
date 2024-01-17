@@ -14,16 +14,23 @@ edition = "2018"
 [lib]
 path = "src/lib.rs"
 
-[dependencies]
-libc = "0.2"
-
 [build-dependencies.bindgen]
-version = "0.57"
+version = "0.69"
+optional = true
+
+# Fix for non-existant feature on nightly `-Z minimal-versions`
+[build-dependencies.proc-macro2]
+version = "1.0.76"
+optional = true
+
+# Fix for `-Z minimal-versions`
+[build-dependencies.regex]
+version = "1.10"
 optional = true
 
 [features]
 default = ["libinput_1_21"]
-gen = ["bindgen"]
+gen = ["bindgen", "proc-macro2", "regex"]
 update_bindings = ["gen"]
 libinput_1_11 = []
 libinput_1_14 = []
