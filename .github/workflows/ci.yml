@@ -287,7 +287,6 @@ jobs:
           done
           exit ${code}
 
-  # TODO copy x86
   update-bindings:
     if: ${{ github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/') }}
     needs:
@@ -303,7 +302,7 @@ jobs:
         run: |
           for i in gen_*-x86_64-unknown-linux-gnu.rs
           do
-              cp $i input-sys/src/bindings/$(basename i x86_64-unknown-linux-gnu.rs).rs
+              cp $i input-sys/src/bindings/$(basename $i -x86_64-unknown-linux-gnu.rs).rs
           done
           rm gen_*.rs
       - name: Create pull request
