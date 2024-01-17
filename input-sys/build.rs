@@ -1,4 +1,4 @@
-#[cfg(feature = "gen")]
+#[cfg(feature = "use_bindgen")]
 extern crate bindgen;
 
 use std::{env, path::Path};
@@ -25,7 +25,7 @@ fn lib_versions() -> impl Iterator<Item = &'static (u8, u8, u8)> {
         .chain(Some(&LIB_VERSIONS[LIB_VERSIONS.len() - 1]))
 }
 
-#[cfg(not(feature = "gen"))]
+#[cfg(not(feature = "use_bindgen"))]
 fn main() {
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
@@ -49,7 +49,7 @@ fn main() {
     );
 }
 
-#[cfg(feature = "gen")]
+#[cfg(feature = "use_bindgen")]
 fn main() {
     let version = lib_versions().next().unwrap();
     println!(
