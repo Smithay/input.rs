@@ -1,6 +1,6 @@
 [package]
 name = "input-sys"
-version = "1.17.0"
+version = "1.18.0"
 authors = ["Victoria Brekenfeld (Drakulix) <github@drakulix.de>"]
 build = "build.rs"
 description = "Bindgen generated unsafe libinput wrapper"

@@ -18,7 +18,7 @@ bitflags = "2.4"
 log = { version = "0.4.20", optional = true }
 
 [dependencies.input-sys]
-version = "1.17.0"
+version = "1.18.0"
 path = "input-sys"
 default-features = false
 
