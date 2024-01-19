@@ -1,3 +1,8 @@
+## 0.9.0
+
+- Update to bitflags 2.x and udev 0.8
+- Don't require generated bindings for specific OS/architecture to build
+
 ## 0.8.3
 
 - Fixed bitflags test for config entries (see https://github.com/Smithay/input.rs/pull/54, thanks @ids1024)

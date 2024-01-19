@@ -4,7 +4,7 @@ description = "libinput bindings for rust"
 license = "MIT"
 documentation = "https://docs.rs/input"
 repository = "https://github.com/Drakulix/input.rs"
-version = "0.8.3"
+version = "0.9.0"
 keywords = ["wayland", "input", "bindings"]
 categories = ["external-ffi-bindings"]
 authors = ["Drakulix (Victoria Brekenfeld)"]
@@ -31,7 +31,7 @@ rustix = { version = "0.38", features = ["event"] }
 
 [features]
 default = ["udev", "log", "libinput_1_21"]
-gen = ["input-sys/gen"]
+use_bindgen = ["input-sys/use_bindgen"]
 libinput_1_11 = ["input-sys/libinput_1_11"]
 libinput_1_14 = ["input-sys/libinput_1_14", "libinput_1_11"]
 libinput_1_15 = ["input-sys/libinput_1_15", "libinput_1_14"]
