@@ -76,7 +76,7 @@ pub struct libinput_event_touch {
 pub struct libinput_event_tablet_tool {
     _unused: [u8; 0],
 }
-#[doc = " @ingroup event_tablet_pad\n @struct libinput_event_tablet_pad\n\n Tablet pad event representing a button press, or ring/strip update on\n the tablet pad itself. Valid event types for this event are @ref\n LIBINPUT_EVENT_TABLET_PAD_BUTTON, @ref LIBINPUT_EVENT_TABLET_PAD_RING and\n @ref LIBINPUT_EVENT_TABLET_PAD_STRIP.\n\n @since 1.3"]
+#[doc = " @ingroup event_tablet_pad\n @struct libinput_event_tablet_pad\n\n Tablet pad event representing a button press, or ring/strip update on\n the tablet pad itself. Valid event types for this event are @ref\n LIBINPUT_EVENT_TABLET_PAD_BUTTON, @ref LIBINPUT_EVENT_TABLET_PAD_DIAL,\n @ref LIBINPUT_EVENT_TABLET_PAD_RING and\n @ref LIBINPUT_EVENT_TABLET_PAD_STRIP.\n\n @since 1.3"]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct libinput_event_tablet_pad {
@@ -104,6 +104,8 @@ pub type libinput_key_state = ::std::os::raw::c_uint;
 pub const libinput_led_LIBINPUT_LED_NUM_LOCK: libinput_led = 1;
 pub const libinput_led_LIBINPUT_LED_CAPS_LOCK: libinput_led = 2;
 pub const libinput_led_LIBINPUT_LED_SCROLL_LOCK: libinput_led = 4;
+pub const libinput_led_LIBINPUT_LED_COMPOSE: libinput_led = 8;
+pub const libinput_led_LIBINPUT_LED_KANA: libinput_led = 16;
 #[doc = " @ingroup device\n\n Mask reflecting LEDs on a device."]
 pub type libinput_led = ::std::os::raw::c_uint;
 pub const libinput_button_state_LIBINPUT_BUTTON_STATE_RELEASED: libinput_button_state = 0;
@@ -180,7 +182,7 @@ pub struct libinput_tablet_pad_mode_group {
     _unused: [u8; 0],
 }
 extern "C" {
-    #[doc = " @ingroup tablet_pad_modes\n\n Most devices only provide a single mode group, however devices such as\n the Wacom Cintiq 22HD provide two mode groups. If multiple mode groups\n are available, a caller should use\n libinput_tablet_pad_mode_group_has_button(),\n libinput_tablet_pad_mode_group_has_ring() and\n libinput_tablet_pad_mode_group_has_strip() to associate each button,\n ring and strip with the correct mode group.\n\n @return the number of mode groups available on this device\n\n @since 1.4"]
+    #[doc = " @ingroup tablet_pad_modes\n\n Most devices only provide a single mode group, however devices such as\n the Wacom Cintiq 22HD provide two mode groups. If multiple mode groups\n are available, a caller should use\n libinput_tablet_pad_mode_group_has_button(),\n libinput_tablet_pad_mode_group_has_ring(),\n libinput_tablet_pad_mode_group_has_dial() and\n libinput_tablet_pad_mode_group_has_strip() to associate each button,\n ring and strip with the correct mode group.\n\n @return the number of mode groups available on this device\n\n @since 1.4"]
     pub fn libinput_device_tablet_pad_get_num_mode_groups(
         device: *mut libinput_device,
     ) -> ::std::os::raw::c_int;
@@ -215,6 +217,13 @@ extern "C" {
     pub fn libinput_tablet_pad_mode_group_has_button(
         group: *mut libinput_tablet_pad_mode_group,
         button: ::std::os::raw::c_uint,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " @ingroup tablet_pad_modes\n\n Devices without mode switching capabilities return true for every dial.\n\n @param group A previously obtained mode group\n @param dial A dial index, starting at 0\n @return true if the given dial index is part of this mode group or\n false otherwise\n\n @since 1.26"]
+    pub fn libinput_tablet_pad_mode_group_has_dial(
+        group: *mut libinput_tablet_pad_mode_group,
+        dial: ::std::os::raw::c_uint,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
@@ -327,17 +336,19 @@ pub const libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_RING: libinput_event_typ
 pub const libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_STRIP: libinput_event_type = 702;
 #[doc = " A key pressed on a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n A key differs from @ref LIBINPUT_EVENT_TABLET_PAD_BUTTON in that\n keys have a specific functionality assigned to them (buttons are\n sequentially ordered). The key code thus carries a semantic\n meaning, a button number does not.\n\n @since 1.15"]
 pub const libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_KEY: libinput_event_type = 703;
-#[doc = " A key pressed on a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n A key differs from @ref LIBINPUT_EVENT_TABLET_PAD_BUTTON in that\n keys have a specific functionality assigned to them (buttons are\n sequentially ordered). The key code thus carries a semantic\n meaning, a button number does not.\n\n @since 1.15"]
+#[doc = " A status change on a tablet dial with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n @since 1.26"]
+pub const libinput_event_type_LIBINPUT_EVENT_TABLET_PAD_DIAL: libinput_event_type = 704;
+#[doc = " A status change on a tablet dial with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n @since 1.26"]
 pub const libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN: libinput_event_type = 800;
-#[doc = " A key pressed on a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n A key differs from @ref LIBINPUT_EVENT_TABLET_PAD_BUTTON in that\n keys have a specific functionality assigned to them (buttons are\n sequentially ordered). The key code thus carries a semantic\n meaning, a button number does not.\n\n @since 1.15"]
+#[doc = " A status change on a tablet dial with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n @since 1.26"]
 pub const libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE: libinput_event_type = 801;
-#[doc = " A key pressed on a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n A key differs from @ref LIBINPUT_EVENT_TABLET_PAD_BUTTON in that\n keys have a specific functionality assigned to them (buttons are\n sequentially ordered). The key code thus carries a semantic\n meaning, a button number does not.\n\n @since 1.15"]
+#[doc = " A status change on a tablet dial with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n @since 1.26"]
 pub const libinput_event_type_LIBINPUT_EVENT_GESTURE_SWIPE_END: libinput_event_type = 802;
-#[doc = " A key pressed on a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n A key differs from @ref LIBINPUT_EVENT_TABLET_PAD_BUTTON in that\n keys have a specific functionality assigned to them (buttons are\n sequentially ordered). The key code thus carries a semantic\n meaning, a button number does not.\n\n @since 1.15"]
+#[doc = " A status change on a tablet dial with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n @since 1.26"]
 pub const libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_BEGIN: libinput_event_type = 803;
-#[doc = " A key pressed on a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n A key differs from @ref LIBINPUT_EVENT_TABLET_PAD_BUTTON in that\n keys have a specific functionality assigned to them (buttons are\n sequentially ordered). The key code thus carries a semantic\n meaning, a button number does not.\n\n @since 1.15"]
+#[doc = " A status change on a tablet dial with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n @since 1.26"]
 pub const libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_UPDATE: libinput_event_type = 804;
-#[doc = " A key pressed on a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n A key differs from @ref LIBINPUT_EVENT_TABLET_PAD_BUTTON in that\n keys have a specific functionality assigned to them (buttons are\n sequentially ordered). The key code thus carries a semantic\n meaning, a button number does not.\n\n @since 1.15"]
+#[doc = " A status change on a tablet dial with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n\n @since 1.26"]
 pub const libinput_event_type_LIBINPUT_EVENT_GESTURE_PINCH_END: libinput_event_type = 805;
 #[doc = " @since 1.19"]
 pub const libinput_event_type_LIBINPUT_EVENT_GESTURE_HOLD_BEGIN: libinput_event_type = 806;
@@ -933,7 +944,7 @@ extern "C" {
     ) -> *mut libinput_event;
 }
 extern "C" {
-    #[doc = " @ingroup event_tablet_pad\n\n Returns the current position of the ring, in degrees counterclockwise\n from the northern-most point of the ring in the tablet's current logical\n orientation.\n\n If the source is @ref LIBINPUT_TABLET_PAD_RING_SOURCE_FINGER,\n libinput sends a terminating event with a ring value of -1 when the\n finger is lifted from the ring. A caller may use this information to e.g.\n determine if kinetic scrolling should be triggered.\n\n @note It is an application bug to call this function for events other than\n @ref LIBINPUT_EVENT_TABLET_PAD_RING.  For other events, this function\n returns 0.\n\n @param event The libinput tablet pad event\n @return The current value of the the axis\n @retval -1 The finger was lifted\n\n @since 1.3"]
+    #[doc = " @ingroup event_tablet_pad\n\n Returns the current position of the ring, in degrees clockwise\n from the northern-most point of the ring in the tablet's current logical\n orientation.\n\n If the source is @ref LIBINPUT_TABLET_PAD_RING_SOURCE_FINGER,\n libinput sends a terminating event with a ring value of -1 when the\n finger is lifted from the ring. A caller may use this information to e.g.\n determine if kinetic scrolling should be triggered.\n\n @note It is an application bug to call this function for events other than\n @ref LIBINPUT_EVENT_TABLET_PAD_RING.  For other events, this function\n returns 0.\n\n @param event The libinput tablet pad event\n @return The current value of the the axis\n @retval -1 The finger was lifted\n\n @since 1.3"]
     pub fn libinput_event_tablet_pad_get_ring_position(
         event: *mut libinput_event_tablet_pad,
     ) -> f64;
@@ -989,6 +1000,18 @@ extern "C" {
     pub fn libinput_event_tablet_pad_get_key_state(
         event: *mut libinput_event_tablet_pad,
     ) -> libinput_key_state;
+}
+extern "C" {
+    #[doc = " @ingroup event_tablet_pad\n\n Returns the delta change of the dial, in multiples or fractions of 120, with\n each multiple of 120 indicating one logical wheel event.\n See libinput_event_pointer_get_scroll_value_v120() for more details.\n\n @note It is an application bug to call this function for events other than\n @ref LIBINPUT_EVENT_TABLET_PAD_DIAL.  For other events, this function\n returns 0.\n\n @param event The libinput tablet pad event\n @return The delta of the the axis\n\n @since 1.26"]
+    pub fn libinput_event_tablet_pad_get_dial_delta_v120(
+        event: *mut libinput_event_tablet_pad,
+    ) -> f64;
+}
+extern "C" {
+    #[doc = " @ingroup event_tablet_pad\n\n Returns the number of the dial that has changed state, with 0 being the\n first dial. On tablets with only one dial, this function always returns\n 0.\n\n @note It is an application bug to call this function for events other than\n @ref LIBINPUT_EVENT_TABLET_PAD_DIAL.  For other events, this function\n returns 0.\n\n @param event The libinput tablet pad event\n @return The index of the dial that changed state\n\n @since 1.26"]
+    pub fn libinput_event_tablet_pad_get_dial_number(
+        event: *mut libinput_event_tablet_pad,
+    ) -> ::std::os::raw::c_uint;
 }
 extern "C" {
     #[doc = " @ingroup event_tablet_pad\n\n Returns the mode the button, ring, or strip that triggered this event is\n in, at the time of the event.\n\n The mode is a virtual grouping of functionality, usually based on some\n visual feedback like LEDs on the pad. Mode indices start at 0, a device\n that does not support modes always returns 0.\n\n @note Pad keys are not part of a mode group. It is an application bug to\n call this function for @ref LIBINPUT_EVENT_TABLET_PAD_KEY.\n\n Mode switching is controlled by libinput and more than one mode may exist\n on the tablet. This function returns the mode that this event's button,\n ring or strip is logically in. If the button is a mode toggle button\n and the button event caused a new mode to be toggled, the mode returned\n is the new mode the button is in.\n\n Note that the returned mode is the mode valid as of the time of the\n event. The returned mode may thus be different to the mode returned by\n libinput_tablet_pad_mode_group_get_mode(). See\n libinput_tablet_pad_mode_group_get_mode() for details.\n\n @param event The libinput tablet pad event\n @return the 0-indexed mode of this button, ring or strip at the time of\n the event\n\n @see libinput_tablet_pad_mode_group_get_mode\n\n @since 1.4"]
@@ -1209,6 +1232,10 @@ extern "C" {
     pub fn libinput_device_get_name(device: *mut libinput_device) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
+    #[doc = " @ingroup device\n\n Get the bus type ID for this device.\n\n @param device A previously obtained device\n @return The bus type ID of this device (see BUS_* in linux/input.h)\n\n @since 1.26"]
+    pub fn libinput_device_get_id_bustype(device: *mut libinput_device) -> ::std::os::raw::c_uint;
+}
+extern "C" {
     #[doc = " @ingroup device\n\n Get the product ID for this device.\n\n @param device A previously obtained device\n @return The product ID of this device"]
     pub fn libinput_device_get_id_product(device: *mut libinput_device) -> ::std::os::raw::c_uint;
 }
@@ -1284,19 +1311,25 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[doc = " @ingroup device\n\n Return the number of buttons on a device with the\n @ref LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n Buttons on a pad device are numbered sequentially, see the\n libinput documentation for details.\n\n @param device A current input device\n\n @return The number of buttons supported by the device.\n\n @since 1.3"]
+    #[doc = " @ingroup device\n\n Return the number of buttons on a device with the\n @ref LIBINPUT_DEVICE_CAP_TABLET_PAD capability.\n Buttons on a pad device are numbered sequentially, see the\n libinput documentation for details.\n\n @param device A current input device\n\n @return The number of buttons supported by the device. -1 on error.\n\n @since 1.3"]
     pub fn libinput_device_tablet_pad_get_num_buttons(
         device: *mut libinput_device,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[doc = " @ingroup device\n\n Return the number of rings a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability provides.\n\n @param device A current input device\n\n @return The number of rings or 0 if the device has no rings.\n\n @see libinput_event_tablet_pad_get_ring_number\n\n @since 1.3"]
+    #[doc = " @ingroup device\n\n Return the number of dials a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability provides.\n\n @param device A current input device\n\n @return The number of dials or 0 if the device has no dials. -1 on error.\n\n @see libinput_event_tablet_pad_get_dial_number\n\n @since 1.26"]
+    pub fn libinput_device_tablet_pad_get_num_dials(
+        device: *mut libinput_device,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " @ingroup device\n\n Return the number of rings a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability provides.\n\n @param device A current input device\n\n @return The number of rings or 0 if the device has no rings. -1 on error.\n\n @see libinput_event_tablet_pad_get_ring_number\n\n @since 1.3"]
     pub fn libinput_device_tablet_pad_get_num_rings(
         device: *mut libinput_device,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[doc = " @ingroup device\n\n Return the number of strips a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability provides.\n\n @param device A current input device\n\n @return The number of strips or 0 if the device has no strips.\n\n @see libinput_event_tablet_pad_get_strip_number\n\n @since 1.3"]
+    #[doc = " @ingroup device\n\n Return the number of strips a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_PAD capability provides.\n\n @param device A current input device\n\n @return The number of strips or 0 if the device has no strips. -1 on error.\n\n @see libinput_event_tablet_pad_get_strip_number\n\n @since 1.3"]
     pub fn libinput_device_tablet_pad_get_num_strips(
         device: *mut libinput_device,
     ) -> ::std::os::raw::c_int;
@@ -1386,6 +1419,14 @@ pub const libinput_config_tap_button_map_LIBINPUT_CONFIG_TAP_MAP_LMR:
     libinput_config_tap_button_map = 1;
 #[doc = " @ingroup config\n\n @since 1.5"]
 pub type libinput_config_tap_button_map = ::std::os::raw::c_uint;
+#[doc = " 1/2/3 finger click maps to left/right/middle"]
+pub const libinput_config_clickfinger_button_map_LIBINPUT_CONFIG_CLICKFINGER_MAP_LRM:
+    libinput_config_clickfinger_button_map = 0;
+#[doc = " 1/2/3 finger click maps to left/middle/right"]
+pub const libinput_config_clickfinger_button_map_LIBINPUT_CONFIG_CLICKFINGER_MAP_LMR:
+    libinput_config_clickfinger_button_map = 1;
+#[doc = " @ingroup config"]
+pub type libinput_config_clickfinger_button_map = ::std::os::raw::c_uint;
 extern "C" {
     #[doc = " @ingroup config\n\n Set the finger number to button number mapping for tap-to-click. The\n default mapping on most devices is to have a 1, 2 and 3 finger tap to map\n to the left, right and middle button, respectively.\n A device may permit changing the button mapping but disallow specific\n maps. In this case @ref LIBINPUT_CONFIG_STATUS_UNSUPPORTED is returned,\n the caller is expected to handle this case correctly.\n\n Changing the button mapping may not take effect immediately,\n the device may wait until it is in a neutral state before applying any\n changes.\n\n The mapping may be changed when tap-to-click is disabled. The new mapping\n takes effect when tap-to-click is enabled in the future.\n\n @note It is an application bug to call this function for devices where\n libinput_device_config_tap_get_finger_count() returns 0.\n\n @param device The device to configure\n @param map The new finger-to-button number mapping\n @return A config status code. Changing the order on a device that does not\n support tapping always fails with @ref LIBINPUT_CONFIG_STATUS_UNSUPPORTED.\n\n @see libinput_device_config_tap_get_button_map\n @see libinput_device_config_tap_get_default_button_map\n\n @since 1.5"]
     pub fn libinput_device_config_tap_set_button_map(
@@ -1528,7 +1569,7 @@ extern "C" {
     ) -> libinput_config_status;
 }
 extern "C" {
-    #[doc = " @ingroup config\n\n Get the current pointer acceleration setting for this pointer device. The\n returned value is normalized to a range of [-1, 1].\n See libinput_device_config_accel_set_speed() for details.\n\n @param device The device to configure\n\n @return The current speed, range -1 to 1\n\n @see libinput_device_config_accel_is_available\n @see libinput_device_config_accel_set_speed\n @see libinput_device_config_accel_get_default_speed"]
+    #[doc = " @ingroup config\n\n Get the current pointer acceleration setting for this pointer device. The\n returned value is normalized to a range of [-1, 1].\n See libinput_device_config_accel_set_speed() for details.\n\n If the current acceleration profile is @ref\n LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM, the behavior of the\n device will not change but future calls to\n libinput_device_config_accel_get_speed() will reflect the updated speed\n setting.\n\n @param device The device to configure\n\n @return The current speed, range -1 to 1\n\n @see libinput_device_config_accel_is_available\n @see libinput_device_config_accel_set_speed\n @see libinput_device_config_accel_get_default_speed"]
     pub fn libinput_device_config_accel_get_speed(device: *mut libinput_device) -> f64;
 }
 extern "C" {
@@ -1544,8 +1585,52 @@ pub const libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT:
 #[doc = " An adaptive acceleration profile. Pointer acceleration depends\n on the input speed. This is the default profile for most devices."]
 pub const libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE:
     libinput_config_accel_profile = 2;
+#[doc = " A custom acceleration profile. Device movement acceleration depends\n on user defined custom acceleration functions for each movement\n type.\n\n @see libinput_config_accel_set_points"]
+pub const libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM:
+    libinput_config_accel_profile = 4;
 #[doc = " @ingroup config\n\n @since 1.1"]
 pub type libinput_config_accel_profile = ::std::os::raw::c_uint;
+#[doc = " @ingroup config\n\n A handle for configuration pointer acceleration.\n\n @warning Unlike other structs pointer acceleration configuration is\n considered transient and <b>not</b> refcounted. Calling\n libinput_config_accel_destroy() <b>will</b> destroy the configuration.\n\n To configure pointer acceleration, first create a config of a desired\n acceleration profile with libinput_config_accel_create(), then\n configure the profile-specific acceleration properties.\n\n In this version of libinput, this pointer acceleration configuration\n only provides configuration for @ref LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM.\n\n For @ref LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM use\n @ref libinput_config_accel_set_points.\n\n Once set up, apply the configuration to a device using\n libinput_device_config_accel_apply(). Once applied,\n destroy it with libinput_config_accel_destroy().\n\n @since 1.23"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct libinput_config_accel {
+    _unused: [u8; 0],
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Create an acceleration configuration of a given profile.\n\n Note that in this version of libinput, only the\n @ref LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM profile provides configuration\n options. All other acceleration profiles, when applied, will merely switch\n the profile and reset any profile-specific options to the default values.\n\n @param profile The profile of the newly created acceleration configuration.\n\n @return The newly created acceleration configuration or NULL on error.\n\n @warning Unlike other structs pointer acceleration configuration is\n considered transient and <b>not</b> refcounted. Calling\n libinput_config_accel_destroy() <b>will</b> destroy the configuration.\n\n @see libinput_config_accel\n @since 1.23"]
+    pub fn libinput_config_accel_create(
+        profile: libinput_config_accel_profile,
+    ) -> *mut libinput_config_accel;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Destroy an acceleration configuration.\n\n @warning Unlike other structs pointer acceleration configuration is\n considered transient and <b>not</b> refcounted. Calling\n libinput_config_accel_destroy() <b>will</b> destroy the configuration.\n\n @param accel_config The acceleration configuration to destroy.\n\n @see libinput_config_accel\n @since 1.23"]
+    pub fn libinput_config_accel_destroy(accel_config: *mut libinput_config_accel);
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Apply this pointer acceleration configuration to the device. This changes the\n device's pointer acceleration method to the method given in\n libinput_config_accel_create() and applies all other configuration settings.\n\n Once applied, call libinput_config_accel_destroy() to destroy the\n configuration struct.\n\n @param device The device to configure.\n @param accel_config The acceleration configuration.\n\n @return A config status code.\n\n @see libinput_config_accel\n @since 1.23"]
+    pub fn libinput_device_config_accel_apply(
+        device: *mut libinput_device,
+        accel_config: *mut libinput_config_accel,
+    ) -> libinput_config_status;
+}
+#[doc = " The default acceleration type used as a fallback when other\n acceleration types are not provided."]
+pub const libinput_config_accel_type_LIBINPUT_ACCEL_TYPE_FALLBACK: libinput_config_accel_type = 0;
+#[doc = " Acceleration type for regular pointer movement. This\n type is always supported."]
+pub const libinput_config_accel_type_LIBINPUT_ACCEL_TYPE_MOTION: libinput_config_accel_type = 1;
+#[doc = " Acceleration type for scroll movement.\n This type is supported by mouse and touchpad."]
+pub const libinput_config_accel_type_LIBINPUT_ACCEL_TYPE_SCROLL: libinput_config_accel_type = 2;
+#[doc = " @ingroup config\n\n Acceleration types are categories of movement by a device that may have\n specific acceleration functions applied. A device always supports the\n @ref LIBINPUT_ACCEL_TYPE_MOTION type (for regular pointer motion). Other\n types (e.g. scrolling) may be added in the future.\n\n The special type @ref LIBINPUT_ACCEL_TYPE_FALLBACK specifies the acceleration\n function to be moved for any movement produced by the device that does not\n have a specific acceleration type defined.\n\n Use to specify the acceleration function type in\n @ref libinput_config_accel_set_points\n\n Each device implements a subset of those types, see a list of supported\n devices for each movement type definition.\n\n @see LIBINPUT_ACCEL_ARG_TYPE\n @since 1.23"]
+pub type libinput_config_accel_type = ::std::os::raw::c_uint;
+extern "C" {
+    #[doc = " @ingroup config\n\n Defines the acceleration function for a given movement type\n in an acceleration configuration with the profile\n @ref LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM.\n\n Movement types are specific to each device, @see libinput_config_accel_type.\n\n Each custom acceleration function is defined by ``n`` points spaced uniformly\n along the x-axis starting from 0 and continuing in a constant step size.\n There by the function is defined by the following points:\n (0 * step, f[0]), (1 * step, f[1]), ..., ((n - 1) * step, f[n - 1]).\n The x-axis represents the device-speed in device units per millisecond.\n The y-axis represents the pointer-speed.\n\n It is up to the user to define those values in accordance with device DPI\n and screen DPI.\n\n @param accel_config The acceleration configuration to modify.\n @param accel_type The movement type to configure a custom function for.\n @param step The distance between each point along the x-axis.\n @param npoints The number of points of the custom acceleration function.\n @param points The points' y-values of the custom acceleration function.\n\n @return A config status code.\n\n @see libinput_config_accel\n @since 1.23"]
+    pub fn libinput_config_accel_set_points(
+        accel_config: *mut libinput_config_accel,
+        accel_type: libinput_config_accel_type,
+        step: f64,
+        npoints: usize,
+        points: *mut f64,
+    ) -> libinput_config_status;
+}
 extern "C" {
     #[doc = " @ingroup config\n\n Returns a bitmask of the configurable acceleration modes available on\n this device.\n\n @param device The device to configure\n\n @return A bitmask of all configurable modes available on this device.\n\n @since 1.1"]
     pub fn libinput_device_config_accel_get_profiles(device: *mut libinput_device) -> u32;
@@ -1652,6 +1737,25 @@ extern "C" {
     pub fn libinput_device_config_click_get_default_method(
         device: *mut libinput_device,
     ) -> libinput_config_click_method;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Set the finger number to button number mapping for clickfinger. The\n default mapping on most devices is to have a 1, 2 and 3 finger tap to map\n to the left, right and middle button, respectively.\n A device may permit changing the button mapping but disallow specific\n maps. In this case @ref LIBINPUT_CONFIG_STATUS_UNSUPPORTED is returned,\n the caller is expected to handle this case correctly.\n\n Changing the button mapping may not take effect immediately,\n the device may wait until it is in a neutral state before applying any\n changes.\n\n @param device The device to configure\n @param map The new finger-to-button number mapping\n\n @return A config status code. Changing the order on a device that does not\n support the clickfinger method always fails with @ref\n LIBINPUT_CONFIG_STATUS_UNSUPPORTED.\n\n @see libinput_device_config_click_get_clickfinger_button_map\n @see libinput_device_config_click_get_default_clickfinger_button_map"]
+    pub fn libinput_device_config_click_set_clickfinger_button_map(
+        device: *mut libinput_device,
+        map: libinput_config_clickfinger_button_map,
+    ) -> libinput_config_status;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Get the finger number to button number mapping for clickfinger.\n\n The return value for a device that does not support clickfinger is always\n @ref LIBINPUT_CONFIG_CLICKFINGER_MAP_LRM.\n\n @param device The device to configure\n @return The current finger-to-button number mapping\n\n @see libinput_device_config_click_set_clickfinger_button_map\n @see libinput_device_config_click_get_default_clickfinger_button_map"]
+    pub fn libinput_device_config_click_get_clickfinger_button_map(
+        device: *mut libinput_device,
+    ) -> libinput_config_clickfinger_button_map;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Get the default finger number to button number mapping for clickfinger.\n\n The return value for a device that does not support clickfinger is always\n @ref LIBINPUT_CONFIG_CLICKFINGER_MAP_LRM.\n\n @param device The device to configure\n @return The default finger-to-button number mapping\n\n @see libinput_device_config_click_set_clickfinger_button_map\n @see libinput_device_config_click_get_clickfinger_button_map"]
+    pub fn libinput_device_config_click_get_default_clickfinger_button_map(
+        device: *mut libinput_device,
+    ) -> libinput_config_clickfinger_button_map;
 }
 #[doc = " Middle mouse button emulation is to be disabled, or\n is currently disabled."]
 pub const libinput_config_middle_emulation_state_LIBINPUT_CONFIG_MIDDLE_EMULATION_DISABLED:
@@ -1827,7 +1931,7 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[doc = " @ingroup config\n\n Set the rotation of a device in degrees clockwise off the logical neutral\n position. Any subsequent motion events are adjusted according to the\n given angle.\n\n The angle has to be in the range of [0, 360[ degrees, otherwise this\n function returns LIBINPUT_CONFIG_STATUS_INVALID. If the angle is a\n multiple of 360 or negative, the caller must ensure the correct ranging\n before calling this function.\n\n libinput guarantees that this function accepts multiples of 90 degrees.\n If a value is within the [0, 360[ range but not a multiple of 90 degrees,\n this function may return LIBINPUT_CONFIG_STATUS_INVALID if the underlying\n device or implementation does not support finer-grained rotation angles.\n\n The rotation angle is applied to all motion events emitted by the device.\n Thus, rotating the device also changes the angle required or presented by\n scrolling, gestures, etc.\n\n @param device The device to configure\n @param degrees_cw The angle in degrees clockwise\n @return A config status code. Setting a rotation of 0 degrees on a\n device that does not support rotation always succeeds.\n\n @see libinput_device_config_rotation_is_available\n @see libinput_device_config_rotation_get_angle\n @see libinput_device_config_rotation_get_default_angle\n\n @since 1.4"]
+    #[doc = " @ingroup config\n\n Set the rotation of a device in degrees clockwise off the logical neutral\n position. Any subsequent motion events are adjusted according to the\n given angle.\n\n The angle has to be in the range of [0, 360[ degrees, otherwise this\n function returns LIBINPUT_CONFIG_STATUS_INVALID. If the angle is a\n multiple of 360 or negative, the caller must ensure the correct ranging\n before calling this function.\n\n The rotation angle is applied to all motion events emitted by the device.\n Thus, rotating the device also changes the angle required or presented by\n scrolling, gestures, etc.\n\n @param device The device to configure\n @param degrees_cw The angle in degrees clockwise\n @return A config status code. Setting a rotation of 0 degrees on a\n device that does not support rotation always succeeds.\n\n @see libinput_device_config_rotation_is_available\n @see libinput_device_config_rotation_get_angle\n @see libinput_device_config_rotation_get_default_angle\n\n @since 1.4"]
     pub fn libinput_device_config_rotation_set_angle(
         device: *mut libinput_device,
         degrees_cw: ::std::os::raw::c_uint,
@@ -1844,4 +1948,42 @@ extern "C" {
     pub fn libinput_device_config_rotation_get_default_angle(
         device: *mut libinput_device,
     ) -> ::std::os::raw::c_uint;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Check if a tablet tool can have a custom pressure range.\n\n @param tool The libinput tool\n @return Non-zero if a device has an adjustible pressure range, zero otherwise.\n\n @see libinput_tablet_tool_config_pressure_range_set\n @see libinput_tablet_tool_config_pressure_range_get_minimum\n @see libinput_tablet_tool_config_pressure_range_get_maximum\n @see libinput_tablet_tool_config_pressure_range_get_default_minimum\n @see libinput_tablet_tool_config_pressure_range_get_default_maximum\n\n @since 1.26"]
+    pub fn libinput_tablet_tool_config_pressure_range_is_available(
+        tool: *mut libinput_tablet_tool,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Set the pressure range for this tablet tool. This maps the given logical\n pressure range into the available hardware pressure range so that a hardware\n pressure of the given minimum value maps into a logical pressure of 0.0 (as\n returned by libinput_event_tablet_tool_get_pressure()) and the hardware\n pressure of the given maximum value is mapped into the logical pressure\n of 1.0 (as returned by libinput_event_tablet_tool_get_pressure())\n\n The minimum value must be less than the maximum value, libinput may\n require the values to have a specific distance to each other,\n i.e. that (maximum - minimum > N) for an implementation-defined value of N.\n\n @param tool The libinput tool\n @param minimum The minimum pressure value in the range [0.0, 1.0)\n @param maximum The maximum pressure value in the range (0.0, 1.0]\n\n @return A config status code\n\n @see libinput_tablet_tool_config_pressure_range_is_available\n @see libinput_tablet_tool_config_pressure_range_get_minimum\n @see libinput_tablet_tool_config_pressure_range_get_maximum\n @see libinput_tablet_tool_config_pressure_range_get_default_minimum\n @see libinput_tablet_tool_config_pressure_range_get_default_maximum\n\n @since 1.26"]
+    pub fn libinput_tablet_tool_config_pressure_range_set(
+        tool: *mut libinput_tablet_tool,
+        minimum: f64,
+        maximum: f64,
+    ) -> libinput_config_status;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Get the minimum pressure value for this tablet tool, normalized to the\n range [0.0, 1.0] of the available hardware pressure.\n\n If the tool does not support pressure range configuration, the return value\n of this function is always 0.0.\n\n @param tool The libinput tool\n @return The minimum pressure value for this tablet tool\n\n @see libinput_tablet_tool_config_pressure_range_is_available\n @see libinput_tablet_tool_config_pressure_range_get_maximum\n @see libinput_tablet_tool_config_pressure_range_get_default_minimum\n @see libinput_tablet_tool_config_pressure_range_get_default_maximum\n\n @since 1.26"]
+    pub fn libinput_tablet_tool_config_pressure_range_get_minimum(
+        tool: *mut libinput_tablet_tool,
+    ) -> f64;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Get the maximum pressure value for this tablet tool, normalized to the\n range [0.0, 1.0] of the available hardware pressure.\n\n If the tool does not support pressure range configuration, the return value\n of this function is always 1.0.\n\n @param tool The libinput tool\n @return The maximum pressure value for this tablet tool\n\n @see libinput_tablet_tool_config_pressure_range_is_available\n @see libinput_tablet_tool_config_pressure_range_get_minimum\n @see libinput_tablet_tool_config_pressure_range_get_default_maximum\n @see libinput_tablet_tool_config_pressure_range_get_default_maximum\n\n @since 1.26"]
+    pub fn libinput_tablet_tool_config_pressure_range_get_maximum(
+        tool: *mut libinput_tablet_tool,
+    ) -> f64;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Get the minimum pressure value for this tablet tool, normalized to the\n range [0.0, 1.0] of the available hardware pressure.\n\n If the tool does not support pressure range configuration, the return value\n of this function is always 0.0.\n\n @param tool The libinput tool\n @return The minimum pressure value for this tablet tool\n\n @see libinput_tablet_tool_config_pressure_range_is_available\n @see libinput_tablet_tool_config_pressure_range_get_minimum\n @see libinput_tablet_tool_config_pressure_range_get_maximum\n @see libinput_tablet_tool_config_pressure_range_get_default_maximum\n\n @since 1.26"]
+    pub fn libinput_tablet_tool_config_pressure_range_get_default_minimum(
+        tool: *mut libinput_tablet_tool,
+    ) -> f64;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Get the maximum pressure value for this tablet tool, normalized to the\n range [0.0, 1.0] of the available hardware pressure.\n\n If the tool does not support pressure range configuration, the return value\n of this function is always 1.0.\n\n @param tool The libinput tool\n @return The maximum pressure value for this tablet tool\n\n @see libinput_tablet_tool_config_pressure_range_is_available\n @see libinput_tablet_tool_config_pressure_range_get_maximum\n @see libinput_tablet_tool_config_pressure_range_get_maximum\n @see libinput_tablet_tool_config_pressure_range_get_default_maximum\n\n @since 1.26"]
+    pub fn libinput_tablet_tool_config_pressure_range_get_default_maximum(
+        tool: *mut libinput_tablet_tool,
+    ) -> f64;
 }
