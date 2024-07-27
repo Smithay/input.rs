@@ -70,7 +70,7 @@ impl AccelConfig {
     ///
     /// The accel config could become dereferenced
     #[cfg(feature = "libinput_1_26")]
-    pub unsafe fn set_points(
+    pub fn set_points(
         &self,
         accel_type: AccelType,
         step: f64,
@@ -138,7 +138,3 @@ pub enum AccelType {
     /// This type is supported by mouse and touchpad.
     Scroll,
 }
-
-// /// Creates a new acceleration config
-// #[cfg(feature = "libinput_1_26")]
-// pub fn config_accel_create(profile: AccelProfile) -> *mut libinput_config_accel {}
