@@ -57,7 +57,9 @@ pub enum AccelProfile {
     /// Pointer acceleration depends on the input speed. This is the
     /// default profile for most devices.
     Adaptive,
-    /// A custom acceleration profile
+    /// A custom acceleration profile. Device movement acceleration depends
+    /// on user defined custom acceleration functions for each movement
+    /// type.
     Custom,
 }
 
@@ -554,7 +556,9 @@ impl Device {
     /// The accel config could become dereferenced
     #[cfg(feature = "libinput_1_26")]
     pub unsafe fn config_accel_apply(&self, accel_config: AccelConfig) -> DeviceConfigResult {
-        match unsafe { ffi::libinput_device_config_accel_apply(self.as_raw_mut(), accel_config.ptr()) } {
+        match unsafe {
+            ffi::libinput_device_config_accel_apply(self.as_raw_mut(), accel_config.ptr())
+        } {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
                 Err(DeviceConfigError::Unsupported)
