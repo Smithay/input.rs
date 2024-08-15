@@ -29,7 +29,7 @@ version = "1.10"
 optional = true
 
 [features]
-default = ["libinput_1_21"]
+default = ["libinput_1_23"]
 use_bindgen = ["bindgen", "proc-macro2", "regex"]
 update_bindings = ["use_bindgen"]
 libinput_1_11 = []
@@ -37,3 +37,4 @@ libinput_1_14 = []
 libinput_1_15 = []
 libinput_1_19 = []
 libinput_1_21 = []
+libinput_1_23 = []

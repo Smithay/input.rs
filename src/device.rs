@@ -8,6 +8,7 @@
 )]
 
 use crate::{
+    accel_config::AccelConfig,
     event::{switch::Switch, tablet_pad::TabletPadModeGroup},
     ffi, AsRaw, FromRaw, Libinput, Seat,
 };
@@ -56,6 +57,10 @@ pub enum AccelProfile {
     /// Pointer acceleration depends on the input speed. This is the
     /// default profile for most devices.
     Adaptive,
+    /// A custom acceleration profile. Device movement acceleration depends
+    /// on user defined custom acceleration functions for each movement
+    /// type.
+    Custom,
 }
 
 /// The click method defines when to generate software-emulated
@@ -544,6 +549,23 @@ impl Device {
         }
     }
 
+    /// Apply the acceleration configuration to the device
+    #[cfg(feature = "libinput_1_23")]
+    pub fn config_accel_apply(&self, accel_config: &AccelConfig) -> DeviceConfigResult {
+        match unsafe {
+            ffi::libinput_device_config_accel_apply(self.as_raw_mut(), accel_config.as_raw_mut())
+        } {
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
+                Err(DeviceConfigError::Unsupported)
+            }
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
+            _ => panic!("libinput returned invalid 'libinput_config_status'"),
+        }
+    }
+
     /// Return the default pointer acceleration profile for this
     /// pointer device.
     pub fn config_accel_default_profile(&self) -> Option<AccelProfile> {
@@ -554,6 +576,9 @@ impl Device {
             }
             ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE => {
                 Some(AccelProfile::Adaptive)
+            }
+            ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM => {
+                Some(AccelProfile::Custom)
             }
             _x => {
                 #[cfg(feature = "log")]
@@ -576,6 +601,9 @@ impl Device {
             }
             ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE => {
                 Some(AccelProfile::Adaptive)
+            }
+            ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM => {
+                Some(AccelProfile::Custom)
             }
             _x => {
                 #[cfg(feature = "log")]
@@ -604,6 +632,11 @@ impl Device {
         {
             profiles.push(AccelProfile::Adaptive);
         }
+        if bitmask & ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM as u32
+            != 0
+        {
+            profiles.push(AccelProfile::Custom);
+        }
         profiles
     }
 
@@ -619,6 +652,9 @@ impl Device {
                     }
                     AccelProfile::Adaptive => {
                         ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE
+                    }
+                    AccelProfile::Custom => {
+                        ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM
                     }
                 },
             )

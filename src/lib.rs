@@ -228,6 +228,7 @@ macro_rules! ffi_func {
 
 mod context;
 mod device;
+pub mod accel_config;
 pub mod event;
 mod seat;
 
