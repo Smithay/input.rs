@@ -549,15 +549,11 @@ impl Device {
         }
     }
 
-    /// Apply the config to the device
-    ///
-    /// # Safety
-    ///
-    /// The accel config could become dereferenced
-    #[cfg(feature = "libinput_1_26")]
-    pub unsafe fn config_accel_apply(&self, accel_config: AccelConfig) -> DeviceConfigResult {
+    /// Apply the acceleration configuration to the device
+    #[cfg(feature = "libinput_1_23")]
+    pub fn config_accel_apply(&self, accel_config: &AccelConfig) -> DeviceConfigResult {
         match unsafe {
-            ffi::libinput_device_config_accel_apply(self.as_raw_mut(), accel_config.ptr())
+            ffi::libinput_device_config_accel_apply(self.as_raw_mut(), accel_config.as_raw_mut())
         } {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {

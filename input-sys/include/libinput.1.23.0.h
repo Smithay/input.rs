@@ -164,8 +164,7 @@ struct libinput_event_tablet_tool;
  *
  * Tablet pad event representing a button press, or ring/strip update on
  * the tablet pad itself. Valid event types for this event are @ref
- * LIBINPUT_EVENT_TABLET_PAD_BUTTON, @ref LIBINPUT_EVENT_TABLET_PAD_DIAL,
- * @ref LIBINPUT_EVENT_TABLET_PAD_RING and
+ * LIBINPUT_EVENT_TABLET_PAD_BUTTON, @ref LIBINPUT_EVENT_TABLET_PAD_RING and
  * @ref LIBINPUT_EVENT_TABLET_PAD_STRIP.
  *
  * @since 1.3
@@ -218,9 +217,7 @@ enum libinput_key_state {
 enum libinput_led {
 	LIBINPUT_LED_NUM_LOCK = (1 << 0),
 	LIBINPUT_LED_CAPS_LOCK = (1 << 1),
-	LIBINPUT_LED_SCROLL_LOCK = (1 << 2),
-	LIBINPUT_LED_COMPOSE = (1 << 3),
-	LIBINPUT_LED_KANA = (1 << 4)
+	LIBINPUT_LED_SCROLL_LOCK = (1 << 2)
 };
 
 /**
@@ -432,8 +429,7 @@ struct libinput_tablet_pad_mode_group;
  * the Wacom Cintiq 22HD provide two mode groups. If multiple mode groups
  * are available, a caller should use
  * libinput_tablet_pad_mode_group_has_button(),
- * libinput_tablet_pad_mode_group_has_ring(),
- * libinput_tablet_pad_mode_group_has_dial() and
+ * libinput_tablet_pad_mode_group_has_ring() and
  * libinput_tablet_pad_mode_group_has_strip() to associate each button,
  * ring and strip with the correct mode group.
  *
@@ -542,22 +538,6 @@ libinput_tablet_pad_mode_group_get_mode(struct libinput_tablet_pad_mode_group *g
 int
 libinput_tablet_pad_mode_group_has_button(struct libinput_tablet_pad_mode_group *group,
 					  unsigned int button);
-
-/**
- * @ingroup tablet_pad_modes
- *
- * Devices without mode switching capabilities return true for every dial.
- *
- * @param group A previously obtained mode group
- * @param dial A dial index, starting at 0
- * @return true if the given dial index is part of this mode group or
- * false otherwise
- *
- * @since 1.26
- */
-int
-libinput_tablet_pad_mode_group_has_dial(struct libinput_tablet_pad_mode_group *group,
-					unsigned int dial);
 
 /**
  * @ingroup tablet_pad_modes
@@ -987,14 +967,6 @@ enum libinput_event_type {
 	 * @since 1.15
 	 */
 	LIBINPUT_EVENT_TABLET_PAD_KEY,
-
-	/**
-	 * A status change on a tablet dial with the @ref
-	 * LIBINPUT_DEVICE_CAP_TABLET_PAD capability.
-	 *
-	 * @since 1.26
-	 */
-	LIBINPUT_EVENT_TABLET_PAD_DIAL,
 
 	LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN = 800,
 	LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE,
@@ -3141,7 +3113,7 @@ libinput_event_tablet_pad_get_base_event(struct libinput_event_tablet_pad *event
 /**
  * @ingroup event_tablet_pad
  *
- * Returns the current position of the ring, in degrees clockwise
+ * Returns the current position of the ring, in degrees counterclockwise
  * from the northern-most point of the ring in the tablet's current logical
  * orientation.
  *
@@ -3341,44 +3313,6 @@ libinput_event_tablet_pad_get_key(struct libinput_event_tablet_pad *event);
  */
 enum libinput_key_state
 libinput_event_tablet_pad_get_key_state(struct libinput_event_tablet_pad *event);
-
-/**
- * @ingroup event_tablet_pad
- *
- * Returns the delta change of the dial, in multiples or fractions of 120, with
- * each multiple of 120 indicating one logical wheel event.
- * See libinput_event_pointer_get_scroll_value_v120() for more details.
- *
- * @note It is an application bug to call this function for events other than
- * @ref LIBINPUT_EVENT_TABLET_PAD_DIAL.  For other events, this function
- * returns 0.
- *
- * @param event The libinput tablet pad event
- * @return The delta of the the axis
- *
- * @since 1.26
- */
-double
-libinput_event_tablet_pad_get_dial_delta_v120(struct libinput_event_tablet_pad *event);
-
-/**
- * @ingroup event_tablet_pad
- *
- * Returns the number of the dial that has changed state, with 0 being the
- * first dial. On tablets with only one dial, this function always returns
- * 0.
- *
- * @note It is an application bug to call this function for events other than
- * @ref LIBINPUT_EVENT_TABLET_PAD_DIAL.  For other events, this function
- * returns 0.
- *
- * @param event The libinput tablet pad event
- * @return The index of the dial that changed state
- *
- * @since 1.26
- */
-unsigned int
-libinput_event_tablet_pad_get_dial_number(struct libinput_event_tablet_pad *event);
 
 /**
  * @ingroup event_tablet_pad
@@ -4202,19 +4136,6 @@ libinput_device_get_name(struct libinput_device *device);
 /**
  * @ingroup device
  *
- * Get the bus type ID for this device.
- *
- * @param device A previously obtained device
- * @return The bus type ID of this device (see BUS_* in linux/input.h)
- *
- * @since 1.26
- */
-unsigned int
-libinput_device_get_id_bustype(struct libinput_device *device);
-
-/**
- * @ingroup device
- *
  * Get the product ID for this device.
  *
  * @param device A previously obtained device
@@ -4449,7 +4370,7 @@ libinput_device_switch_has_switch(struct libinput_device *device,
  *
  * @param device A current input device
  *
- * @return The number of buttons supported by the device. -1 on error.
+ * @return The number of buttons supported by the device.
  *
  * @since 1.3
  */
@@ -4459,29 +4380,12 @@ libinput_device_tablet_pad_get_num_buttons(struct libinput_device *device);
 /**
  * @ingroup device
  *
- * Return the number of dials a device with the @ref
- * LIBINPUT_DEVICE_CAP_TABLET_PAD capability provides.
- *
- * @param device A current input device
- *
- * @return The number of dials or 0 if the device has no dials. -1 on error.
- *
- * @see libinput_event_tablet_pad_get_dial_number
- *
- * @since 1.26
- */
-int
-libinput_device_tablet_pad_get_num_dials(struct libinput_device *device);
-
-/**
- * @ingroup device
- *
  * Return the number of rings a device with the @ref
  * LIBINPUT_DEVICE_CAP_TABLET_PAD capability provides.
  *
  * @param device A current input device
  *
- * @return The number of rings or 0 if the device has no rings. -1 on error.
+ * @return The number of rings or 0 if the device has no rings.
  *
  * @see libinput_event_tablet_pad_get_ring_number
  *
@@ -4498,7 +4402,7 @@ libinput_device_tablet_pad_get_num_rings(struct libinput_device *device);
  *
  * @param device A current input device
  *
- * @return The number of strips or 0 if the device has no strips. -1 on error.
+ * @return The number of strips or 0 if the device has no strips.
  *
  * @see libinput_event_tablet_pad_get_strip_number
  *
@@ -4610,15 +4514,10 @@ libinput_device_group_get_user_data(struct libinput_device_group *group);
  *    - libinput_device_config_tap_set_drag_enabled()
  *    - libinput_device_config_tap_set_drag_lock_enabled()
  *    - libinput_device_config_click_set_method()
- *    - libinput_device_config_click_set_clickfinger_button_map()
  *    - libinput_device_config_scroll_set_method()
  *    - libinput_device_config_dwt_set_enabled()
  * - Touchscreens:
  *    - libinput_device_config_calibration_set_matrix()
- * - Tablets:
- *    - libinput_device_config_calibration_set_matrix()
- *    - libinput_tablet_tool_config_pressure_range_set()
- *    - libinput_device_config_left_handed_set()
  * - Pointer devices (mice, trackballs, touchpads):
  *    - libinput_device_config_accel_set_speed()
  *    - libinput_device_config_accel_set_profile()
@@ -4752,16 +4651,6 @@ enum libinput_config_tap_button_map {
 	LIBINPUT_CONFIG_TAP_MAP_LRM,
 	/** 1/2/3 finger tap maps to left/middle/right*/
 	LIBINPUT_CONFIG_TAP_MAP_LMR,
-};
-
-/**
- * @ingroup config
- */
-enum libinput_config_clickfinger_button_map {
-	/** 1/2/3 finger click maps to left/right/middle */
-	LIBINPUT_CONFIG_CLICKFINGER_MAP_LRM,
-	/** 1/2/3 finger click maps to left/middle/right*/
-	LIBINPUT_CONFIG_CLICKFINGER_MAP_LMR,
 };
 
 /**
@@ -5348,7 +5237,7 @@ enum libinput_config_accel_profile {
 	 * on user defined custom acceleration functions for each movement
 	 * type.
 	 *
-	 * @see libinput_config_accel_set_points
+	 * @see libinput_device_config_accel_set_points
 	 */
 	LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM = (1 << 2),
 };
@@ -5832,68 +5721,6 @@ libinput_device_config_click_get_method(struct libinput_device *device);
  */
 enum libinput_config_click_method
 libinput_device_config_click_get_default_method(struct libinput_device *device);
-
-/**
- * @ingroup config
- *
- * Set the finger number to button number mapping for clickfinger. The
- * default mapping on most devices is to have a 1, 2 and 3 finger tap to map
- * to the left, right and middle button, respectively.
- * A device may permit changing the button mapping but disallow specific
- * maps. In this case @ref LIBINPUT_CONFIG_STATUS_UNSUPPORTED is returned,
- * the caller is expected to handle this case correctly.
- *
- * Changing the button mapping may not take effect immediately,
- * the device may wait until it is in a neutral state before applying any
- * changes.
- *
- * @param device The device to configure
- * @param map The new finger-to-button number mapping
- *
- * @return A config status code. Changing the order on a device that does not
- * support the clickfinger method always fails with @ref
- * LIBINPUT_CONFIG_STATUS_UNSUPPORTED.
- *
- * @see libinput_device_config_click_get_clickfinger_button_map
- * @see libinput_device_config_click_get_default_clickfinger_button_map
- */
-enum libinput_config_status
-libinput_device_config_click_set_clickfinger_button_map(struct libinput_device *device,
-							enum libinput_config_clickfinger_button_map map);
-
-/**
- * @ingroup config
- *
- * Get the finger number to button number mapping for clickfinger.
- *
- * The return value for a device that does not support clickfinger is always
- * @ref LIBINPUT_CONFIG_CLICKFINGER_MAP_LRM.
- *
- * @param device The device to configure
- * @return The current finger-to-button number mapping
- *
- * @see libinput_device_config_click_set_clickfinger_button_map
- * @see libinput_device_config_click_get_default_clickfinger_button_map
- */
-enum libinput_config_clickfinger_button_map
-libinput_device_config_click_get_clickfinger_button_map(struct libinput_device *device);
-
-/**
- * @ingroup config
- *
- * Get the default finger number to button number mapping for clickfinger.
- *
- * The return value for a device that does not support clickfinger is always
- * @ref LIBINPUT_CONFIG_CLICKFINGER_MAP_LRM.
- *
- * @param device The device to configure
- * @return The default finger-to-button number mapping
- *
- * @see libinput_device_config_click_set_clickfinger_button_map
- * @see libinput_device_config_click_get_clickfinger_button_map
- */
-enum libinput_config_clickfinger_button_map
-libinput_device_config_click_get_default_clickfinger_button_map(struct libinput_device *device);
 
 /**
  * @ingroup config
@@ -6571,148 +6398,7 @@ libinput_device_config_rotation_get_angle(struct libinput_device *device);
 unsigned int
 libinput_device_config_rotation_get_default_angle(struct libinput_device *device);
 
-/**
- * @ingroup config
- *
- * Check if a tablet tool can have a custom pressure range.
- *
- * @param tool The libinput tool
- * @return Non-zero if a device has an adjustible pressure range, zero otherwise.
- *
- * @see libinput_tablet_tool_config_pressure_range_set
- * @see libinput_tablet_tool_config_pressure_range_get_minimum
- * @see libinput_tablet_tool_config_pressure_range_get_maximum
- * @see libinput_tablet_tool_config_pressure_range_get_default_minimum
- * @see libinput_tablet_tool_config_pressure_range_get_default_maximum
- *
- * @since 1.26
- */
-int
-libinput_tablet_tool_config_pressure_range_is_available(struct libinput_tablet_tool *tool);
-
-/**
- * @ingroup config
- *
- * Set the pressure range for this tablet tool. This maps the given logical
- * pressure range into the available hardware pressure range so that a hardware
- * pressure of the given minimum value maps into a logical pressure of 0.0 (as
- * returned by libinput_event_tablet_tool_get_pressure()) and the hardware
- * pressure of the given maximum value is mapped into the logical pressure
- * of 1.0 (as returned by libinput_event_tablet_tool_get_pressure())
- *
- * The minimum value must be less than the maximum value, libinput may
- * require the values to have a specific distance to each other,
- * i.e. that (maximum - minimum > N) for an implementation-defined value of N.
- *
- * @param tool The libinput tool
- * @param minimum The minimum pressure value in the range [0.0, 1.0)
- * @param maximum The maximum pressure value in the range (0.0, 1.0]
- *
- * @return A config status code
- *
- * @see libinput_tablet_tool_config_pressure_range_is_available
- * @see libinput_tablet_tool_config_pressure_range_get_minimum
- * @see libinput_tablet_tool_config_pressure_range_get_maximum
- * @see libinput_tablet_tool_config_pressure_range_get_default_minimum
- * @see libinput_tablet_tool_config_pressure_range_get_default_maximum
- *
- * @since 1.26
- */
-enum libinput_config_status
-libinput_tablet_tool_config_pressure_range_set(struct libinput_tablet_tool *tool,
-					       double minimum,
-					       double maximum);
-
-/**
- * @ingroup config
- *
- * Get the minimum pressure value for this tablet tool, normalized to the
- * range [0.0, 1.0] of the available hardware pressure.
- *
- * If the tool does not support pressure range configuration, the return value
- * of this function is always 0.0.
- *
- * @param tool The libinput tool
- * @return The minimum pressure value for this tablet tool
- *
- * @see libinput_tablet_tool_config_pressure_range_is_available
- * @see libinput_tablet_tool_config_pressure_range_get_maximum
- * @see libinput_tablet_tool_config_pressure_range_get_default_minimum
- * @see libinput_tablet_tool_config_pressure_range_get_default_maximum
- *
- * @since 1.26
- */
-double
-libinput_tablet_tool_config_pressure_range_get_minimum(struct libinput_tablet_tool *tool);
-
-/**
- * @ingroup config
- *
- * Get the maximum pressure value for this tablet tool, normalized to the
- * range [0.0, 1.0] of the available hardware pressure.
- *
- * If the tool does not support pressure range configuration, the return value
- * of this function is always 1.0.
- *
- * @param tool The libinput tool
- * @return The maximum pressure value for this tablet tool
- *
- * @see libinput_tablet_tool_config_pressure_range_is_available
- * @see libinput_tablet_tool_config_pressure_range_get_minimum
- * @see libinput_tablet_tool_config_pressure_range_get_default_maximum
- * @see libinput_tablet_tool_config_pressure_range_get_default_maximum
- *
- * @since 1.26
- */
-double
-libinput_tablet_tool_config_pressure_range_get_maximum(struct libinput_tablet_tool *tool);
-
-/**
- * @ingroup config
- *
- * Get the minimum pressure value for this tablet tool, normalized to the
- * range [0.0, 1.0] of the available hardware pressure.
- *
- * If the tool does not support pressure range configuration, the return value
- * of this function is always 0.0.
- *
- * @param tool The libinput tool
- * @return The minimum pressure value for this tablet tool
- *
- * @see libinput_tablet_tool_config_pressure_range_is_available
- * @see libinput_tablet_tool_config_pressure_range_get_minimum
- * @see libinput_tablet_tool_config_pressure_range_get_maximum
- * @see libinput_tablet_tool_config_pressure_range_get_default_maximum
- *
- * @since 1.26
- */
-double
-libinput_tablet_tool_config_pressure_range_get_default_minimum(struct libinput_tablet_tool *tool);
-
-/**
- * @ingroup config
- *
- * Get the maximum pressure value for this tablet tool, normalized to the
- * range [0.0, 1.0] of the available hardware pressure.
- *
- * If the tool does not support pressure range configuration, the return value
- * of this function is always 1.0.
- *
- * @param tool The libinput tool
- * @return The maximum pressure value for this tablet tool
- *
- * @see libinput_tablet_tool_config_pressure_range_is_available
- * @see libinput_tablet_tool_config_pressure_range_get_maximum
- * @see libinput_tablet_tool_config_pressure_range_get_maximum
- * @see libinput_tablet_tool_config_pressure_range_get_default_maximum
- *
- * @since 1.26
- */
-double
-libinput_tablet_tool_config_pressure_range_get_default_maximum(struct libinput_tablet_tool *tool);
-
 #ifdef __cplusplus
 }
 #endif
 #endif /* LIBINPUT_H */
-
