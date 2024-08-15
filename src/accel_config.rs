@@ -92,7 +92,6 @@ impl crate::AsRaw<libinput_config_accel> for AccelConfig {
     }
 }
 
-/// Destroy the related pointer
 #[cfg(feature = "libinput_1_23")]
 impl std::ops::Drop for AccelConfig {
     fn drop(&mut self) {
