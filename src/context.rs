@@ -2,12 +2,11 @@
 #![allow(clippy::result_unit_err)]
 
 use crate::{ffi, AsRaw, Device, Event, FromRaw};
-use io_lifetimes::{AsFd, BorrowedFd, OwnedFd};
 use std::{
     ffi::{CStr, CString},
     io::{Error as IoError, Result as IoResult},
     iter::Iterator,
-    os::unix::io::{AsRawFd, FromRawFd, IntoRawFd, RawFd},
+    os::unix::io::{AsFd, AsRawFd, BorrowedFd, FromRawFd, IntoRawFd, OwnedFd, RawFd},
     path::Path,
     rc::Rc,
 };
