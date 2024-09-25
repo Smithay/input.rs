@@ -23,7 +23,7 @@ path = "input-sys"
 default-features = false
 
 [dependencies.udev]
-version = "0.8"
+version = "0.9"
 optional = true
 
 [dev-dependencies]
