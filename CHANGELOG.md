@@ -1,3 +1,8 @@
+## 0.9.1
+
+- Update udev to 0.8
+- Drop io-lifetimes dependency and require Rust 1.63
+
 ## 0.9.0
 
 - Update to bitflags 2.x and udev 0.8
