@@ -235,3 +235,8 @@ pub use context::*;
 pub use device::*;
 pub use event::Event;
 pub use seat::*;
+
+#[cfg(feature = "libinput_1_23")]
+mod accel_config;
+#[cfg(feature = "libinput_1_23")]
+pub use accel_config::*;
