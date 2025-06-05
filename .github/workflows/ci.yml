@@ -225,7 +225,7 @@ jobs:
           RUST_LOG: bindgen=warn,bindgen::ir=error,bindgen::codegen=error
         with:
           command: build
-          args: --manifest-path input-sys/Cargo.toml --target ${{ matrix.target }} --no-default-features --features update_bindings,libinput_1_11,libinput_1_14,libinput_1_15,libinput_1_19,libinput_1_21
+          args: --manifest-path input-sys/Cargo.toml --target ${{ matrix.target }} --no-default-features --features update_bindings,libinput_1_11,libinput_1_14,libinput_1_15,libinput_1_19,libinput_1_21,libinput_1_23
       - name: Copy bindings
         run: |
           for i in input-sys/src/bindings/*.rs
