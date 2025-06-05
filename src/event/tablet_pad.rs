@@ -76,6 +76,10 @@ pub enum TabletPadEvent {
     /// A status change on a tablet ring with the `DeviceCapability::TabletPad`
     /// capability.
     Ring(TabletPadRingEvent),
+    /// A status change on a dial on a device with the
+    /// `DeviceCapability::TabletPad` capability.
+    #[cfg(feature = "libinput_1_26")]
+    Dial(TabletPadDialEvent),
     /// A status change on a strip on a device with the
     /// `DeviceCapability::TabletPad` capability.
     Strip(TabletPadStripEvent),
@@ -94,6 +98,8 @@ impl EventTrait for TabletPadEvent {
         match self {
             TabletPadEvent::Button(event) => event.as_raw_event(),
             TabletPadEvent::Ring(event) => event.as_raw_event(),
+            #[cfg(feature = "libinput_1_26")]
+            TabletPadEvent::Dial(event) => event.as_raw_event(),
             TabletPadEvent::Strip(event) => event.as_raw_event(),
             #[cfg(feature = "libinput_1_15")]
             TabletPadEvent::Key(event) => event.as_raw_event(),
@@ -134,6 +140,8 @@ impl AsRaw<ffi::libinput_event_tablet_pad> for TabletPadEvent {
         match self {
             TabletPadEvent::Button(event) => event.as_raw(),
             TabletPadEvent::Ring(event) => event.as_raw(),
+            #[cfg(feature = "libinput_1_26")]
+            TabletPadEvent::Dial(event) => event.as_raw(),
             TabletPadEvent::Strip(event) => event.as_raw(),
             #[cfg(feature = "libinput_1_15")]
             TabletPadEvent::Key(event) => event.as_raw(),
@@ -146,6 +154,8 @@ impl Context for TabletPadEvent {
         match self {
             TabletPadEvent::Button(event) => event.context(),
             TabletPadEvent::Ring(event) => event.context(),
+            #[cfg(feature = "libinput_1_26")]
+            TabletPadEvent::Dial(event) => event.context(),
             TabletPadEvent::Strip(event) => event.context(),
             #[cfg(feature = "libinput_1_15")]
             TabletPadEvent::Key(event) => event.context(),
@@ -203,7 +213,7 @@ impl TabletPadRingEvent {
     /// On tablets with only one ring, this function always returns 0.
     pub fn number, ffi::libinput_event_tablet_pad_get_ring_number, u32);
     ffi_func!(
-    /// Returns the current position of the ring, in degrees counterclockwise from
+    /// Returns the current position of the ring, in degrees clockwise from
     /// the northern-most point of the ring in the tablet's current logical
     /// orientation.
     ///
@@ -232,6 +242,30 @@ impl TabletPadRingEvent {
             }
         }
     }
+}
+
+#[cfg(feature = "libinput_1_26")]
+ffi_event_struct!(
+/// A status change on a dial on a device with the `DeviceCapability::TabletPad`
+/// capability.
+struct TabletPadDialEvent, ffi::libinput_event_tablet_pad, ffi::libinput_event_tablet_pad_get_base_event);
+
+#[cfg(feature = "libinput_1_26")]
+impl TabletPadDialEvent {
+    ffi_func!(
+    /// Returns the delta change of the dial, in multiples or fractions of 120,
+    /// with each multiple of 120 indicating one logical wheel event.
+    ///
+    /// See [`PointerScrollWheelEvent::scroll_value_v120`](crate::event::pointer::PointerScrollWheelEvent::scroll_value_v120)
+    /// for more details.
+    pub fn dial_v120, ffi::libinput_event_tablet_pad_get_dial_delta_v120, f64);
+
+    ffi_func!(
+    /// Returns the number of the dial that has changed state, with 0 being the
+    /// first dial.
+    ///
+    /// On tablets with only one dial, this function always returns 0.
+    pub fn number, ffi::libinput_event_tablet_pad_get_dial_number, u32);
 }
 
 /// The source for a `TabletPadStripEvent` event.

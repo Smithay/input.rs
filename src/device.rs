@@ -180,6 +180,17 @@ pub enum TapButtonMap {
     LeftMiddleRight,
 }
 
+/// Map 1/2/3 finger clicks to buttons
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[non_exhaustive]
+#[cfg(feature = "libinput_1_26")]
+pub enum ClickfingerButtonMap {
+    /// 1/2/3 finger click maps to left/right/middle
+    LeftRightMiddle,
+    /// 1/2/3 finger click maps to left/middle/right
+    LeftMiddleRight,
+}
+
 /// Whenever scroll button lock is enabled or not
 #[cfg(feature = "libinput_1_15")]
 #[allow(missing_docs)]
@@ -202,6 +213,12 @@ bitflags! {
         const CAPSLOCK = ffi::libinput_led_LIBINPUT_LED_CAPS_LOCK;
         /// Scroll Lock Led
         const SCROLLLOCK = ffi::libinput_led_LIBINPUT_LED_SCROLL_LOCK;
+        /// Compose Key Led
+        #[cfg(feature = "libinput_1_26")]
+        const COMPOSE = ffi::libinput_led_LIBINPUT_LED_COMPOSE;
+        /// Kana Key Led
+        #[cfg(feature = "libinput_1_26")]
+        const KANA = ffi::libinput_led_LIBINPUT_LED_KANA;
     }
 }
 
@@ -322,6 +339,12 @@ impl Device {
     ffi_func!(
     /// Get the product ID for this device.
     pub fn id_product, ffi::libinput_device_get_id_product, u32);
+
+    #[cfg(feature = "libinput_1_26")]
+    ffi_func!(
+    /// Get the bus type ID for this device.
+    pub fn id_bustype, ffi::libinput_device_get_id_bustype, u32);
+
     ffi_func!(
     /// Get the vendor ID for this device.
     pub fn id_vendor, ffi::libinput_device_get_id_vendor, u32);
@@ -521,7 +544,8 @@ impl Device {
     ///
     /// If multiple mode groups are available, a caller should use
     /// `TabletPadModeGroup::has_button`,
-    /// `TabletPadModeGroup::has_ring` and
+    /// `TabletPadModeGroup::has_ring`,
+    /// `TabletPadModeGroup::has_dial` (since libinput 1.26.0) and
     /// `TabletPadModeGroup::has_strip()` to associate each button,
     /// ring and strip with the correct mode group.
     pub fn tablet_pad_number_of_mode_groups, ffi::libinput_device_tablet_pad_get_num_mode_groups, i32);
@@ -938,6 +962,76 @@ impl Device {
                     }
                 },
             )
+        } {
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
+                Err(DeviceConfigError::Unsupported)
+            }
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
+            _ => panic!("libinput returned invalid 'libinput_config_status'"),
+        }
+    }
+
+    /// Get the finger number to button number mapping for clickfinger.
+    ///
+    /// The return value for a device that does not support clickfinger is
+    /// always [`ClickfingerButtonMap::LeftRightMiddle`].
+    #[cfg(feature = "libinput_1_26")]
+    pub fn config_click_clickfinger_default_button_map(&self) -> ClickfingerButtonMap {
+        match unsafe {
+            ffi::libinput_device_config_click_get_default_clickfinger_button_map(self.as_raw_mut())
+        } {
+            ffi::libinput_config_clickfinger_button_map_LIBINPUT_CONFIG_CLICKFINGER_MAP_LRM => {
+                ClickfingerButtonMap::LeftRightMiddle
+            }
+            ffi::libinput_config_clickfinger_button_map_LIBINPUT_CONFIG_CLICKFINGER_MAP_LMR => {
+                ClickfingerButtonMap::LeftMiddleRight
+            }
+            _ => panic!("libinput returned invalid 'libinput_config_tap_button_map'"),
+        }
+    }
+
+    /// Get the default finger number to button number mapping for clickfinger.
+    ///
+    /// The return value for a device that does not support clickfinger is
+    /// always [`ClickfingerButtonMap::LeftRightMiddle`].
+    #[cfg(feature = "libinput_1_26")]
+    pub fn config_click_clickfinger_button_map(&self) -> ClickfingerButtonMap {
+        match unsafe {
+            ffi::libinput_device_config_click_get_clickfinger_button_map(self.as_raw_mut())
+        } {
+            ffi::libinput_config_clickfinger_button_map_LIBINPUT_CONFIG_CLICKFINGER_MAP_LRM => {
+                ClickfingerButtonMap::LeftRightMiddle
+            }
+            ffi::libinput_config_clickfinger_button_map_LIBINPUT_CONFIG_CLICKFINGER_MAP_LMR => {
+                ClickfingerButtonMap::LeftMiddleRight
+            }
+            _ => panic!("libinput returned invalid 'libinput_config_tap_button_map'"),
+        }
+    }
+
+    /// Set the finger number to button number mapping for clickfinger.
+    ///
+    /// The default mapping on most devices is to have a 1, 2 and 3 finger tap
+    /// to map to the left, right and middle button, respectively. A device may
+    /// permit changing the button mapping but disallow specific maps. In this
+    /// case [`DeviceConfigError::Unsupported`] is returned, the caller is expected
+    /// to handle this case correctly.
+    ///
+    /// Changing the button mapping may not take effect immediately, the device may
+    /// wait until it is in a neutral state before applying any changes.
+    #[cfg(feature = "libinput_1_26")]
+    pub fn config_click_clickfinger_set_button_map(
+        &self,
+        map: ClickfingerButtonMap,
+    ) -> DeviceConfigResult {
+        match unsafe {
+            ffi::libinput_device_config_click_set_clickfinger_button_map(self.as_raw_mut(), match map {
+                ClickfingerButtonMap::LeftRightMiddle => ffi::libinput_config_clickfinger_button_map_LIBINPUT_CONFIG_CLICKFINGER_MAP_LRM,
+                ClickfingerButtonMap::LeftMiddleRight => ffi::libinput_config_clickfinger_button_map_LIBINPUT_CONFIG_CLICKFINGER_MAP_LMR,
+            })
         } {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {

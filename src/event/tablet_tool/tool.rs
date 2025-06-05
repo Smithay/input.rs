@@ -1,4 +1,6 @@
 use crate::{ffi, AsRaw, FromRaw};
+#[cfg(feature = "libinput_1_26")]
+use crate::{DeviceConfigError, DeviceConfigResult};
 
 /// Available tool types for a device with the `DeviceCapability::TabletTool` capability.
 ///
@@ -150,4 +152,68 @@ impl TabletTool {
     /// libinput emulated the other axis as a cicular contact, i.e. major == minor
     /// for all values of major.
     pub fn tablet_tool_has_size, ffi::libinput_tablet_tool_has_size, bool);
+
+    /// Set the pressure range for this tablet tool.
+    ///
+    /// This maps the given logical pressure range into the available hardware
+    /// pressure range so that a hardware pressure of the given minimum value
+    /// maps into a logical pressure of 0.0 (as returned by
+    /// [`TabletToolEventTrait::get_pressure`](crate::event::tablet_tool::TabletToolEventTrait::pressure))
+    /// and the hardware pressure of the given maximum value is mapped into
+    /// the logical pressure of 1.0 (as returned by
+    /// [`TabletToolEventTrait::get_pressure`](crate::event::tablet_tool::TabletToolEventTrait::pressure))
+    ///
+    /// The minimum value must be less than the maximum value, libinput may
+    /// require the values to have a specific distance to each other,
+    /// i.e. that (maximium - minimum > N) for an implementation-defined value of N.
+    #[cfg(feature = "libinput_1_26")]
+    pub fn config_pressure_range_set(&self, minimum: f64, maximum: f64) -> DeviceConfigResult {
+        match unsafe {
+            ffi::libinput_tablet_tool_config_pressure_range_set(self.as_raw_mut(), minimum, maximum)
+        } {
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
+                Err(DeviceConfigError::Unsupported)
+            }
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
+            _ => panic!("libinput returned invalid 'libinput_config_status'"),
+        }
+    }
+
+    #[cfg(feature = "libinput_1_26")]
+    ffi_func!(
+    /// Check if a tablet tool can have a custom pressure range.
+    pub fn config_pressure_range_is_available, ffi::libinput_tablet_tool_config_pressure_range_is_available, bool);
+
+    #[cfg(feature = "libinput_1_26")]
+    ffi_func!(
+    /// Get the minimum pressure value for this tablet tool, normalized to the
+    /// range [0.0, 1.0] of the available hardware pressure.
+    ///
+    /// If the tool does not support pressure range configuration, the return
+    /// value of this function is always 0.0.
+    pub fn config_pressure_range_get_minimum, ffi::libinput_tablet_tool_config_pressure_range_get_minimum, f64);
+
+    #[cfg(feature = "libinput_1_26")]
+    ffi_func!(
+    /// Get the maximum pressure value for this tablet tool, normalized to the range [0.0, 1.0] of the available hardware pressure.
+    ///
+    /// If the tool does not support pressure range configuration, the return value of this function is always 1.0.
+    pub fn config_pressure_range_get_maximum, ffi::libinput_tablet_tool_config_pressure_range_get_maximum, f64);
+
+    #[cfg(feature = "libinput_1_26")]
+    ffi_func!(
+    /// Get the minimum pressure value for this tablet tool, normalized to the range [0.0, 1.0] of the available hardware pressure.
+    ///
+    /// If the tool does not support pressure range configuration, the return value of this function is always 0.0.
+    pub fn config_pressure_range_get_default_minimum, ffi::libinput_tablet_tool_config_pressure_range_get_default_minimum, f64);
+
+    #[cfg(feature = "libinput_1_26")]
+    ffi_func!(
+    /// Get the maximum pressure value for this tablet tool, normalized to the range [0.0, 1.0] of the available hardware pressure.
+    ///
+    /// If the tool does not support pressure range configuration, the return value of this function is always 1.0.
+    pub fn config_pressure_range_get_default_maximum, ffi::libinput_tablet_tool_config_pressure_range_get_default_maximum, f64);
 }
