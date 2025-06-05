@@ -191,6 +191,21 @@ pub enum ClickfingerButtonMap {
     LeftMiddleRight,
 }
 
+/// Drag lock state
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[non_exhaustive]
+pub enum DragLockState {
+    /// Drag lock is to be disabled, or is currently disabled
+    Disabled,
+    /// Drag lock is to be enabled in timeout mode,
+    /// or is currently enabled in timeout mode
+    EnabledTimeout,
+    /// Drag lock is to be enabled in sticky mode,
+    /// or is currently enabled in sticky mode
+    #[cfg(feature = "libinput_1_27")]
+    EnabledSticky,
+}
+
 /// Whenever scroll button lock is enabled or not
 #[cfg(feature = "libinput_1_15")]
 #[allow(missing_docs)]
@@ -219,6 +234,50 @@ bitflags! {
         /// Kana Key Led
         #[cfg(feature = "libinput_1_26")]
         const KANA = ffi::libinput_led_LIBINPUT_LED_KANA;
+    }
+}
+
+/// Describes a rectangle to configure a device’s area, see [`Device::config_area_set_rectangle`].
+///
+/// This struct describes a rectangle via the upper left points (x1, y1) and the lower right point (x2, y2).
+///
+/// All arguments are normalized to the range [0.0, 1.0] to represent the corresponding proportion of the device’s width and height, respectively. A rectangle covering the whole device thus comprises of the points (0.0, 0.0) and (1.0, 1.0).
+///
+/// The conditions x1 < x2 and y1 < y2 must be true.
+#[derive(Debug, Copy, Clone, PartialEq)]
+#[cfg(feature = "libinput_1_27")]
+pub struct AreaRectangle {
+    /// x1 coordinate
+    pub x1: f64,
+    /// y1 coordinate
+    pub y1: f64,
+    /// x2 coordinate
+    pub x2: f64,
+    /// y2 coordinate
+    pub y2: f64,
+}
+
+#[cfg(feature = "libinput_1_27")]
+impl From<AreaRectangle> for ffi::libinput_config_area_rectangle {
+    fn from(rect: AreaRectangle) -> Self {
+        input_sys::libinput_config_area_rectangle {
+            x1: rect.x1,
+            y1: rect.y1,
+            x2: rect.x2,
+            y2: rect.y2,
+        }
+    }
+}
+
+#[cfg(feature = "libinput_1_27")]
+impl From<ffi::libinput_config_area_rectangle> for AreaRectangle {
+    fn from(rect: ffi::libinput_config_area_rectangle) -> Self {
+        AreaRectangle {
+            x1: rect.x1,
+            y1: rect.y1,
+            x2: rect.x2,
+            y2: rect.y2,
+        }
     }
 }
 
@@ -809,6 +868,85 @@ impl Device {
     ffi_func!(
     /// Check if the device can be calibrated via a calibration matrix.
     pub fn config_calibration_has_matrix, ffi::libinput_device_config_calibration_has_matrix, bool);
+
+    #[cfg(feature = "libinput_1_27")]
+    ffi_func!(
+    /// Check if the device can change its logical input area via a rectangle.
+    pub fn config_area_has_rectangle, ffi::libinput_device_config_area_has_rectangle, bool);
+
+    /// Set the given rectangle as the logical input area of this device.
+    ///
+    /// Future interactions by a tablet tool on this devices are scaled to only
+    /// consider events within this logical input area - as if the logical input
+    /// area were the available physical area.
+    ///
+    /// The coordinates of the rectangle represent the proportion of the
+    /// available maximum physical area, normalized to the range [0.0, 1.0].
+    /// For example, a rectangle with the two points 0.25, 0.5, 0.75, 1.0 adds
+    /// a 25% dead zone to the left and right and a 50% dead zone on the top:
+    ///
+    /// ```text
+    /// +----------------------------------+
+    /// |                                  |
+    /// |                50%               |
+    /// |                                  |
+    /// |        +-----------------+       |
+    /// |        |                 |       |
+    /// |   25%  |                 |  25%  |
+    /// |        |                 |       |
+    /// +--------+-----------------+-------+
+    /// ```
+    /// The area applies in the tablet’s current logical rotation, i.e. the
+    /// above example is always at the bottom of the tablet.
+    ///
+    /// Once applied, the logical area’s top-left coordinate (in the current
+    /// logical rotation) becomes the new offset (0/0) and the return values
+    /// of [`TabletToolEventTrait::x`](crate::event::tablet_tool::TabletToolEventTrait::x) and
+    /// [`TabletToolEventTrait::y`](crate::event::tablet_tool::TabletToolEventTrait::y)
+    /// are in relation to this new offset.
+    ///
+    /// Likewise, [`TabletToolEventTrait::x_transformed`](crate::event::tablet_tool::TabletToolEventTrait::x_transformed)
+    /// and [`TabletToolEventTrait::y_transformed`](crate::event::tablet_tool::TabletToolEventTrait::y_transformed)
+    /// represent the value scaled into the configured logical area.
+    ///
+    /// The return value of libinput_device_get_size() is not affected by the configured area.
+    ///
+    /// Changing the area may not take effect immediately, the device may wait until it is in a
+    /// neutral state before applying any changes.
+    #[cfg(feature = "libinput_1_27")]
+    pub fn config_area_set_rectangle(&self, area: AreaRectangle) -> DeviceConfigResult {
+        let area = area.into();
+        match unsafe {
+            ffi::libinput_device_config_area_set_rectangle(self.as_raw_mut(), &raw const area)
+        } {
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
+                Err(DeviceConfigError::Unsupported)
+            }
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
+            _ => panic!("libinput returned invalid 'libinput_config_status'"),
+        }
+    }
+
+    /// Return the current area rectangle for this device.
+    ///
+    /// The return value for a device that does not support area rectangles is
+    /// a rectangle with the points 0/0 and 1/1.
+    #[cfg(feature = "libinput_1_27")]
+    pub fn config_area_get_rectangle(&self) -> AreaRectangle {
+        unsafe { ffi::libinput_device_config_area_get_rectangle(self.as_raw_mut()) }.into()
+    }
+
+    /// Return the default area rectangle for this device.
+    ///
+    /// The return value for a device that does not support area rectangles is
+    /// a rectangle with the points 0/0 and 1/1.
+    #[cfg(feature = "libinput_1_27")]
+    pub fn config_area_get_default_rectangle(&self) -> AreaRectangle {
+        unsafe { ffi::libinput_device_config_area_get_default_rectangle(self.as_raw_mut()) }.into()
+    }
 
     /// Apply the 3x3 transformation matrix to absolute device
     /// coordinates.
@@ -1768,12 +1906,26 @@ impl Device {
     ///
     /// Drag lock may be enabled by default even when tapping is
     /// disabled by default.
-    pub fn config_tap_default_drag_lock_enabled(&self) -> bool {
+    pub fn config_tap_default_drag_lock_enabled(&self) -> DragLockState {
         match unsafe {
             ffi::libinput_device_config_tap_get_default_drag_lock_enabled(self.as_raw_mut())
         } {
-            ffi::libinput_config_drag_lock_state_LIBINPUT_CONFIG_DRAG_LOCK_ENABLED => true,
-            ffi::libinput_config_drag_lock_state_LIBINPUT_CONFIG_DRAG_LOCK_DISABLED => false,
+            ffi::libinput_config_drag_lock_state_LIBINPUT_CONFIG_DRAG_LOCK_DISABLED => {
+                DragLockState::Disabled
+            }
+            // legacy spelling for LIBINPUT_CONFIG_DRAG_LOCK_ENABLED_TIMEOUT
+            #[cfg(not(feature = "libinput_1_27"))]
+            ffi::libinput_config_drag_lock_state_LIBINPUT_CONFIG_DRAG_LOCK_ENABLED => {
+                DragLockState::EnabledTimeout
+            }
+            #[cfg(feature = "libinput_1_27")]
+            ffi::libinput_config_drag_lock_state_LIBINPUT_CONFIG_DRAG_LOCK_ENABLED_TIMEOUT => {
+                DragLockState::EnabledTimeout
+            }
+            #[cfg(feature = "libinput_1_27")]
+            ffi::libinput_config_drag_lock_state_LIBINPUT_CONFIG_DRAG_LOCK_ENABLED_STICKY => {
+                DragLockState::EnabledSticky
+            }
             _ => panic!("libinput returned invalid 'libinput_config_drag_lock_state'"),
         }
     }
@@ -1919,14 +2071,27 @@ impl Device {
     ///
     /// Enabling drag lock on a device that has tapping disabled is
     /// permitted, but has no effect until tapping is enabled.
-    pub fn config_tap_set_drag_lock_enabled(&mut self, enabled: bool) -> DeviceConfigResult {
+    pub fn config_tap_set_drag_lock_enabled(&mut self, state: DragLockState) -> DeviceConfigResult {
         match unsafe {
             ffi::libinput_device_config_tap_set_drag_lock_enabled(
                 self.as_raw_mut(),
-                if enabled {
-                    ffi::libinput_config_drag_lock_state_LIBINPUT_CONFIG_DRAG_LOCK_ENABLED
-                } else {
-                    ffi::libinput_config_drag_lock_state_LIBINPUT_CONFIG_DRAG_LOCK_DISABLED
+                match state {
+                    DragLockState::Disabled => {
+                        ffi::libinput_config_drag_lock_state_LIBINPUT_CONFIG_DRAG_LOCK_DISABLED
+                    }
+                    #[cfg(not(feature = "libinput_1_27"))]
+                    DragLockState::EnabledTimeout => {
+                        // legacy spelling for LIBINPUT_CONFIG_DRAG_LOCK_ENABLED_TIMEOUT
+                        ffi::libinput_config_drag_lock_state_LIBINPUT_CONFIG_DRAG_LOCK_ENABLED
+                    }
+                    #[cfg(feature = "libinput_1_27")]
+                    DragLockState::EnabledTimeout => {
+                        ffi::libinput_config_drag_lock_state_LIBINPUT_CONFIG_DRAG_LOCK_ENABLED_TIMEOUT
+                    }
+                    #[cfg(feature = "libinput_1_27")]
+                    DragLockState::EnabledSticky => {
+                        ffi::libinput_config_drag_lock_state_LIBINPUT_CONFIG_DRAG_LOCK_ENABLED_STICKY
+                    }
                 },
             )
         } {
