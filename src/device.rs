@@ -206,6 +206,19 @@ pub enum DragLockState {
     EnabledSticky,
 }
 
+/// A config status to distinguish or set 3-finger dragging on a device.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[non_exhaustive]
+#[cfg(feature = "libinput_1_28")]
+pub enum ThreeFingerDragState {
+    /// Drag is to be disabled, or is currently disabled
+    Disabled,
+    /// Drag is to be enabled for 3 fingers, or is currently enabled
+    EnabledThreeFinger,
+    /// Drag is to be enabled for 4 fingers, or is currently enabled
+    EnabledFourFinger,
+}
+
 /// Whenever scroll button lock is enabled or not
 #[cfg(feature = "libinput_1_15")]
 #[allow(missing_docs)]
@@ -1982,6 +1995,82 @@ impl Device {
     ///
     /// See `config_tap_set_enabled` for more information.
     pub fn config_tap_finger_count, ffi::libinput_device_config_tap_get_finger_count, u32);
+
+    #[cfg(feature = "libinput_1_28")]
+    ffi_func!(
+    /// Returns the maximum number of fingers available for 3-finger dragging.
+    pub fn config_3fg_drag_get_finger_count, ffi::libinput_device_config_3fg_drag_get_finger_count, u32);
+
+    /// Enable or disable 3-finger drag on this device.
+    ///
+    /// When enabled, three fingers down will result in a button down event,
+    /// subsequent finger motion triggers a drag. The button is released shortly
+    /// after all fingers are logically up.
+    ///
+    /// See [Three-finger drag](https://wayland.freedesktop.org/libinput/doc/latest/configuration.html#three-finger-drag) for details.
+    #[cfg(feature = "libinput_1_28")]
+    pub fn config_3fg_drag_set_enabled(&self, state: ThreeFingerDragState) -> DeviceConfigResult {
+        match unsafe {
+            ffi::libinput_device_config_3fg_drag_set_enabled(
+                self.as_raw_mut(),
+                match state {
+                    ThreeFingerDragState::Disabled => {
+                        ffi::libinput_config_3fg_drag_state_LIBINPUT_CONFIG_3FG_DRAG_DISABLED
+                    }
+                    ThreeFingerDragState::EnabledThreeFinger => {
+                        ffi::libinput_config_3fg_drag_state_LIBINPUT_CONFIG_3FG_DRAG_ENABLED_3FG
+                    }
+                    ThreeFingerDragState::EnabledFourFinger => {
+                        ffi::libinput_config_3fg_drag_state_LIBINPUT_CONFIG_3FG_DRAG_ENABLED_4FG
+                    }
+                },
+            )
+        } {
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
+                Err(DeviceConfigError::Unsupported)
+            }
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
+            _ => panic!("libinput returned invalid 'libinput_config_status'"),
+        }
+    }
+
+    /// Return whether 3-finger drag is enabled or disabled on this device.
+    #[cfg(feature = "libinput_1_28")]
+    pub fn config_3fg_drag_get_enabled(&self) -> ThreeFingerDragState {
+        match unsafe { ffi::libinput_device_config_3fg_drag_get_enabled(self.as_raw_mut()) } {
+            ffi::libinput_config_3fg_drag_state_LIBINPUT_CONFIG_3FG_DRAG_DISABLED => {
+                ThreeFingerDragState::Disabled
+            }
+            ffi::libinput_config_3fg_drag_state_LIBINPUT_CONFIG_3FG_DRAG_ENABLED_3FG => {
+                ThreeFingerDragState::EnabledThreeFinger
+            }
+            ffi::libinput_config_3fg_drag_state_LIBINPUT_CONFIG_3FG_DRAG_ENABLED_4FG => {
+                ThreeFingerDragState::EnabledFourFinger
+            }
+            _ => panic!("libinput returned invalid 'libinput_config_3fg_drag_state'"),
+        }
+    }
+
+    /// Return whether 3-finger drag is enabled or disabled by default on this device.
+    #[cfg(feature = "libinput_1_28")]
+    pub fn config_3fg_drag_get_default_enabled(&self) -> ThreeFingerDragState {
+        match unsafe { ffi::libinput_device_config_3fg_drag_get_default_enabled(self.as_raw_mut()) }
+        {
+            ffi::libinput_config_3fg_drag_state_LIBINPUT_CONFIG_3FG_DRAG_DISABLED => {
+                ThreeFingerDragState::Disabled
+            }
+            ffi::libinput_config_3fg_drag_state_LIBINPUT_CONFIG_3FG_DRAG_ENABLED_3FG => {
+                ThreeFingerDragState::EnabledThreeFinger
+            }
+            ffi::libinput_config_3fg_drag_state_LIBINPUT_CONFIG_3FG_DRAG_ENABLED_4FG => {
+                ThreeFingerDragState::EnabledFourFinger
+            }
+            _ => panic!("libinput returned invalid 'libinput_config_3fg_drag_state'"),
+        }
+    }
 
     /// Set the finger number to button number mapping for
     /// tap-to-click.
