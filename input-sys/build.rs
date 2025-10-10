@@ -73,6 +73,7 @@ fn main() {
                 false => "",
             })
             .header(header.display().to_string())
+            .rust_target(bindgen::RustTarget::stable(63, 0).unwrap())
             .allowlist_type(r"^libinput_.*$")
             .allowlist_function(r"^libinput_.*$")
             // Requires `va_list`

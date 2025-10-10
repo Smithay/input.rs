@@ -15,7 +15,7 @@ edition = "2018"
 path = "src/lib.rs"
 
 [build-dependencies.bindgen]
-version = "0.69"
+version = "0.72"
 optional = true
 
 # Fix for non-existant feature on nightly `-Z minimal-versions`
