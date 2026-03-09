@@ -21,7 +21,7 @@ jobs:
           default: true
           override: true
       - name: Cargo cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
@@ -49,7 +49,7 @@ jobs:
           default: true
           override: true
       - name: Cargo cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
@@ -77,14 +77,14 @@ jobs:
           default: true
           override: true
       - name: Cargo cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
           key: ${{ runner.os }}-cargo-rust_nightly-${{ hashFiles('**/Cargo.toml') }}
       - name: Build cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: target
           key: ${{ runner.os }}-build-rust_nightly-check-${{ hashFiles('**/Cargo.toml') }}
@@ -108,14 +108,14 @@ jobs:
           sudo apt-get update -qqy
           sudo apt-get install -qqy libudev-dev
       - name: Cargo cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
           key: ${{ runner.os }}-cargo-rust_nightly-${{ hashFiles('**/Cargo.toml') }}
       - name: Build cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: target
           key: ${{ runner.os }}-build-rust_nightly-check-minimal-${{ hashFiles('**/Cargo.toml') }}
@@ -202,7 +202,7 @@ jobs:
           default: true
           override: true
       - name: Cargo cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
@@ -211,7 +211,7 @@ jobs:
       - name: Build cache
         if: |
           runner.os != 'macOS'
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: target
           key: ${{ runner.os }}-build-rust_${{ matrix.rust }}-target_${{ matrix.target }}-${{ hashFiles('**/Cargo.toml') }}
@@ -234,9 +234,9 @@ jobs:
           done
       - name: Upload bindings
         if: matrix.task == 'bindings'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: bindings
+          name: bindings ${{ matrix.target }}
           path: gen_*.rs
       - name: Build
         if: contains(matrix.target, '-linux-') && startsWith(matrix.target, 'x86_64-')
@@ -267,9 +267,9 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: download bindings
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: bindings
+          name: bindings x86_64-unknown-linux-gnu
       - name: compare
         run: |
           code=0
@@ -295,9 +295,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download bindings
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: bindings
+          name: bindings x86_64-unknown-linux-gnu
       - name: Copy x86_64 bindings
         run: |
           for i in gen_*-x86_64-unknown-linux-gnu.rs
