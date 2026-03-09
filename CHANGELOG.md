@@ -1,3 +1,7 @@
+## Unreleased
+
+- **Breaking:** All string getter functions now support non-utf8 strings via lossly converted Cow strings 
+
 ## 0.9.1
 
 - Update udev to 0.8

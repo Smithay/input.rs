@@ -1,5 +1,5 @@
 use crate::{ffi, AsRaw, FromRaw, Libinput};
-use std::ffi::CStr;
+use std::{borrow::Cow, ffi::CStr};
 
 ffi_ref_struct!(
 /// A seat has two identifiers, the physical name and the logical name.
@@ -26,11 +26,10 @@ impl Seat {
     /// system or lower levels of the stack. In most cases, this is the
     /// base filter for devices - devices assigned to seats outside the
     /// current seat will not be available to the caller.
-    pub fn physical_name(&self) -> &str {
+    pub fn physical_name(&self) -> Cow<'_, str> {
         unsafe {
             CStr::from_ptr(ffi::libinput_seat_get_physical_name(self.as_raw_mut()))
-                .to_str()
-                .expect("Seat physical_name is no valid utf-8")
+                .to_string_lossy()
         }
     }
 
@@ -38,11 +37,9 @@ impl Seat {
     ///
     /// This is an identifier to group sets of devices within the
     /// compositor.
-    pub fn logical_name(&self) -> &str {
+    pub fn logical_name(&self) -> Cow<'_, str> {
         unsafe {
-            CStr::from_ptr(ffi::libinput_seat_get_logical_name(self.as_raw_mut()))
-                .to_str()
-                .expect("Seat logical_name is no valid utf-8")
+            CStr::from_ptr(ffi::libinput_seat_get_logical_name(self.as_raw_mut())).to_string_lossy()
         }
     }
 }
