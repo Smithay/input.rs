@@ -1,7 +1,7 @@
 ## Unreleased
 
 - **Breaking:** `Device::name`, `Device::output_name`, `Seat::physical_name` and `Seat::logical_name` now return Cow strings due to lossy conversion into UTF8
-- Added support for libinput accel config
+- Added support for libinput 1.23, 1.26, 1.27, 1.28 features
 
 ## 0.9.1
 
