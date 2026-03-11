@@ -38,6 +38,7 @@ libinput_1_15 = ["input-sys/libinput_1_15", "libinput_1_14"]
 libinput_1_19 = ["input-sys/libinput_1_19", "libinput_1_15"]
 libinput_1_21 = ["input-sys/libinput_1_21", "libinput_1_19"]
 libinput_1_23 = ["input-sys/libinput_1_23", "libinput_1_21"]
+libinput_1_26 = ["input-sys/libinput_1_26", "libinput_1_23"]
 
 [workspace]
 members = [

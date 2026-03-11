@@ -69,6 +69,12 @@ impl TabletPadModeGroup {
         unsafe { ffi::libinput_tablet_pad_mode_group_has_ring(self.as_raw_mut(), ring) != 0 }
     }
 
+    /// Devices without mode switching capabilities return true for every dial.
+    #[cfg(feature = "libinput_1_26")]
+    pub fn has_dial(&self, dial: u32) -> bool {
+        unsafe { ffi::libinput_tablet_pad_mode_group_has_dial(self.as_raw_mut(), dial) != 0 }
+    }
+
     /// Devices without mode switching capabilities return `true` for every strip.
     pub fn has_strip(&self, strip: u32) -> bool {
         unsafe { ffi::libinput_tablet_pad_mode_group_has_strip(self.as_raw_mut(), strip) != 0 }
