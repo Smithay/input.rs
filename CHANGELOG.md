@@ -1,6 +1,6 @@
 ## Unreleased
 
-- **Breaking:** All string getter functions now support non-utf8 strings via lossly converted Cow strings 
+- **Breaking:** `Device::name`, `Device::output_name`, `Seat::physical_name` and `Seat::logical_name` now return Cow strings due to lossy conversion into UTF8
 
 ## 0.9.1
 
