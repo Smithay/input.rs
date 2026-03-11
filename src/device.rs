@@ -7,6 +7,8 @@
     clippy::unnecessary_cast
 )]
 
+#[cfg(feature = "libinput_1_23")]
+use crate::accel_config::AccelConfig;
 use crate::{
     event::{switch::Switch, tablet_pad::TabletPadModeGroup},
     ffi, AsRaw, FromRaw, Libinput, Seat,
@@ -59,6 +61,42 @@ pub enum AccelProfile {
     /// Pointer acceleration depends on the input speed. This is the
     /// default profile for most devices.
     Adaptive,
+    /// A custom acceleration profile.
+    ///
+    /// Device movement acceleration depends on user defined custom
+    /// acceleration functions for each movement type.
+    #[cfg(feature = "libinput_1_23")]
+    Custom,
+}
+
+/// Acceleration types are categories of movement by a device that may have
+/// specific acceleration functions applied. A device always supports the
+/// [`AccelType::Motion`] type (for regular pointer motion).
+/// Other types (e.g. scrolling) may be added in the future.
+///
+/// The special type [`AccelType::Fallback`] specifies the acceleration function
+/// to be moved for any movement produced by the device that does not have a
+/// specific acceleration type defined.
+///
+/// Use to specify the acceleration function type in [`AccelConfig::set_points`].
+///
+/// Each device implements a subset of those types, see a list of supported
+/// devices for each movement type definition.
+#[cfg(feature = "libinput_1_23")]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[non_exhaustive]
+pub enum AccelType {
+    /// The default acceleration type used as a fallback when other acceleration
+    /// types are not provided.
+    Fallback,
+    /// Acceleration type for regular pointer movement.
+    ///
+    /// This type is always supported.
+    Motion,
+    /// Acceleration type for scroll movement.
+    ///
+    /// This type is supported by mouse and touchpad.
+    Scroll,
 }
 
 /// The click method defines when to generate software-emulated
@@ -541,6 +579,27 @@ impl Device {
         }
     }
 
+    /// Apply this pointer acceleration configuration to the device.
+    ///
+    /// This changes the device’s pointer acceleration method to the method
+    /// given in [`AccelConfig::new`] and applies all other configuration
+    /// settings.
+    #[cfg(feature = "libinput_1_23")]
+    pub fn config_accel_apply(&self, accel_config: AccelConfig) -> DeviceConfigResult {
+        match unsafe {
+            ffi::libinput_device_config_accel_apply(self.as_raw_mut(), accel_config.as_raw_mut())
+        } {
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
+                Err(DeviceConfigError::Unsupported)
+            }
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
+            _ => panic!("libinput returned invalid 'libinput_config_status'"),
+        }
+    }
+
     /// Return the default pointer acceleration profile for this
     /// pointer device.
     pub fn config_accel_default_profile(&self) -> Option<AccelProfile> {
@@ -551,6 +610,10 @@ impl Device {
             }
             ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE => {
                 Some(AccelProfile::Adaptive)
+            }
+            #[cfg(feature = "libinput_1_23")]
+            ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM => {
+                Some(AccelProfile::Custom)
             }
             _x => {
                 #[cfg(feature = "log")]
@@ -573,6 +636,10 @@ impl Device {
             }
             ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE => {
                 Some(AccelProfile::Adaptive)
+            }
+            #[cfg(feature = "libinput_1_23")]
+            ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM => {
+                Some(AccelProfile::Custom)
             }
             _x => {
                 #[cfg(feature = "log")]
@@ -601,6 +668,12 @@ impl Device {
         {
             profiles.push(AccelProfile::Adaptive);
         }
+        #[cfg(feature = "libinput_1_23")]
+        if bitmask & ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM as u32
+            != 0
+        {
+            profiles.push(AccelProfile::Custom);
+        }
         profiles
     }
 
@@ -616,6 +689,10 @@ impl Device {
                     }
                     AccelProfile::Adaptive => {
                         ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE
+                    }
+                    #[cfg(feature = "libinput_1_23")]
+                    AccelProfile::Custom => {
+                        ffi::libinput_config_accel_profile_LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM
                     }
                 },
             )
@@ -1165,12 +1242,6 @@ impl Device {
     /// otherwise this function returns `DeviceConfigError::Invalid`.
     /// If the angle is a multiple of 360 or negative, the caller
     /// must ensure the correct ranging before calling this function.
-    ///
-    /// libinput guarantees that this function accepts multiples of
-    /// 90 degrees. If a value is within the [0, 360] range but not a
-    /// multiple of 90 degrees, this function may return
-    /// `DeviceConfigError::Invalid` if the underlying device or
-    /// implementation does not support finer-grained rotation angles.
     ///
     /// The rotation angle is applied to all motion events emitted by
     /// the device. Thus, rotating the device also changes the angle

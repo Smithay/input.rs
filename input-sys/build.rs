@@ -4,6 +4,7 @@ extern crate bindgen;
 use std::{env, path::Path};
 
 const LIB_VERSIONS: &[(u8, u8, u8)] = &[
+    (1, 23, 0),
     (1, 21, 0),
     (1, 19, 0),
     (1, 15, 0),
