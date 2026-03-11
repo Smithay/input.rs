@@ -12,7 +12,10 @@ use crate::{
     ffi, AsRaw, FromRaw, Libinput, Seat,
 };
 use bitflags::bitflags;
-use std::ffi::{CStr, CString};
+use std::{
+    borrow::Cow,
+    ffi::{CStr, CString},
+};
 #[cfg(feature = "udev")]
 use udev::{
     ffi::{udev as udev_context, udev_device, udev_device_get_udev, udev_ref},
@@ -254,11 +257,9 @@ impl Device {
     /// the hardware itself.
     ///
     /// To get the sysname for this device, use `sysname`.
-    pub fn name(&self) -> &str {
+    pub fn name(&self) -> Cow<'_, str> {
         unsafe {
-            CStr::from_ptr(ffi::libinput_device_get_name(self.as_raw_mut()))
-                .to_str()
-                .expect("Device name is no valid utf8")
+            CStr::from_ptr(ffi::libinput_device_get_name(self.as_raw_mut())).to_string_lossy()
         }
     }
 
@@ -269,15 +270,11 @@ impl Device {
     /// device may not move beyond the boundaries of this output. An
     /// absolute device has its input coordinates mapped to the
     /// extents of this output.
-    pub fn output_name(&self) -> Option<&str> {
+    pub fn output_name(&self) -> Option<Cow<'_, str>> {
         unsafe {
             let ptr = ffi::libinput_device_get_output_name(self.as_raw_mut());
             if !ptr.is_null() {
-                Some(
-                    CStr::from_ptr(ptr)
-                        .to_str()
-                        .expect("Device output_name is no valid utf8"),
-                )
+                Some(CStr::from_ptr(ptr).to_string_lossy())
             } else {
                 None
             }

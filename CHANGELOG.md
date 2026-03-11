@@ -1,3 +1,7 @@
+## Unreleased
+
+- **Breaking:** `Device::name`, `Device::output_name`, `Seat::physical_name` and `Seat::logical_name` now return Cow strings due to lossy conversion into UTF8
+
 ## 0.9.1
 
 - Update udev to 0.8
