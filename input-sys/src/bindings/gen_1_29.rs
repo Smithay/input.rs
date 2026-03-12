@@ -322,7 +322,7 @@ pub const libinput_event_type_LIBINPUT_EVENT_TOUCH_CANCEL: libinput_event_type =
 pub const libinput_event_type_LIBINPUT_EVENT_TOUCH_FRAME: libinput_event_type = 504;
 #[doc = " One or more axes have changed state on a device with the @ref\n LIBINPUT_DEVICE_CAP_TABLET_TOOL capability. This event is only sent\n when the tool is in proximity, see @ref\n LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY for details.\n\n The proximity event contains the initial state of the axis as the\n tool comes into proximity. An event of type @ref\n LIBINPUT_EVENT_TABLET_TOOL_AXIS is only sent when an axis value\n changes from this initial state. It is possible for a tool to\n enter and leave proximity without sending an event of type @ref\n LIBINPUT_EVENT_TABLET_TOOL_AXIS.\n\n An event of type @ref LIBINPUT_EVENT_TABLET_TOOL_AXIS is sent\n when the tip state does not change. See the documentation for\n @ref LIBINPUT_EVENT_TABLET_TOOL_TIP for more details.\n\n @since 1.2"]
 pub const libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_AXIS: libinput_event_type = 600;
-#[doc = " Signals that a tool has come in or out of proximity of a device with\n the @ref LIBINPUT_DEVICE_CAP_TABLET_TOOL capability.\n\n Proximity events contain each of the current values for each axis,\n and these values may be extracted from them in the same way they are\n with @ref LIBINPUT_EVENT_TABLET_TOOL_AXIS events.\n\n Some tools may always be in proximity. For these tools, events of\n type @ref LIBINPUT_TABLET_TOOL_PROXIMITY_STATE_IN are sent only once after @ref\n LIBINPUT_EVENT_DEVICE_ADDED, and events of type @ref\n LIBINPUT_TABLET_TOOL_PROXIMITY_STATE_OUT are sent only once before @ref\n LIBINPUT_EVENT_DEVICE_REMOVED.\n\n If the tool that comes into proximity supports x/y coordinates,\n libinput guarantees that both x and y are set in the proximity\n event.\n\n When a tool goes out of proximity, the value of every axis should be\n assumed to have an undefined state and any buttons that are currently held\n down on the stylus are marked as released. Button release events for\n each button that was held down on the stylus are sent before the\n proximity out event.\n\n @since 1.2"]
+#[doc = " Signals that a tool has come in or out of proximity of a device with\n the @ref LIBINPUT_DEVICE_CAP_TABLET_TOOL capability.\n\n Proximity events contain each of the current values for each axis,\n and these values may be extracted from them in the same way they are\n with @ref LIBINPUT_EVENT_TABLET_TOOL_AXIS events.\n\n Some tools may always be in proximity. For these tools, events of\n type @ref LIBINPUT_TABLET_TOOL_PROXIMITY_STATE_IN are sent only once after\n @ref LIBINPUT_EVENT_DEVICE_ADDED, and events of type @ref\n LIBINPUT_TABLET_TOOL_PROXIMITY_STATE_OUT are sent only once before @ref\n LIBINPUT_EVENT_DEVICE_REMOVED.\n\n If the tool that comes into proximity supports x/y coordinates,\n libinput guarantees that both x and y are set in the proximity\n event.\n\n When a tool goes out of proximity, the value of every axis should be\n assumed to have an undefined state and any buttons that are currently held\n down on the stylus are marked as released. Button release events for\n each button that was held down on the stylus are sent before the\n proximity out event.\n\n @since 1.2"]
 pub const libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY: libinput_event_type = 601;
 #[doc = " Signals that a tool has come in contact with the surface of a\n device with the @ref LIBINPUT_DEVICE_CAP_TABLET_TOOL capability.\n\n On devices without distance proximity detection, the @ref\n LIBINPUT_EVENT_TABLET_TOOL_TIP is sent immediately after @ref\n LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY for the tip down event, and\n immediately before for the tip up event.\n\n The decision when a tip touches the surface is device-dependent\n and may be derived from pressure data or other means. If the tip\n state is changed by axes changing state, the\n @ref LIBINPUT_EVENT_TABLET_TOOL_TIP event includes the changed\n axes and no additional axis event is sent for this state change.\n In other words, a caller must look at both @ref\n LIBINPUT_EVENT_TABLET_TOOL_AXIS and @ref\n LIBINPUT_EVENT_TABLET_TOOL_TIP events to know the current state\n of the axes.\n\n If a button state change occurs at the same time as a tip state\n change, the order of events is device-dependent.\n\n @since 1.2"]
 pub const libinput_event_type_LIBINPUT_EVENT_TABLET_TOOL_TIP: libinput_event_type = 602;
@@ -2062,4 +2062,56 @@ extern "C" {
     pub fn libinput_tablet_tool_config_pressure_range_get_default_maximum(
         tool: *mut libinput_tablet_tool,
     ) -> f64;
+}
+#[doc = " Use the default hardware behavior of the tool. libinput\n does not modify the behavior of the eraser button (if any)."]
+pub const libinput_config_eraser_button_mode_LIBINPUT_CONFIG_ERASER_BUTTON_DEFAULT:
+    libinput_config_eraser_button_mode = 0;
+#[doc = " The eraser button on the tool sends a button event\n instead. If this tool comes into proximity as an eraser,\n a button event on the pen is emulated instead.\n\n See libinput_tablet_tool_config_eraser_button_set_mode() for details."]
+pub const libinput_config_eraser_button_mode_LIBINPUT_CONFIG_ERASER_BUTTON_BUTTON:
+    libinput_config_eraser_button_mode = 1;
+#[doc = " @ingroup config"]
+pub type libinput_config_eraser_button_mode = ::std::os::raw::c_uint;
+extern "C" {
+    #[doc = " @ingroup config\n\n Check if a tool can change the behavior of or to a firmware eraser button.\n\n A firmware eraser button is a button on the tool that, when pressed,\n virtually toggles the pen going out of proximity followed by the\n eraser tool coming in proximity. When released, the eraser goes\n out of proximity followed by the pen coming back into proximity.\n\n This is the default behavior for many contemporary pens who implement\n this in firmware. See also the [Windows Pen\n States](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/windows-pen-states).\n\n See the libinput documentation for more details.\n\n @param tool The libinput tool\n @return Non-zero if the device can be set to change to an eraser on button\n press.\n\n @see libinput_tablet_tool_config_eraser_button_get_modes\n @see libinput_tablet_tool_config_eraser_button_set_mode\n @see libinput_tablet_tool_config_eraser_button_get_mode\n @see libinput_tablet_tool_config_eraser_button_get_default_mode\n\n @since 1.29"]
+    pub fn libinput_tablet_tool_config_eraser_button_get_modes(
+        tool: *mut libinput_tablet_tool,
+    ) -> u32;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Change the eraser button behavior on a tool.\n\n If set to @ref LIBINPUT_CONFIG_ERASER_BUTTON_BUTTON, pressing the\n firmware eraser button on the tool instead triggers an event\n of type @ref LIBINPUT_EVENT_TABLET_TOOL_BUTTON.\n This event's libinput_event_tablet_tool_get_button() returns the\n button set with\n libinput_tablet_tool_config_eraser_button_set_button()\n Releasing the firmware eraser button releases that button again.\n\n @param tool The libinput tool\n @param mode The eraser button mode to switch to\n\n @return A config status code\n\n @see libinput_tablet_tool_config_eraser_button_get_modes\n @see libinput_tablet_tool_config_eraser_button_set_mode\n @see libinput_tablet_tool_config_eraser_button_get_mode\n @see libinput_tablet_tool_config_eraser_button_get_default_mode\n @see libinput_tablet_tool_config_eraser_button_set_button\n @see libinput_tablet_tool_config_eraser_button_get_button\n @see libinput_tablet_tool_config_eraser_button_get_default_button\n\n @since 1.29"]
+    pub fn libinput_tablet_tool_config_eraser_button_set_mode(
+        tool: *mut libinput_tablet_tool,
+        mode: libinput_config_eraser_button_mode,
+    ) -> libinput_config_status;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Get the mode for the eraser button.\n\n @param tool The libinput tool\n\n @return The eraser mode\n\n @see libinput_tablet_tool_config_eraser_button_get_modes\n @see libinput_tablet_tool_config_eraser_button_set_mode\n @see libinput_tablet_tool_config_eraser_button_get_mode\n @see libinput_tablet_tool_config_eraser_button_get_default_mode\n @see libinput_tablet_tool_config_eraser_button_set_button\n @see libinput_tablet_tool_config_eraser_button_get_button\n @see libinput_tablet_tool_config_eraser_button_get_default_button\n\n @since 1.29"]
+    pub fn libinput_tablet_tool_config_eraser_button_get_mode(
+        tool: *mut libinput_tablet_tool,
+    ) -> libinput_config_eraser_button_mode;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Get the default mode for the eraser button.\n\n @param tool The libinput tool\n\n @return The eraser button, if any, or zero otherwise\n\n @see libinput_tablet_tool_config_eraser_button_get_modes\n @see libinput_tablet_tool_config_eraser_button_set_mode\n @see libinput_tablet_tool_config_eraser_button_get_mode\n @see libinput_tablet_tool_config_eraser_button_get_default_mode\n @see libinput_tablet_tool_config_eraser_button_set_button\n @see libinput_tablet_tool_config_eraser_button_get_button\n @see libinput_tablet_tool_config_eraser_button_get_default_button\n\n @since 1.29"]
+    pub fn libinput_tablet_tool_config_eraser_button_get_default_mode(
+        tool: *mut libinput_tablet_tool,
+    ) -> libinput_config_eraser_button_mode;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Set a button to be the eraser button for this tool.\n This configuration has no effect unless the caller also sets\n the eraser mode to @ref LIBINPUT_CONFIG_ERASER_BUTTON_BUTTON via\n libinput_tablet_tool_config_eraser_button_set_mode().\n\n The buttons BTN_STYLUS, BTN_STYLUS2 and BTN_STYLUS2 are always\n allowed, even if libinput_tablet_tool_has_button() returns zero\n for the button. Otherwise, the button must be one that\n libinput_tablet_tool_has_button() returns a nonzero value for.\n\n @param tool The libinput tool\n @param button The button, usually one of BTN_STYLUS, BTN_STYLUS2 or\n BTN_STYLUS3\n\n @return A config status code\n\n @see libinput_tablet_tool_config_eraser_button_get_modes\n @see libinput_tablet_tool_config_eraser_button_set_mode\n @see libinput_tablet_tool_config_eraser_button_get_mode\n @see libinput_tablet_tool_config_eraser_button_get_default_mode\n @see libinput_tablet_tool_config_eraser_button_set_button\n @see libinput_tablet_tool_config_eraser_button_get_button\n @see libinput_tablet_tool_config_eraser_button_get_default_button\n\n @since 1.29"]
+    pub fn libinput_tablet_tool_config_eraser_button_set_button(
+        tool: *mut libinput_tablet_tool,
+        button: u32,
+    ) -> libinput_config_status;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Get the button configured to emulate an eraser for this tool.\n\n @param tool The libinput tool\n\n @return The eraser button, if any, or zero otherwise\n\n @see libinput_tablet_tool_config_eraser_button_get_modes\n @see libinput_tablet_tool_config_eraser_button_set_mode\n @see libinput_tablet_tool_config_eraser_button_get_mode\n @see libinput_tablet_tool_config_eraser_button_get_default_mode\n @see libinput_tablet_tool_config_eraser_button_set_button\n @see libinput_tablet_tool_config_eraser_button_get_button\n @see libinput_tablet_tool_config_eraser_button_get_default_button\n\n @since 1.29"]
+    pub fn libinput_tablet_tool_config_eraser_button_get_button(
+        tool: *mut libinput_tablet_tool,
+    ) -> ::std::os::raw::c_uint;
+}
+extern "C" {
+    #[doc = " @ingroup config\n\n Get the default button configured to emulate an eraser for this tool.\n\n @param tool The libinput tool\n\n @return The eraser button, if any, or zero otherwise\n\n @see libinput_tablet_tool_config_eraser_button_get_modes\n @see libinput_tablet_tool_config_eraser_button_set_mode\n @see libinput_tablet_tool_config_eraser_button_get_mode\n @see libinput_tablet_tool_config_eraser_button_get_default_mode\n @see libinput_tablet_tool_config_eraser_button_set_button\n @see libinput_tablet_tool_config_eraser_button_get_button\n @see libinput_tablet_tool_config_eraser_button_get_default_button\n\n @since 1.29"]
+    pub fn libinput_tablet_tool_config_eraser_button_get_default_button(
+        tool: *mut libinput_tablet_tool,
+    ) -> ::std::os::raw::c_uint;
 }

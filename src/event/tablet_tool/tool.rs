@@ -217,3 +217,113 @@ impl TabletTool {
     /// If the tool does not support pressure range configuration, the return value of this function is always 1.0.
     pub fn config_pressure_range_get_default_maximum, ffi::libinput_tablet_tool_config_pressure_range_get_default_maximum, f64);
 }
+
+/// Used to change tablet tool eraser mode using [`TabletTool::config_eraser_button_set_mode`]
+#[cfg(feature = "libinput_1_29")]
+#[doc(alias = "libinput_config_eraser_button_mode")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[non_exhaustive]
+pub enum EraserButtonMode {
+    /// The eraser button on the tool sends a button event instead.
+    /// If this tool comes into proximity as an eraser,
+    /// a button event on the pen is emulated instead.
+    ///
+    /// See [`TabletTool::config_eraser_button_set_mode`] for details.
+    Button,
+    /// Use the default hardware behavior of the tool.
+    /// libinput does not modify the behavior of the eraser button (if any).
+    Default,
+}
+
+#[cfg(feature = "libinput_1_29")]
+impl EraserButtonMode {
+    fn from_ffi(v: ffi::libinput_config_eraser_button_mode) -> Self {
+        match v {
+            ffi::libinput_config_eraser_button_mode_LIBINPUT_CONFIG_ERASER_BUTTON_BUTTON => {
+                Self::Button
+            }
+            ffi::libinput_config_eraser_button_mode_LIBINPUT_CONFIG_ERASER_BUTTON_DEFAULT => {
+                Self::Default
+            }
+            _ => unreachable!(),
+        }
+    }
+
+    fn as_ffi(&self) -> ffi::libinput_config_eraser_button_mode {
+        match self {
+            EraserButtonMode::Button => {
+                ffi::libinput_config_eraser_button_mode_LIBINPUT_CONFIG_ERASER_BUTTON_BUTTON
+            }
+            EraserButtonMode::Default => {
+                ffi::libinput_config_eraser_button_mode_LIBINPUT_CONFIG_ERASER_BUTTON_DEFAULT
+            }
+        }
+    }
+}
+
+#[cfg(feature = "libinput_1_29")]
+impl TabletTool {
+    /// Get the button configured to emulate an eraser for this tool.
+    #[doc(alias = "libinput_tablet_tool_config_eraser_button_get_button")]
+    pub fn config_eraser_button_get_button(&self) -> Option<u32> {
+        let btn = unsafe {
+            ffi::libinput_tablet_tool_config_eraser_button_get_button(self.as_raw_mut()) as u32
+        };
+        (btn != 0).then_some(btn)
+    }
+
+    /// Get the default button configured to emulate an eraser for this tool.
+    #[doc(alias = "libinput_tablet_tool_config_eraser_button_get_default_button")]
+    pub fn config_eraser_button_get_default_button(&self) -> Option<u32> {
+        let btn = unsafe {
+            ffi::libinput_tablet_tool_config_eraser_button_get_default_button(self.as_raw_mut())
+                as u32
+        };
+        (btn != 0).then_some(btn)
+    }
+
+    /// Get the mode for the eraser button.
+    #[doc(alias = "libinput_tablet_tool_config_eraser_button_get_mode")]
+    pub fn config_eraser_button_get_mode(&self) -> EraserButtonMode {
+        EraserButtonMode::from_ffi(unsafe {
+            ffi::libinput_tablet_tool_config_eraser_button_get_mode(self.as_raw_mut())
+        })
+    }
+
+    /// Get the default mode for the eraser button.
+    #[doc(alias = "libinput_tablet_tool_config_eraser_button_get_default_mode")]
+    pub fn config_eraser_button_get_default_mode(&self) -> EraserButtonMode {
+        EraserButtonMode::from_ffi(unsafe {
+            ffi::libinput_tablet_tool_config_eraser_button_get_default_mode(self.as_raw_mut())
+        })
+    }
+
+    ffi_func!(
+    /// Check if a tool can change the behavior of or to a firmware eraser button.
+    ///
+    /// returns: Non-zero if the device can be set to change to an eraser on button
+    #[doc(alias = "libinput_tablet_tool_config_eraser_button_get_modes")]
+    pub fn config_eraser_button_get_modes, ffi::libinput_tablet_tool_config_eraser_button_get_modes, u32);
+
+    /// Set a button to be the eraser button for this tool.
+    /// This configuration has no effect unless the caller also sets
+    /// the eraser mode to [`ConfigEraserButtonMode::Button`] via
+    /// [`TabletTool::config_eraser_button_set_mode()`].
+    #[doc(alias = "libinput_tablet_tool_config_eraser_button_set_button")]
+    pub fn config_eraser_button_set_button(&self, button: u32) -> DeviceConfigResult {
+        DeviceConfigError::from_ffi(unsafe {
+            ffi::libinput_tablet_tool_config_eraser_button_set_button(self.as_raw_mut(), button)
+        })
+    }
+
+    /// Change the eraser button behavior on a tool.
+    #[doc(alias = "libinput_tablet_tool_config_eraser_button_set_mode")]
+    pub fn config_eraser_button_set_mode(&self, mode: EraserButtonMode) -> DeviceConfigResult {
+        DeviceConfigError::from_ffi(unsafe {
+            ffi::libinput_tablet_tool_config_eraser_button_set_mode(
+                self.as_raw_mut(),
+                mode.as_ffi(),
+            )
+        })
+    }
+}

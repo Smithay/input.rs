@@ -141,6 +141,21 @@ pub enum DeviceConfigError {
     Invalid,
 }
 
+impl DeviceConfigError {
+    pub(crate) fn from_ffi(v: ffi::libinput_config_status) -> DeviceConfigResult {
+        match v {
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_UNSUPPORTED => {
+                Err(DeviceConfigError::Unsupported)
+            }
+            ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_INVALID => {
+                Err(DeviceConfigError::Invalid)
+            }
+            _ => unreachable!("libinput returned invalid 'libinput_config_status'"),
+        }
+    }
+}
+
 bitflags! {
     /// The send-event mode of a device defines when a device may generate
     /// events and pass those events to the caller.
