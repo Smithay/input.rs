@@ -5775,7 +5775,7 @@ enum libinput_config_accel_type {
 enum libinput_config_status
 libinput_config_accel_set_points(struct libinput_config_accel *accel_config,
 				 enum libinput_config_accel_type accel_type,
-				 double step, size_t npoints, double *points);
+				 double step, size_t npoints, const double *points);
 
 /**
  * @ingroup config

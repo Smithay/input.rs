@@ -1704,7 +1704,7 @@ extern "C" {
         accel_type: libinput_config_accel_type,
         step: f64,
         npoints: usize,
-        points: *mut f64,
+        points: *const f64,
     ) -> libinput_config_status;
 }
 extern "C" {
