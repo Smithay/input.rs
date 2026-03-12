@@ -181,6 +181,10 @@ pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool> + Context
     /// Use `x_transformed` for transforming the axis value into a different coordinate
     /// space.
     ///
+    /// If an area is defined for this device, the coordinate is in mm from the
+    /// top left corner of the area. See
+    /// [`Device::config_area_set_rectangle`](crate::Device::config_area_set_rectangle) for details.
+    ///
     /// ## Note
     ///
     /// On some devices, returned value may be negative or larger than the width of the
@@ -193,6 +197,10 @@ pub trait TabletToolEventTrait: AsRaw<ffi::libinput_event_tablet_tool> + Context
     ///
     /// Use `y_transformed` for transforming the axis value into a different coordinate
     /// space.
+    ///
+    /// If an area is defined for this device, the coordinate is in mm from the
+    /// top left corner of the area. See
+    /// [`Device::config_area_set_rectangle`](crate::Device::config_area_set_rectangle) for details.
     ///
     /// ## Note
     ///
