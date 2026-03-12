@@ -1372,7 +1372,7 @@ impl Device {
     /// Check if configurable middle button emulation is enabled by
     /// default on this device.
     ///
-    /// See [Middle button emulation](https://wayland.freedesktop.org/libinput/doc/latest/middle_button_emulation.html) for details.
+    /// See [Middle button emulation](https://wayland.freedesktop.org/libinput/doc/latest/middle-button-emulation.html) for details.
     ///
     /// If the device does not have configurable middle button
     /// emulation, this function returns `false`.
@@ -1395,7 +1395,7 @@ impl Device {
     /// Check if configurable middle button emulation is enabled on
     /// this device.
     ///
-    /// See [Middle button emulation](https://wayland.freedesktop.org/libinput/doc/latest/middle_button_emulation.html)
+    /// See [Middle button emulation](https://wayland.freedesktop.org/libinput/doc/latest/middle-button-emulation.html)
     /// for details.
     ///
     /// If the device does not have configurable middle button
@@ -1418,7 +1418,7 @@ impl Device {
     /// Check if middle mouse button emulation configuration is
     /// available on this device.
     ///
-    /// See [Middle button emulation](https://wayland.freedesktop.org/libinput/doc/latest/middle_button_emulation.html)
+    /// See [Middle button emulation](https://wayland.freedesktop.org/libinput/doc/latest/middle-button-emulation.html)
     /// for details.
     ///
     /// ## Note
@@ -1435,7 +1435,7 @@ impl Device {
     /// buttons generates a middle mouse button release, the left and
     /// right button events are discarded otherwise.
     ///
-    /// See [Middle button emulation](https://wayland.freedesktop.org/libinput/doc/latest/middle_button_emulation.html)
+    /// See [Middle button emulation](https://wayland.freedesktop.org/libinput/doc/latest/middle-button-emulation.html)
     /// for details.
     pub fn config_middle_emulation_set_enabled(&self, enabled: bool) -> DeviceConfigResult {
         match unsafe {

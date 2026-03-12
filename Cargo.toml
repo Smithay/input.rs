@@ -46,3 +46,6 @@ libinput_1_28 = ["input-sys/libinput_1_28", "libinput_1_27"]
 members = [
   "input-sys"
 ]
+
+[package.metadata.docs.rs]
+features = ["libinput_1_28"]
