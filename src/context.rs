@@ -427,6 +427,45 @@ impl Libinput {
     }
 }
 
+#[cfg(feature = "libinput_1_30")]
+bitflags::bitflags! {
+    /// Flags used for [`Libinput::plugin_system_load_plugins`]
+    #[doc(alias = "libinput_plugin_system_flags")]
+    #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+    pub struct PluginSystemFlags: u32 {}
+}
+
+#[cfg(feature = "libinput_1_30")]
+impl Libinput {
+    /// Add the default plugin lookup paths
+    #[doc(alias = "libinput_plugin_system_append_default_paths")]
+    pub fn plugin_system_append_default_paths(&self) {
+        unsafe { ffi::libinput_plugin_system_append_default_paths(self.as_raw_mut()) };
+    }
+
+    /// Appends the given directory path to the libinput plugin lookup path.
+    /// If the path is already in the lookup paths, this function does nothing.
+    #[doc(alias = "libinput_plugin_system_append_path")]
+    pub fn plugin_system_append_path(&self, path: &str) {
+        let path = CString::new(path).expect("Plugin path contained a null-byte");
+        unsafe { ffi::libinput_plugin_system_append_path(self.as_raw_mut(), path.as_ptr()) };
+    }
+
+    /// Load the plugins from the set of lookup paths.
+    /// This function does nothing if no plugin paths have been configured,
+    /// see [`Self::plugin_system_append_default_paths`] and [`Self::plugin_system_append_path`]
+    #[doc(alias = "libinput_plugin_system_load_plugins")]
+    pub fn plugin_system_load_plugins(&self, flags: PluginSystemFlags) -> IoResult<()> {
+        unsafe {
+            match ffi::libinput_plugin_system_load_plugins(self.as_raw_mut(), flags.bits()) {
+                0 => Ok(()),
+                x if x < 0 => Err(IoError::from_raw_os_error(-x)),
+                _ => unreachable!(),
+            }
+        }
+    }
+}
+
 impl AsRawFd for Libinput {
     fn as_raw_fd(&self) -> RawFd {
         unsafe { ffi::libinput_get_fd(self.as_raw_mut()) }
