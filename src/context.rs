@@ -384,7 +384,7 @@ impl Libinput {
     /// let mut input = Libinput::new_with_udev(Interface);
     /// input.udev_assign_seat("seat0").unwrap();
     ///
-    /// while poll(&mut [PollFd::new(&input, PollFlags::IN)], -1).is_ok() {
+    /// while poll(&mut [PollFd::new(&input, PollFlags::IN)], None).is_ok() {
     ///     input.dispatch().unwrap();
     ///     for event in &mut input {
     ///         // do some processing...
