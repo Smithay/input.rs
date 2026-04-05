@@ -107,7 +107,7 @@ fn main() {
             let bind_file = Path::new(&out_dir).join(&bind_name);
             let dest_file = dest_dir.join(&bind_name);
 
-            fs::create_dir_all(&dest_dir).unwrap();
+            fs::create_dir_all(dest_dir).unwrap();
             fs::copy(&bind_file, &dest_file).unwrap();
         }
     }

@@ -142,6 +142,7 @@ pub enum DeviceConfigError {
 }
 
 impl DeviceConfigError {
+    #[cfg(feature = "libinput_1_29")]
     pub(crate) fn from_ffi(v: ffi::libinput_config_status) -> DeviceConfigResult {
         match v {
             ffi::libinput_config_status_LIBINPUT_CONFIG_STATUS_SUCCESS => Ok(()),
