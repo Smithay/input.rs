@@ -388,11 +388,14 @@ impl Device {
     /// Get the system name of the device.
     ///
     /// To get the descriptive device name, use `name`.
-    pub fn sysname(&self) -> &str {
+    ///
+    /// The sysname is the name of the device in the `/sys` filesystem.
+    /// If the sysname is not valid UTF-8, the invalid bytes are replaced
+    /// with `U+FFFD REPLACEMENT CHARACTER`.
+    pub fn sysname(&self) -> Cow<'_, str> {
         unsafe {
             CStr::from_ptr(ffi::libinput_device_get_sysname(self.as_raw_mut()))
-                .to_str()
-                .expect("Device sysname is no valid utf8")
+                .to_string_lossy()
         }
     }
 
