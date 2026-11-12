@@ -130,6 +130,11 @@ pub enum ScrollMethod {
     /// Send scroll events when a button is down and the device moves
     /// along a scroll-capable axis.
     OnButtonDown,
+    /// Send scroll events when a finger moves in a circular motion,
+    /// clockwise for a logical scroll down and counterclockwise for
+    /// a logical scroll up.
+    #[cfg(feature = "libinput_1_32")]
+    Circular,
 }
 
 /// Errors returned when applying configuration settings.
@@ -1627,6 +1632,10 @@ impl Device {
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN => {
                 Some(ScrollMethod::OnButtonDown)
             }
+            #[cfg(feature = "libinput_1_32")]
+            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_CIRCULAR => {
+                Some(ScrollMethod::Circular)
+            }
             _x => {
                 #[cfg(feature = "log")]
                 log::warn!(
@@ -1658,6 +1667,10 @@ impl Device {
             ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN => {
                 Some(ScrollMethod::OnButtonDown)
             }
+            #[cfg(feature = "libinput_1_32")]
+            ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_CIRCULAR => {
+                Some(ScrollMethod::Circular)
+            }
             _ => panic!("libinput returned invalid 'libinput_config_scroll_method'"),
         }
     }
@@ -1683,6 +1696,11 @@ impl Device {
             != 0
         {
             methods.push(ScrollMethod::OnButtonDown);
+        }
+        #[cfg(feature = "libinput_1_32")]
+        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_CIRCULAR as u32 != 0
+        {
+            methods.push(ScrollMethod::Circular);
         }
         methods
     }
@@ -1714,6 +1732,10 @@ impl Device {
                     }
                     ScrollMethod::OnButtonDown => {
                         ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_ON_BUTTON_DOWN
+                    }
+                    #[cfg(feature = "libinput_1_32")]
+                    ScrollMethod::Circular => {
+                        ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_CIRCULAR
                     }
                 },
             )

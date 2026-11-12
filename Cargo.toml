@@ -44,6 +44,7 @@ libinput_1_28 = ["input-sys/libinput_1_28", "libinput_1_27"]
 libinput_1_29 = ["input-sys/libinput_1_29", "libinput_1_28"]
 libinput_1_30 = ["input-sys/libinput_1_30", "libinput_1_29"]
 libinput_1_31 = ["input-sys/libinput_1_31", "libinput_1_30"]
+libinput_1_32 = ["input-sys/libinput_1_32", "libinput_1_31"]
 
 [workspace]
 members = [
@@ -51,4 +52,4 @@ members = [
 ]
 
 [package.metadata.docs.rs]
-features = ["libinput_1_31"]
+features = ["libinput_1_32"]
