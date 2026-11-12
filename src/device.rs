@@ -1682,8 +1682,8 @@ impl Device {
     pub fn config_scroll_methods(&self) -> Vec<ScrollMethod> {
         let mut methods = Vec::new();
         let bitmask = unsafe { ffi::libinput_device_config_scroll_get_methods(self.as_raw_mut()) };
-        if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL as u32 != 0
-        {
+        // `LIBINPUT_CONFIG_SCROLL_NO_SCROLL` is 0, so don't bit test, just compare
+        if bitmask == ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_NO_SCROLL {
             methods.push(ScrollMethod::NoScroll);
         }
         if bitmask & ffi::libinput_config_scroll_method_LIBINPUT_CONFIG_SCROLL_2FG as u32 != 0 {
