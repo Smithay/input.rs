@@ -95,6 +95,16 @@ pub enum Switch {
     /// It is up to the caller to identify which devices are inaccessible
     /// `in tablet mode.
     TabletMode = ffi::libinput_switch_LIBINPUT_SWITCH_TABLET_MODE,
+    /// This switch indicates if the device keypad is exposed or not.
+    ///
+    /// If the switch is in state `SwitchState::Off`, the
+    /// keypad is hidden. If the state is `SwitchState::On`,
+    /// the keypad is exposed.
+    ///
+    /// All devices will remain accessible regardless of the state of this
+    /// switch.
+    #[cfg(feature = "libinput_1_31")]
+    KeypadSlide = ffi::libinput_switch_LIBINPUT_SWITCH_KEYPAD_SLIDE,
 }
 
 /// State of a Switch
@@ -118,6 +128,8 @@ impl SwitchToggleEvent {
         match unsafe { ffi::libinput_event_switch_get_switch(self.as_raw_mut()) } {
             ffi::libinput_switch_LIBINPUT_SWITCH_LID => Some(Switch::Lid),
             ffi::libinput_switch_LIBINPUT_SWITCH_TABLET_MODE => Some(Switch::TabletMode),
+            #[cfg(feature = "libinput_1_31")]
+            ffi::libinput_switch_LIBINPUT_SWITCH_KEYPAD_SLIDE => Some(Switch::KeypadSlide),
             _x => {
                 #[cfg(feature = "log")]
                 log::warn!("Unknown Switch type returned by libinput: {}", _x);
