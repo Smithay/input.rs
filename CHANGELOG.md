@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Added support for libinput 1.31 features
+
 ## 0.10.0
 
 - **Breaking:** `Device::name`, `Device::output_name`, `Seat::physical_name` and `Seat::logical_name` now return Cow strings due to lossy conversion into UTF8

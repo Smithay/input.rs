@@ -1,6 +1,8 @@
 use crate::{ffi, AsRaw, FromRaw};
 #[cfg(feature = "libinput_1_26")]
 use crate::{DeviceConfigError, DeviceConfigResult};
+#[cfg(feature = "libinput_1_31")]
+use std::{borrow::Cow, ffi::CStr};
 
 /// Available tool types for a device with the `DeviceCapability::TabletTool` capability.
 ///
@@ -71,6 +73,29 @@ impl TabletTool {
     /// Tablets known to support tool IDs include the Wacom Intuos 3, 4, 5, Wacom Cintiq
     /// and Wacom Intuos Pro series.
     pub fn tool_id, ffi::libinput_tablet_tool_get_tool_id, u64);
+
+    /// Return the tool name for a tool object, if any.
+    ///
+    /// The tool name is a human-readable string that identifies the specific tool,
+    /// for example "Pro Pen 2" or "Airbrush" and may be presented to the user.
+    ///
+    /// ## Note
+    ///
+    /// This function requires libwacom support. If libwacom is not available
+    /// at compile time or the tool is not known to libwacom, this function
+    /// returns `None`.
+    #[cfg(feature = "libinput_1_31")]
+    #[doc(alias = "libinput_tablet_tool_get_name")]
+    pub fn name(&self) -> Option<Cow<'_, str>> {
+        unsafe {
+            let ptr = ffi::libinput_tablet_tool_get_name(self.as_raw_mut());
+            if ptr.is_null() {
+                None
+            } else {
+                Some(CStr::from_ptr(ptr).to_string_lossy())
+            }
+        }
+    }
 
     /// Return the tool type for a tool object,
     /// see [Vendor-specific tablet tool types](https://wayland.freedesktop.org/libinput/doc/latest/tablet-support.html#tablet-tool-types)

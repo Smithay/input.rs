@@ -1278,6 +1278,38 @@ impl Device {
         }
     }
 
+    ffi_func!(
+    /// Get the current disable-while-typing timeout.
+    #[cfg(feature = "libinput_1_31")]
+    #[doc(alias = "libinput_device_config_dwt_get_timeout")]
+    pub fn config_dwt_timeout, ffi::libinput_device_config_dwt_get_timeout, u32);
+
+    ffi_func!(
+    /// Get the default disable-while-typing timeout.
+    #[cfg(feature = "libinput_1_31")]
+    #[doc(alias = "libinput_device_config_dwt_get_default_timeout")]
+    pub fn config_dwt_default_timeout, ffi::libinput_device_config_dwt_get_default_timeout, u32);
+
+    /// Set the disable-while-typing timeout. This timeout denotes the time
+    /// in milliseconds between the last key event and the touchpad re-enabling.
+    ///
+    /// The timeout only takes effect if disable-while-typing is enabled. libinput
+    /// implements implementation-defined minimum/maximum timeout values, setting
+    /// a timeout outside of those returns `DeviceConfigError::Invalid`.
+    /// Normal use-cases should never hit these limits.
+    ///
+    /// ## Note
+    ///
+    /// The timeout is not the only condition for disable-while-typing, expiry of
+    /// the timeout does not guarantee that the touchpad is re-enabled.
+    #[cfg(feature = "libinput_1_31")]
+    #[doc(alias = "libinput_device_config_dwt_set_timeout")]
+    pub fn config_dwt_set_timeout(&self, millis: u32) -> DeviceConfigResult {
+        DeviceConfigError::from_ffi(unsafe {
+            ffi::libinput_device_config_dwt_set_timeout(self.as_raw_mut(), millis)
+        })
+    }
+
     /// Check if the disable-while trackpointing feature is enabled on this
     /// device by default.
     ///
@@ -1345,6 +1377,35 @@ impl Device {
             }
             _ => panic!("libinput returned invalid 'libinput_config_status'"),
         }
+    }
+
+    ffi_func!(
+    /// Get the current disable-while-trackpointing timeout.
+    #[cfg(feature = "libinput_1_31")]
+    #[doc(alias = "libinput_device_config_dwtp_get_timeout")]
+    pub fn config_dwtp_timeout, ffi::libinput_device_config_dwtp_get_timeout, u32);
+
+    ffi_func!(
+    /// Get the default disable-while-trackpointing timeout.
+    #[cfg(feature = "libinput_1_31")]
+    #[doc(alias = "libinput_device_config_dwtp_get_default_timeout")]
+    pub fn config_dwtp_default_timeout, ffi::libinput_device_config_dwtp_get_default_timeout, u32);
+
+    /// Set the disable-while-trackpointing timeout. This timeout denotes the time
+    /// in milliseconds between the last trackpoint event and the touchpad re-enabling.
+    ///
+    /// The timeout only takes effect if disable-while-trackpointing is enabled.
+    ///
+    /// ## Note
+    ///
+    /// The timeout is not the only condition for disable-while-trackpointing, expiry of
+    /// the timeout does not guarantee that the touchpad is re-enabled.
+    #[cfg(feature = "libinput_1_31")]
+    #[doc(alias = "libinput_device_config_dwtp_set_timeout")]
+    pub fn config_dwtp_set_timeout(&self, millis: u32) -> DeviceConfigResult {
+        DeviceConfigError::from_ffi(unsafe {
+            ffi::libinput_device_config_dwtp_set_timeout(self.as_raw_mut(), millis)
+        })
     }
 
     ffi_func!(
