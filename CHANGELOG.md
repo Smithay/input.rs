@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Added support for libinput 1.31 features
+- Added support for libinput 1.31, 1.32 features
 
 ## 0.10.0
 
